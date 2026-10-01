@@ -11,9 +11,13 @@ Order intake → 11-stage production pipeline → automated WhatsApp updates →
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Supabase](https://img.shields.io/badge/Supabase-Postgres_%2B_RLS-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
-[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?logo=vercel&logoColor=white)](https://nexasport.vercel.app)
+[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?logo=vercel&logoColor=white)](https://nexa-sport-theta.vercel.app)
 
-[**Live demo**](https://nexasport.vercel.app) · [Customer tracking](https://nexasport.vercel.app/track)
+[**Live demo**](https://nexa-sport-theta.vercel.app) · [Customer tracking](https://nexa-sport-theta.vercel.app/track)
+
+> **Database:** aplikasi ini berbagi project Supabase dengan Rabona, tetapi seluruh
+tabelnya berada di schema `nexa_sport` (lihat `supabase/migrations/0011_schema_nexa_sport.sql`).
+> Push ke branch `main` akan otomatis di-deploy oleh Vercel.
 
 </div>
 
