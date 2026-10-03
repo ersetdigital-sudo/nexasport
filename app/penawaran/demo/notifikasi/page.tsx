@@ -56,7 +56,7 @@ export default function DemoNotifikasi() {
         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
         Sistem Berjalan
       </p>
-      <h2 className="text-[24px] font-extrabold tracking-tight text-[#0B1A5C] sm:text-[30px]">
+      <h2 className="text-[24px] font-extrabold tracking-tight text-[#04123F] sm:text-[30px]">
         Tidak ada deadline yang terlewat.
       </h2>
       <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-[#64748B]">
@@ -65,8 +65,8 @@ export default function DemoNotifikasi() {
 
       {/* Kartu hero gradient */}
       <div
-        className="mt-6 overflow-hidden rounded-2xl border border-[#0B1A5C]/10"
-        style={{ background: "linear-gradient(120deg, #0B1A5C 0%, #23134A 55%, #5C1220 100%)" }}
+        className="mt-6 overflow-hidden rounded-2xl border border-[#04123F]/10"
+        style={{ background: "linear-gradient(120deg, #04123F 0%, #23134A 55%, #5C1220 100%)" }}
       >
         <div
           className="grid gap-8 p-6 sm:p-8 lg:grid-cols-2"
@@ -87,7 +87,7 @@ export default function DemoNotifikasi() {
               className="flex items-center gap-3"
             >
               <span
-                className={`relative h-7 w-12 rounded-full transition-colors ${s.notifAktif ? "bg-[#FFC107]" : "bg-white/20"}`}
+                className={`relative h-7 w-12 rounded-full transition-colors ${s.notifAktif ? "bg-[#FEC40B]" : "bg-white/20"}`}
               >
                 <span
                   className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-all ${s.notifAktif ? "left-6" : "left-1"}`}
@@ -154,8 +154,8 @@ export default function DemoNotifikasi() {
           ["H-3, H-2, H-1", "Penerima Pengingat", "Aktif di 3 tahap sebelum deadline"],
         ].map(([angka, judul, ket]) => (
           <Kartu key={judul} className="p-5">
-            <p className="text-[26px] font-extrabold text-[#0B1A5C]">{angka}</p>
-            <p className="mt-1 text-[13px] font-bold text-[#0B1A5C]">{judul}</p>
+            <p className="text-[26px] font-extrabold text-[#04123F]">{angka}</p>
+            <p className="mt-1 text-[13px] font-bold text-[#04123F]">{judul}</p>
             <p className="mt-1 text-[11.5px] text-[#94A3B8]">{ket}</p>
           </Kartu>
         ))}
@@ -164,7 +164,7 @@ export default function DemoNotifikasi() {
       {/* Riwayat pesan */}
       <Kartu className="mt-5">
         <div className="border-b border-[#E9EDF2] px-5 py-3.5">
-          <h3 className="text-[14px] font-bold text-[#0B1A5C]">Riwayat Pesan WhatsApp</h3>
+          <h3 className="text-[14px] font-bold text-[#04123F]">Riwayat Pesan WhatsApp</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[520px] text-left text-[13px]">
@@ -178,7 +178,7 @@ export default function DemoNotifikasi() {
             <tbody>
               {s.notifRiwayat.map((r, i) => (
                 <tr key={i} className={i % 2 ? "bg-[#FAFBFC]" : ""}>
-                  <td className="px-5 py-2.5 font-bold text-[#0B1A5C]">{r.kode}</td>
+                  <td className="px-5 py-2.5 font-bold text-[#04123F]">{r.kode}</td>
                   <td className="px-5 py-2.5 text-[#475569]">{r.tahap}</td>
                   <td className="px-5 py-2.5 tabular-nums">H-{r.hke}</td>
                   <td className="px-5 py-2.5 tabular-nums text-[#475569]">{r.jam}</td>

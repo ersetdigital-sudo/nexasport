@@ -25,19 +25,20 @@ export const PENAWARAN = {
   },
 
   hero: {
-    badge: "Dibangun dari alur kerja nyata TNT Sport",
-    headline: "Order jersey makin banyak, untung jangan bocor di HPP dan deadline.",
+    badge: "◉ Dibangun dari alur kerja nyata TNT Sport",
+    headline: "Order makin banyak. Produksi tetap terkendali.",
     subheadline:
-      "Nexa Sport menghitung HPP otomatis, memantau 11 tahap produksi, dan mengingatkan deadline lewat WhatsApp. Bukan template, tapi sistem yang sudah dipakai di produksi jersey sungguhan.",
+      "Nexa Sport membantu konveksi menghitung HPP, memantau produksi, dan mengontrol deadline dalam satu sistem. Tanpa spreadsheet yang berantakan, tanpa harus buka banyak aplikasi.",
     ctaUtama: "Coba Demo Gratis",
     ctaKedua: "Tanya via WhatsApp",
-    /** Tiga poin kecil di bawah tombol. */
+    /** Poin manfaat di bawah tombol. */
     poin: [
-      "Harga jual ketemu tanpa Excel",
-      "Tahu order mana yang mepet tanpa buka app",
+      "Harga jual ketemu tanpa hitung manual",
+      "Pantau progres pesanan dari awal sampai kirim",
+      "Deadline produksi lebih mudah terkontrol",
       "Bayar sekali, tanpa langganan bulanan",
     ],
-    catatan: "Demo langsung terbuka, tanpa daftar.",
+    catatan: "Demo langsung terbuka. Tanpa daftar.",
   },
 
   pain: {

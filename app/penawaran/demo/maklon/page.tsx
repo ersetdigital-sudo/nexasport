@@ -22,7 +22,7 @@ export default function DemoMaklon() {
           <Kartu key={o.id} className="p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <p className="text-[15px] font-bold text-[#0B1A5C]">{o.kode} — {o.customer}</p>
+                <p className="text-[15px] font-bold text-[#04123F]">{o.kode} — {o.customer}</p>
                 <p className="mt-0.5 text-[12.5px] text-[#64748B]">{o.produk} · {o.qty} pcs</p>
               </div>
               <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${badgeTahap(o.tahapSelesai, total)}`}>
@@ -34,7 +34,7 @@ export default function DemoMaklon() {
               {s.tahapan.map((t, i) => (
                 <div key={t} className="group relative flex-1">
                   <div
-                    className={`h-2 rounded-full ${i < o.tahapSelesai ? "bg-[#FFC107]" : i === o.tahapSelesai ? "bg-[#FFC107]/50" : "bg-[#E2E8F0]"}`}
+                    className={`h-2 rounded-full ${i < o.tahapSelesai ? "bg-[#FEC40B]" : i === o.tahapSelesai ? "bg-[#FEC40B]/50" : "bg-[#E2E8F0]"}`}
                     title={t}
                   />
                 </div>

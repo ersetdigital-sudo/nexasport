@@ -43,7 +43,7 @@ export default function DemoLaporan() {
           <select
             value={periode}
             onChange={(e) => setPeriode(Number(e.target.value))}
-            className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5 text-[13px] font-semibold text-[#0B1A5C] outline-none"
+            className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5 text-[13px] font-semibold text-[#04123F] outline-none"
           >
             <option value={3}>3 bulan</option>
             <option value={6}>6 bulan</option>
@@ -60,8 +60,8 @@ export default function DemoLaporan() {
           [rp(rataHpp), "Rata-rata HPP", "per set dari Kalkulator HPP"],
         ].map(([v, judul, ket]) => (
           <Kartu key={judul} className="p-5">
-            <p className="text-[22px] font-extrabold tabular-nums text-[#0B1A5C]">{v}</p>
-            <p className="mt-1 text-[13px] font-bold text-[#0B1A5C]">{judul}</p>
+            <p className="text-[22px] font-extrabold tabular-nums text-[#04123F]">{v}</p>
+            <p className="mt-1 text-[13px] font-bold text-[#04123F]">{judul}</p>
             <p className="mt-1 text-[11.5px] text-[#94A3B8]">{ket}</p>
           </Kartu>
         ))}
@@ -69,12 +69,12 @@ export default function DemoLaporan() {
 
       {/* Grafik bar omzet */}
       <Kartu className="mt-5 p-5">
-        <h3 className="text-[14px] font-bold text-[#0B1A5C]">Omzet {periode} bulan terakhir</h3>
+        <h3 className="text-[14px] font-bold text-[#04123F]">Omzet {periode} bulan terakhir</h3>
         <div className="mt-6 flex h-48 items-end gap-3">
           {seri.map((b, i) => (
             <div key={b.label + i} className="flex min-w-0 flex-1 flex-col items-center gap-2">
               <div
-                className="w-full max-w-12 rounded-t-lg bg-gradient-to-t from-[#0B1A5C] to-[#2E4AA8] transition-all duration-700"
+                className="w-full max-w-12 rounded-t-lg bg-gradient-to-t from-[#04123F] to-[#2E4AA8] transition-all duration-700"
                 style={{ height: `${Math.max(6, (b.omzet / max) * 100)}%` }}
                 title={rp(b.omzet)}
               />
@@ -85,10 +85,10 @@ export default function DemoLaporan() {
       </Kartu>
 
       <Kartu className="mt-5 p-5">
-        <h3 className="text-[14px] font-bold text-[#0B1A5C]">Ringkasan</h3>
+        <h3 className="text-[14px] font-bold text-[#04123F]">Ringkasan</h3>
         <div className="mt-3 space-y-2 text-[13px] text-[#475569]">
-          <p>· Rata-rata nilai order: <b className="text-[#0B1A5C]">{rp(Math.round(omzet / Math.max(1, s.orders.length)))}</b></p>
-          <p>· Order mendekati deadline dipantau otomatis lewat menu <b className="text-[#0B1A5C]">Notifikasi</b>.</p>
+          <p>· Rata-rata nilai order: <b className="text-[#04123F]">{rp(Math.round(omzet / Math.max(1, s.orders.length)))}</b></p>
+          <p>· Order mendekati deadline dipantau otomatis lewat menu <b className="text-[#04123F]">Notifikasi</b>.</p>
           <p>· Angka di laporan demo ini dummy — di app asli dihitung dari data pesanan sungguhan.</p>
         </div>
       </Kartu>

@@ -28,7 +28,7 @@ export default function DemoPengaturan() {
       <div className="grid gap-5 lg:grid-cols-2">
         {/* Profil usaha */}
         <Kartu className="p-5">
-          <h3 className="text-[14px] font-bold text-[#0B1A5C]">Profil Usaha</h3>
+          <h3 className="text-[14px] font-bold text-[#04123F]">Profil Usaha</h3>
           <div className="mt-4 grid gap-3">
             {([["Nama usaha", "nama"], ["Nomor WhatsApp", "wa"], ["Alamat", "alamat"]] as const).map(([label, key]) => (
               <label key={key} className="block">
@@ -36,7 +36,7 @@ export default function DemoPengaturan() {
                 <input
                   value={profil[key]}
                   onChange={(e) => setProfil((p) => ({ ...p, [key]: e.target.value }))}
-                  className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3.5 py-2.5 text-[13.5px] outline-none focus:border-[#0B1A5C] focus:bg-white"
+                  className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3.5 py-2.5 text-[13.5px] outline-none focus:border-[#04123F] focus:bg-white"
                 />
               </label>
             ))}
@@ -48,7 +48,7 @@ export default function DemoPengaturan() {
 
         {/* Preferensi */}
         <Kartu className="p-5">
-          <h3 className="text-[14px] font-bold text-[#0B1A5C]">Preferensi</h3>
+          <h3 className="text-[14px] font-bold text-[#04123F]">Preferensi</h3>
           <div className="mt-4 space-y-3">
             {[
               ["Notifikasi deadline WhatsApp", nowa, () => setNowa((v) => !v)],
@@ -57,7 +57,7 @@ export default function DemoPengaturan() {
             ].map(([label, aktif, onClick], i) => (
               <button key={i} type="button" onClick={onClick as () => void} className="flex w-full items-center justify-between rounded-xl bg-[#F8FAFC] px-4 py-3 text-left">
                 <span className="text-[13.5px] font-semibold text-[#334155]">{label as string}</span>
-                <span className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${(aktif as boolean) ? "bg-[#FFC107]" : "bg-[#E2E8F0]"}`}>
+                <span className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${(aktif as boolean) ? "bg-[#FEC40B]" : "bg-[#E2E8F0]"}`}>
                   <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${(aktif as boolean) ? "left-[22px]" : "left-0.5"}`} />
                 </span>
               </button>
@@ -69,7 +69,7 @@ export default function DemoPengaturan() {
       {/* Tahap produksi: urutan bisa ditukar */}
       <Kartu className="mt-5">
         <div className="border-b border-[#E9EDF2] px-5 py-3.5">
-          <h3 className="text-[14px] font-bold text-[#0B1A5C]">Tahap Produksi</h3>
+          <h3 className="text-[14px] font-bold text-[#04123F]">Tahap Produksi</h3>
           <p className="mt-0.5 text-[12px] text-[#94A3B8]">
             {s.tahapan.length} tahap — pakai tombol panah untuk ubah urutan. Nama dan jumlah tahap dikunci.
           </p>
@@ -77,8 +77,8 @@ export default function DemoPengaturan() {
         <div className="divide-y divide-[#F1F5F9]">
           {s.tahapan.map((t, i) => (
             <div key={t} className="flex items-center gap-3 px-5 py-2.5">
-              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#F1F5F9] text-[11px] font-bold text-[#0B1A5C]">{i + 1}</span>
-              <span className="flex-1 text-[13.5px] font-semibold text-[#0B1A5C]">{t}</span>
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#F1F5F9] text-[11px] font-bold text-[#04123F]">{i + 1}</span>
+              <span className="flex-1 text-[13.5px] font-semibold text-[#04123F]">{t}</span>
               <button
                 type="button"
                 disabled={i === 0}

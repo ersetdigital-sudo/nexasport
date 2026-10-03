@@ -17,7 +17,7 @@ import { MockupKalkulator, BubbleWA } from "@/components/penawaran/Mockups";
 export function HppHighlight() {
   const hpp = PENAWARAN.hpp;
   return (
-    <section className="bg-white py-20">
+    <section className="bg-[#F7F8FA] py-20">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 lg:grid-cols-2">
         <Reveal>
           <span className="rounded-full bg-[#FEC40B] px-3 py-1.5 text-[11.5px] font-bold text-[#04123F]">{hpp.badge}</span>
@@ -62,7 +62,7 @@ const BANDING = [
 export function ExcelToNexa() {
   const excel = PENAWARAN.excel;
   return (
-    <section className="bg-[#F3F6FB] py-20">
+    <section className="bg-white py-20">
       <div className="mx-auto max-w-6xl px-5">
         <Reveal>
           <h2 className="mx-auto max-w-2xl text-center text-[26px] font-extrabold tracking-tight text-[#04123F] sm:text-[34px]">
@@ -188,10 +188,10 @@ export function DeadlineNotif() {
   const notif = PENAWARAN.notif;
 
   return (
-    <section className="bg-white py-20">
+    <section className="bg-[#F7F8FA] py-20">
       <div className="mx-auto max-w-6xl px-5">
         <Reveal>
-          <span className="rounded-full border border-[#04123F]/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-[#5A6784]">
+          <span className="rounded-full border border-[#04123F]/15 bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-[#5A6784]">
             Untuk kepala produksi
           </span>
           <h2 className="mt-4 max-w-xl text-[26px] font-extrabold tracking-tight text-[#04123F] sm:text-[34px]">
@@ -204,8 +204,8 @@ export function DeadlineNotif() {
 
         <Reveal delay={120}>
           <div
-            className="mt-10 overflow-hidden rounded-2xl border border-white/10"
-            style={{ background: "linear-gradient(120deg, #04123F 0%, #23134A 55%, #5C1220 100%)" }}
+            className="mt-10 overflow-hidden rounded-2xl border border-[#04123F]/20 shadow-xl shadow-[#04123F]/10"
+            style={{ background: "linear-gradient(120deg, #04123F 0%, #0A1E5C 100%)" }}
           >
             {/* Pola grid halus */}
             <div

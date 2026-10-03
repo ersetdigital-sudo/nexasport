@@ -2,15 +2,14 @@
 
 /** Komponen UI kecil yang dipakai halaman-halaman demo. */
 import { PENAWARAN, waLink } from "@/lib/penawaran-config";
+import { formatShortDateID } from "@/lib/format-date";
 
 export const rp = (v: number) => "Rp" + new Intl.NumberFormat("id-ID").format(Math.round(v));
 
 export const tanggalID = (iso: string) =>
   new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(iso));
 
-const hariIni = new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date());
-
-/** Header halaman demo: label kapital + judul + tanggal + aksi utama. */
+/** Header halaman demo — disamakan dengan topbar admin asli (pas-*). */
 export function PageHead({
   kicker = "Operasional",
   title,
@@ -21,16 +20,16 @@ export function PageHead({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-6 rounded-2xl border border-[#E9EDF2] bg-white px-5 py-4 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-[#94A3B8]">{kicker}</p>
-          <h1 className="mt-0.5 text-[20px] font-extrabold tracking-tight text-[#0B1A5C] sm:text-[22px]">{title}</h1>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="hidden text-[12.5px] text-[#64748B] sm:inline">{hariIni}</span>
-          {action}
-        </div>
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="min-w-0">
+        <p className="pas-kicker">{kicker}</p>
+        <h1 className="pas-display pas-title mt-1 truncate">{title}</h1>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="hidden text-[12.5px] text-[var(--pas-muted)] lg:inline">
+          {formatShortDateID(new Date())}
+        </span>
+        {action}
       </div>
     </div>
   );
@@ -58,7 +57,7 @@ export function BtnKuning({ children, onClick, disabled }: { children: React.Rea
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="rounded-xl bg-[#FFC107] px-4 py-2.5 text-[13.5px] font-bold text-[#3A2B00] shadow-sm transition hover:brightness-105 active:scale-[0.97] disabled:opacity-50"
+      className="rounded-xl bg-[#FEC40B] px-4 py-2.5 text-[13.5px] font-bold text-[#04123F] shadow-[0_4px_12px_rgba(254,196,11,0.35)] transition hover:brightness-105 active:scale-[0.97] disabled:opacity-50"
     >
       {children}
     </button>

@@ -64,7 +64,7 @@ export default function DemoHpp() {
             onClick={() => setTab(t)}
             className={
               "rounded-xl px-3.5 py-2.5 text-[13px] font-semibold transition text-center whitespace-nowrap " +
-              (tab === t ? "bg-gradient-to-b from-[#0B1A5C] to-[#12266E] text-white shadow-sm" : "text-[#64748B] hover:text-[#0B1A5C]")
+              (tab === t ? "bg-gradient-to-b from-[#04123F] to-[#12266E] text-white shadow-sm" : "text-[#64748B] hover:text-[#04123F]")
             }
           >
             {t}
@@ -140,7 +140,7 @@ function Kalkulator() {
                   : s.hppItems.filter((it) => it.item === l.item).map((it) => it.variasi);
                 return (
                   <tr key={l.key} className={i % 2 ? "bg-[#FAFBFC]" : ""}>
-                    <td className="px-4 py-2.5 font-semibold text-[#0B1A5C]">{l.label}</td>
+                    <td className="px-4 py-2.5 font-semibold text-[#04123F]">{l.label}</td>
                     <td className="px-2 py-2.5">
                       {l.key === "dtf" || l.key === "lain" ? (
                         <span className="text-[12px] text-[#94A3B8]">otomatis</span>
@@ -148,7 +148,7 @@ function Kalkulator() {
                         <select
                           value={l.variasi}
                           onChange={(e) => setSelected((p) => ({ ...p, [l.key]: e.target.value }))}
-                          className="w-full max-w-[240px] rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] outline-none focus:border-[#0B1A5C]"
+                          className="w-full max-w-[240px] rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] outline-none focus:border-[#04123F]"
                         >
                           <option value="">—</option>
                           {grups.map((g) => (
@@ -165,7 +165,7 @@ function Kalkulator() {
                         <select
                           value={l.variasi}
                           onChange={(e) => setSelected((p) => ({ ...p, [l.key]: e.target.value }))}
-                          className="w-full max-w-[240px] rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] outline-none focus:border-[#0B1A5C]"
+                          className="w-full max-w-[240px] rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] outline-none focus:border-[#04123F]"
                         >
                           <option value="">—</option>
                           {opsi.map((o) => (
@@ -176,7 +176,7 @@ function Kalkulator() {
                         <span className="text-[12px] text-[#94A3B8]">belum ada di database</span>
                       )}
                     </td>
-                    <td className="px-4 py-2.5 text-right font-bold tabular-nums text-[#0B1A5C]">
+                    <td className="px-4 py-2.5 text-right font-bold tabular-nums text-[#04123F]">
                       {l.harga != null ? rp(l.harga) : "—"}
                     </td>
                   </tr>
@@ -186,7 +186,7 @@ function Kalkulator() {
             <tfoot>
               <tr className="border-t border-[#E2E8F0]">
                 <td className="px-4 py-3 font-bold" colSpan={2}>TOTAL HPP</td>
-                <td className="px-4 py-3 text-right font-bold tabular-nums text-[#0B1A5C]">{rp(total)}</td>
+                <td className="px-4 py-3 text-right font-bold tabular-nums text-[#04123F]">{rp(total)}</td>
               </tr>
               <tr>
                 <td className="px-4 py-2 font-semibold" colSpan={2}>MARGIN</td>
@@ -194,9 +194,9 @@ function Kalkulator() {
                   <RupiahInput className="ml-auto w-36" value={margin} onValueChange={setMargin} />
                 </td>
               </tr>
-              <tr className="bg-[#FFC107]/10">
+              <tr className="bg-[#FEC40B]/10">
                 <td className="px-4 py-3 font-bold" colSpan={2}>HARGA JUAL</td>
-                <td className="px-4 py-3 text-right font-extrabold tabular-nums text-[15px] text-[#0B1A5C]">{rp(jual)}</td>
+                <td className="px-4 py-3 text-right font-extrabold tabular-nums text-[15px] text-[#04123F]">{rp(jual)}</td>
               </tr>
             </tfoot>
           </table>
@@ -230,7 +230,7 @@ function Database() {
 
   return (
     <Kartu>
-      <div className="border-b border-[#E9EDF2] bg-gradient-to-r from-[#0B1A5C] to-[#12266E] px-5 py-4">
+      <div className="border-b border-[#E9EDF2] bg-gradient-to-r from-[#04123F] to-[#12266E] px-5 py-4">
         <h2 className="text-[15px] font-bold text-white">Database HPP</h2>
         <p className="mt-0.5 text-[12px] text-white/60">{s.hppItems.length} item — klik harga untuk edit langsung</p>
       </div>
@@ -252,7 +252,7 @@ function Database() {
                     {it.kategori}
                   </span>
                 </td>
-                <td className="px-4 py-2.5 font-semibold text-[#0B1A5C]">{it.item}</td>
+                <td className="px-4 py-2.5 font-semibold text-[#04123F]">{it.item}</td>
                 <td className="px-4 py-2.5 text-[#475569]">{it.variasi}</td>
                 <td className="px-4 py-2.5 text-right">
                   {editId === it.id ? (
@@ -263,7 +263,7 @@ function Database() {
                         value={draft}
                         onValueChange={setDraft}
                       />
-                      <button type="button" className="rounded-lg bg-[#FFC107] px-2.5 py-1.5 text-[11px] font-bold text-[#3A2B00]" onClick={() => simpan(it)}>✓</button>
+                      <button type="button" className="rounded-lg bg-[#FEC40B] px-2.5 py-1.5 text-[11px] font-bold text-[#04123F]" onClick={() => simpan(it)}>✓</button>
                     </span>
                   ) : (
                     <button
@@ -273,7 +273,7 @@ function Database() {
                         setEditId(it.id);
                         setDraft(it.harga);
                       }}
-                      className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 font-bold tabular-nums text-[#0B1A5C] transition hover:bg-[#EEF1F5]"
+                      className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 font-bold tabular-nums text-[#04123F] transition hover:bg-[#EEF1F5]"
                     >
                       {rp(it.harga)} <span className="text-[11px] opacity-40">✏️</span>
                     </button>
@@ -344,7 +344,7 @@ function DaftarKain() {
               value={draft.nama}
               onChange={(e) => setDraft((d) => ({ ...d, nama: e.target.value }))}
               placeholder="Nama kain, mis. BIRON"
-              className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3.5 py-2.5 text-[13.5px] outline-none focus:border-[#0B1A5C] focus:bg-white"
+              className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3.5 py-2.5 text-[13.5px] outline-none focus:border-[#04123F] focus:bg-white"
             />
             <RupiahInput value={draft.hargaPerKg} onValueChange={(n) => setDraft((d) => ({ ...d, hargaPerKg: n }))} className="w-full sm:w-44" />
           </div>
@@ -356,7 +356,7 @@ function DaftarKain() {
       {grups.map((g) => (
         <Kartu key={g}>
           <div className="flex items-center justify-between bg-[#F1F5F9] px-5 py-3">
-            <h3 className="text-[14px] font-bold text-[#0B1A5C]">{g}</h3>
+            <h3 className="text-[14px] font-bold text-[#04123F]">{g}</h3>
             <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-[#475569]">
               {s.kains.filter((k) => k.grup === g).length} kain
             </span>
@@ -364,11 +364,11 @@ function DaftarKain() {
           <div className="divide-y divide-[#F1F5F9]">
             {s.kains.filter((k) => k.grup === g).map((k) => (
               <div key={k.id} className="flex flex-wrap items-center gap-3 px-5 py-3">
-                <span className="min-w-28 text-[13.5px] font-bold text-[#0B1A5C]">{k.nama}</span>
+                <span className="min-w-28 text-[13.5px] font-bold text-[#04123F]">{k.nama}</span>
                 {editId === k.id ? (
                   <span className="inline-flex items-center gap-1.5">
                     <RupiahInput autoFocus className="w-32" value={kgDraft} onValueChange={setKgDraft} />
-                    <button type="button" className="rounded-lg bg-[#FFC107] px-2.5 py-1.5 text-[11px] font-bold text-[#3A2B00]" onClick={() => simpanKg(k)}>✓</button>
+                    <button type="button" className="rounded-lg bg-[#FEC40B] px-2.5 py-1.5 text-[11px] font-bold text-[#04123F]" onClick={() => simpanKg(k)}>✓</button>
                   </span>
                 ) : (
                   <button

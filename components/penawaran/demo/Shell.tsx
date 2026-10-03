@@ -59,35 +59,33 @@ export default function DemoShell({ children }: { children: React.ReactNode }) {
   const aktif = (href: string) =>
     href === "/penawaran/demo" ? pathname === href : pathname.startsWith(href);
 
+  // Sidebar demo — memakai kelas pas-* yang sama dengan sidebar admin asli
+  // (pas-navlink, pas-navsec, pas-brand-logo) supaya tampilannya identik.
   const sidebar = (
-    <div className="flex h-full flex-col bg-[#0B1A5C]">
-      <div className="px-5 py-6">
-        <p className="text-[17px] font-extrabold tracking-tight text-white">
-          NEXA <span className="text-[#FFC107]">SPORT</span>
-        </p>
-        <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.35em] text-white/40">Admin Panel</p>
+    <div
+      className="flex h-full flex-col px-4 pb-4 pt-6"
+      style={{ background: "linear-gradient(180deg, #04123F, #0A1B45)" }}
+    >
+      <div className="mb-2 px-2">
+        <img src="/nexa-sport-logo.png" alt="Nexa Sport" className="w-[150px] max-w-full" />
+        <span className="pas-brand-sub mt-2">Admin Panel</span>
       </div>
-      <nav className="flex-1 overflow-y-auto px-3 pb-4">
+      <nav className="flex-1 overflow-y-auto">
         {(["OPERASIONAL", "DATA"] as const).map((grup) => (
-          <div key={grup} className="mb-4">
-            <p className="px-2 pb-2 text-[9.5px] font-bold uppercase tracking-[0.25em] text-white/35">{grup}</p>
+          <div key={grup}>
+            <p className="pas-navsec">{grup}</p>
             <div className="flex flex-col gap-1">
               {MENU.filter((m) => m.grup === grup).map((m) => (
                 <Link
                   key={m.href}
                   href={m.href}
                   onClick={() => setNavOpen(false)}
-                  className={
-                    "flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13.5px] font-semibold transition " +
-                    (aktif(m.href)
-                      ? "bg-[#FFC107] text-[#3A2B00]"
-                      : "text-white/70 hover:bg-white/10 hover:text-white")
-                  }
+                  className={`pas-navlink${aktif(m.href) ? " on" : ""}`}
                 >
-                  {m.icon}
+                  <span className="pas-ic">{m.icon}</span>
                   <span className="flex-1">{m.label}</span>
                   {m.label === "Pesanan" && mendekati > 0 && (
-                    <span className={`grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-[10px] font-bold ${aktif(m.href) ? "bg-[#3A2B00] text-[#FFC107]" : "bg-[#FFC107] text-[#3A2B00]"}`}>
+                    <span className={`grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-[10px] font-bold ${aktif(m.href) ? "bg-[#04123F] text-[#FEC40B]" : "bg-[#FEC40B] text-[#04123F]"}`}>
                       {mendekati}
                     </span>
                   )}
@@ -97,10 +95,10 @@ export default function DemoShell({ children }: { children: React.ReactNode }) {
           </div>
         ))}
       </nav>
-      <div className="mx-3 mb-4 flex items-center gap-3 rounded-2xl bg-white/5 p-3">
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#FFC107] text-[12px] font-bold text-[#3A2B00]">AD</span>
+      <div className="pas-userbox mt-4 flex items-center gap-3 p-3">
+        <span className="pas-avatar-invert grid h-9 w-9 shrink-0 place-items-center rounded-full text-[12px] font-bold">AD</span>
         <div className="min-w-0 leading-tight">
-          <p className="truncate text-[12.5px] font-bold text-white">Admin Nexa Sport</p>
+          <p className="truncate text-[12.5px] font-bold">Admin Nexa Sport</p>
           <p className="truncate text-[10.5px] text-white/50">admin@nexasport.id</p>
         </div>
       </div>
@@ -110,9 +108,9 @@ export default function DemoShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#F6F7F9] text-[#0F172A]" style={{ fontFamily: "'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif" }}>
       {/* ── BANNER MODE DEMO ── */}
-      <div className="sticky top-0 z-40 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 bg-[#0B1A5C] px-4 py-2 text-[11.5px] text-white/80">
+      <div className="sticky top-0 z-40 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 bg-[#04123F] px-4 py-2 text-[11.5px] text-white/80">
         <span>
-          <b className="text-[#FFC107]">Mode Demo</b> — data contoh, perubahan tidak disimpan
+          <b className="text-[#FEC40B]">Mode Demo</b> — data contoh, perubahan tidak disimpan
         </span>
         <div className="flex items-center gap-1.5">
           <button
@@ -135,7 +133,7 @@ export default function DemoShell({ children }: { children: React.ReactNode }) {
           <a href={waLink()} target="_blank" rel="noreferrer" className="rounded-lg bg-white/10 px-2.5 py-1 font-bold text-white transition hover:bg-white/20">
             Hubungi Kami
           </a>
-          <a href={waLink("Halo Nexa Sport, saya mau minta penawaran.")} target="_blank" rel="noreferrer" className="rounded-lg bg-[#FFC107] px-2.5 py-1 font-bold text-[#3A2B00] transition hover:brightness-105">
+          <a href={waLink("Halo Nexa Sport, saya mau minta penawaran.")} target="_blank" rel="noreferrer" className="rounded-lg bg-[#FEC40B] px-2.5 py-1 font-bold text-[#04123F] transition hover:brightness-105">
             Minta Penawaran
           </a>
         </div>
@@ -172,7 +170,7 @@ export default function DemoShell({ children }: { children: React.ReactNode }) {
 
       {/* ── TOAST ── */}
       {toast && (
-        <div className="fixed bottom-5 left-1/2 z-[60] -translate-x-1/2 rounded-xl bg-[#0B1A5C] px-4 py-2.5 text-[13px] font-semibold text-white shadow-xl">
+        <div className="fixed bottom-5 left-1/2 z-[60] -translate-x-1/2 rounded-xl bg-[#04123F] px-4 py-2.5 text-[13px] font-semibold text-white shadow-xl">
           {toast}
         </div>
       )}
@@ -187,7 +185,7 @@ export default function DemoShell({ children }: { children: React.ReactNode }) {
             <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#94A3B8]">
               Tur demo · {tour + 1}/{TOUR.length}
             </p>
-            <h3 className="mt-1.5 text-[15px] font-bold text-[#0B1A5C]">{TOUR[tour].judul}</h3>
+            <h3 className="mt-1.5 text-[15px] font-bold text-[#04123F]">{TOUR[tour].judul}</h3>
             <p className="mt-2 text-[13px] leading-relaxed text-[#64748B]">{TOUR[tour].teks}</p>
             <div className="mt-4 flex items-center justify-between">
               <button type="button" className="text-[12.5px] font-semibold text-[#94A3B8] hover:text-[#475569]" onClick={() => { setTour(null); tandaiTourSelesai(); }}>
@@ -205,7 +203,7 @@ export default function DemoShell({ children }: { children: React.ReactNode }) {
                 )}
                 <button
                   type="button"
-                  className="rounded-lg bg-[#FFC107] px-3.5 py-1.5 text-[12.5px] font-bold text-[#3A2B00]"
+                  className="rounded-lg bg-[#FEC40B] px-3.5 py-1.5 text-[12.5px] font-bold text-[#04123F]"
                   onClick={() => {
                     if (tour + 1 >= TOUR.length) {
                       setTour(null);

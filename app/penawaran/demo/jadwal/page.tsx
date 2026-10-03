@@ -48,9 +48,9 @@ export default function DemoJadwal() {
         title="Jadwal Produksi"
         action={
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => setOffset((v) => v - 1)} className="rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] font-bold text-[#475569] transition hover:border-[#0B1A5C]">←</button>
+            <button type="button" onClick={() => setOffset((v) => v - 1)} className="rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] font-bold text-[#475569] transition hover:border-[#04123F]">←</button>
             <span className="rounded-xl bg-[#F1F5F9] px-3 py-2 text-[12.5px] font-semibold text-[#475569]">Minggu ini</span>
-            <button type="button" onClick={() => setOffset((v) => v + 1)} className="rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] font-bold text-[#475569] transition hover:border-[#0B1A5C]">→</button>
+            <button type="button" onClick={() => setOffset((v) => v + 1)} className="rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-[13px] font-bold text-[#475569] transition hover:border-[#04123F]">→</button>
           </div>
         }
       />
@@ -59,7 +59,7 @@ export default function DemoJadwal() {
           {kolom.map((k) => (
             <Kartu key={k.iso}>
               <div className="border-b border-[#E9EDF2] bg-[#F8FAFC] px-3 py-2.5 text-center">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-[#0B1A5C]">{k.hari}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-[#04123F]">{k.hari}</p>
                 <p className="text-[10.5px] text-[#94A3B8]">
                   {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short" }).format(new Date(k.iso))}
                 </p>
@@ -67,7 +67,7 @@ export default function DemoJadwal() {
               <div className="space-y-2 p-2.5">
                 {k.order.map((o) => (
                   <div key={o.id} className="rounded-xl border border-[#EEF1F5] bg-white p-2.5 shadow-sm">
-                    <p className="text-[11px] font-bold text-[#0B1A5C]">{o.kode}</p>
+                    <p className="text-[11px] font-bold text-[#04123F]">{o.kode}</p>
                     <p className="mt-0.5 line-clamp-2 text-[10.5px] text-[#64748B]">{o.customer}</p>
                     <p className="mt-1 text-[10px] font-semibold text-[#94A3B8]">{o.qty} pcs · {rp(o.total)}</p>
                     <div className="mt-2 flex gap-1">

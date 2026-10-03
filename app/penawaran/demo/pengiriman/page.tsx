@@ -42,7 +42,7 @@ export default function DemoPengiriman() {
             <tbody>
               {s.kirim.map((k, i) => (
                 <tr key={k.id} className={i % 2 ? "bg-[#FAFBFC]" : ""}>
-                  <td className="px-4 py-3 font-bold tabular-nums text-[#0B1A5C]">{k.resi}</td>
+                  <td className="px-4 py-3 font-bold tabular-nums text-[#04123F]">{k.resi}</td>
                   <td className="px-4 py-3">{k.order}</td>
                   <td className="px-4 py-3 text-[#475569]">{k.ekspedisi}</td>
                   <td className="px-4 py-3 tabular-nums text-[#475569]">{tanggalID(k.tanggal)}</td>
@@ -56,7 +56,7 @@ export default function DemoPengiriman() {
                       <button
                         type="button"
                         onClick={() => update(k.id)}
-                        className="rounded-xl bg-[#FFC107] px-3 py-1.5 text-[12px] font-bold text-[#3A2B00] transition hover:brightness-105 active:scale-95"
+                        className="rounded-xl bg-[#FEC40B] px-3 py-1.5 text-[12px] font-bold text-[#04123F] transition hover:brightness-105 active:scale-95"
                       >
                         Update Status
                       </button>

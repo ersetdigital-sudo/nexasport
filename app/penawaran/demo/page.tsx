@@ -1,18 +1,75 @@
 "use client";
 
 /**
- * Demo Pesanan — tracking 11 tahap produksi. Data dummy in-memory.
- * Urutan tahap dibaca dari store (bisa diubah di halaman Pengaturan).
+ * Demo Pesanan — tampilan DISAMAKAN dengan dashboard admin asli
+ * (/pesanan/orders): memakai kelas pas-* yang sama dari globals.css, jadi
+ * KPI, toolbar, tabel, dan kartu mobile identik dengan app asli.
+ * Data tetap dummy in-memory, terisolasi dari API/session.
  */
 import { useMemo, useState } from "react";
 import { setDemo, useDemo, demoToast } from "@/lib/demo-store";
 import { DEFAULT_PRODUCTS } from "@/lib/product-options";
-import { PageHead, Kartu, BtnKuning, Modal, badgeTahap, rp, tanggalID } from "@/components/penawaran/demo/ui";
+import { pcsLabel } from "@/lib/utils";
+import { formatNumericDateID } from "@/lib/format-date";
+import { PageHead, BtnKuning, Modal, tanggalID } from "@/components/penawaran/demo/ui";
+
+/* ── Helper yang disamakan dengan PesananDashboard asli ── */
+const MONTH_NAMES = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+type FilterKey = "all" | "baru" | "produksi" | "kirim" | "selesai";
+const FILTER_LABEL: Record<FilterKey, string> = {
+  all: "Semua", baru: "Baru", produksi: "Produksi", kirim: "Siap Dikirim", selesai: "Selesai",
+};
+
+const monthKeyOf = (iso: string) => (iso ? iso.slice(0, 7) : "");
+const monthLabelOf = (key: string) => {
+  const [y, m] = key.split("-");
+  const idx = parseInt(m, 10) - 1;
+  if (!y || isNaN(idx) || idx < 0 || idx > 11) return key;
+  return `${MONTH_NAMES[idx]} ${y}`;
+};
+
+/** Status bucket (sama seperti admin asli): selesai → kirim → baru → produksi. */
+function statusOf(tahapSelesai: number, total: number): FilterKey {
+  if (tahapSelesai >= total) return "selesai";
+  if (tahapSelesai >= total - 1) return "kirim";
+  if (tahapSelesai <= 1) return "baru";
+  return "produksi";
+}
+
+function deadlineStatus(deadline: string | null): { level: "normal" | "approaching" | "warning" | "critical" | "overdue" | null; diffDays: number } {
+  if (!deadline) return { level: null, diffDays: 0 };
+  const diffDays = Math.ceil((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  if (diffDays <= 0) return { level: "overdue", diffDays };
+  if (diffDays === 1) return { level: "critical", diffDays };
+  if (diffDays === 2) return { level: "warning", diffDays };
+  if (diffDays === 3) return { level: "approaching", diffDays };
+  return { level: "normal", diffDays };
+}
+
+/** Badge keterangan deadline di kolom status (H-3/H-2/H-1/lewat). */
+function deadlineNote(level: ReturnType<typeof deadlineStatus>["level"], diffDays: number): { text: string; cls: "warn" | "danger" } | null {
+  switch (level) {
+    case "overdue": {
+      const late = Math.abs(diffDays);
+      return { text: late > 0 ? `Lewat ${late} hari` : "Lewat deadline", cls: "danger" };
+    }
+    case "critical": return { text: "H-1", cls: "danger" };
+    case "warning": return { text: "H-2", cls: "warn" };
+    case "approaching": return { text: "H-3", cls: "warn" };
+    default: return null;
+  }
+}
+
+const initials = (name: string) =>
+  name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+
+const formatDate = (iso: string) => formatNumericDateID(iso) || "-";
 
 export default function DemoPesanan() {
   const s = useDemo();
   const [q, setQ] = useState("");
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState<FilterKey>("all");
   const [detailId, setDetailId] = useState<number | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   // Form tambah pesanan — meniru AddForm app asli: customer + HP,
@@ -28,21 +85,70 @@ export default function DemoPesanan() {
   const [formError, setFormError] = useState("");
   const totalQty = productRows.reduce((acc, p) => acc + (parseInt(p.qty, 10) || 0), 0);
 
-  const statusOf = (tahapSelesai: number) =>
-    tahapSelesai >= s.tahapan.length ? "Selesai" : s.tahapan[tahapSelesai];
+  const total = s.tahapan.length;
+
+  /* ── Statistik & filter — logika sama dengan ViewPesanan admin asli ── */
+  const [selectedMonth, setSelectedMonth] = useState(() => monthKeyOf(new Date().toISOString()));
+
+  const monthOptions = useMemo(() => {
+    const keys = new Set<string>();
+    s.orders.forEach((o) => {
+      const k = monthKeyOf(o.mulai);
+      if (k) keys.add(k);
+    });
+    keys.add(monthKeyOf(new Date().toISOString()));
+    return Array.from(keys).sort().reverse();
+  }, [s.orders]);
 
   const filtered = useMemo(() => {
     const k = q.trim().toLowerCase();
-    return s.orders.filter(
-      (o) =>
-        (!filter || statusOf(o.tahapSelesai) === filter) &&
-        (!k || o.kode.toLowerCase().includes(k) || o.customer.toLowerCase().includes(k) || o.produk.toLowerCase().includes(k))
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [s.orders, s.tahapan, q, filter]);
+    return s.orders
+      .filter((o) => {
+        if (selectedMonth !== "all" && monthKeyOf(o.mulai) !== selectedMonth) return false;
+        if (filter !== "all" && statusOf(o.tahapSelesai, total) !== filter) return false;
+        if (!k) return true;
+        return (o.kode + " " + o.customer + " " + o.produk).toLowerCase().includes(k);
+      })
+      .sort((a, b) => (a.id < b.id ? 1 : -1));
+  }, [s.orders, selectedMonth, filter, q, total]);
+
+  const stats = {
+    total: s.orders.length,
+    produksi: s.orders.filter((o) => ["produksi", "baru"].includes(statusOf(o.tahapSelesai, total))).length,
+    kirim: s.orders.filter((o) => statusOf(o.tahapSelesai, total) === "kirim").length,
+    selesai: s.orders.filter((o) => statusOf(o.tahapSelesai, total) === "selesai").length,
+  };
+
+  // Pesanan masuk dalam 7 hari terakhir (WIB) — delta KPI Total Pesanan.
+  const baruMingguIni = useMemo(() => {
+    const cutoff = new Date();
+    cutoff.setUTCDate(cutoff.getUTCDate() - 6);
+    const cutoffKey = cutoff.toISOString().slice(0, 10);
+    return s.orders.filter((o) => o.mulai && o.mulai.slice(0, 10) >= cutoffKey).length;
+  }, [s.orders]);
+
+  const nextDeadline = s.orders
+    .filter((o) => o.deadline && o.tahapSelesai < total)
+    .sort((a, b) => (a.deadline < b.deadline ? -1 : 1))[0]?.deadline ?? null;
+  const deadlineInfo = deadlineStatus(nextDeadline);
+
+  const deadlineAlertCount = s.orders.filter((o) => {
+    if (!o.deadline || o.tahapSelesai >= total) return false;
+    const lvl = deadlineStatus(o.deadline).level;
+    return lvl !== null && lvl !== "normal";
+  }).length;
+  const hasOverdue = s.orders.some((o) => o.tahapSelesai < total && o.deadline && deadlineStatus(o.deadline).level === "overdue");
+  const hasWarning = s.orders.some((o) => o.tahapSelesai < total && o.deadline && ["approaching", "warning", "critical"].includes(deadlineStatus(o.deadline).level as string));
+
+  const overdueCount = s.orders.filter((o) => o.tahapSelesai < total && o.deadline && deadlineStatus(o.deadline).level === "overdue").length;
+  const produksiBadge =
+    overdueCount > 0
+      ? { text: `${overdueCount} lewat deadline`, cls: "pas-delta bad mb-0.5" }
+      : deadlineAlertCount > 0
+        ? { text: `${deadlineAlertCount} mendekati deadline`, cls: "pas-delta ok mb-0.5" }
+        : { text: "on track", cls: "pas-delta good mb-0.5" };
 
   const detail = s.orders.find((o) => o.id === detailId) ?? null;
-  const total = s.tahapan.length;
 
   const lanjut = (id: number) => {
     setDemo({
@@ -108,76 +214,326 @@ export default function DemoPesanan() {
     demoToast("Pesanan ditambahkan (mode demo)");
   };
 
+  const demoAksiHapus = () => demoToast("Mode Demo — aksi hapus tidak tersedia");
+
   return (
     <div>
       <PageHead
         title="Pesanan"
-        action={
-          <BtnKuning onClick={() => setFormOpen(true)}>+ Tambah Pesanan</BtnKuning>
-        }
+        action={<BtnKuning onClick={() => setFormOpen(true)}>+ Pesanan</BtnKuning>}
       />
 
-      {/* Filter + pencarian */}
-      <Kartu className="mb-5 p-4">
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Cari kode, customer, atau produk…"
-            className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3.5 py-2.5 text-[13.5px] outline-none focus:border-[#0B1A5C] focus:bg-white"
-          />
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5 text-[13.5px] font-semibold text-[#0B1A5C] outline-none"
-          >
-            <option value="">Semua status</option>
-            {s.tahapan.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-            <option value="Selesai">Selesai</option>
-          </select>
+      {/* KPI — struktur & kelas sama dengan admin asli */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
+        <div className="pas-card pas-kpi pas-kpi-hero pas-bento-kpi p-4 sm:p-5">
+          <p className="pas-kpi-label text-[13px]">Total Pesanan</p>
+          <div className="flex items-end gap-2.5 mt-2.5">
+            <p className="pas-display pas-num text-[34px] leading-none">{stats.total}</p>
+            <span className="pas-delta mb-0.5">+{baruMingguIni} minggu ini</span>
+          </div>
         </div>
-      </Kartu>
+        <div className="pas-card pas-kpi pas-bento-kpi p-4 sm:p-5">
+          <p className="text-[13px] text-[var(--pas-muted)]">Sedang Produksi</p>
+          <div className="flex items-end gap-2.5 mt-2.5">
+            <p className="pas-display pas-num text-[30px] leading-none">{stats.produksi}</p>
+            <span className={produksiBadge.cls}>{produksiBadge.text}</span>
+          </div>
+        </div>
+        <div className="pas-card pas-kpi pas-bento-kpi p-4 sm:p-5">
+          <p className="text-[13px] text-[var(--pas-muted)]">Deadline</p>
+          <div className="flex items-end gap-2.5 mt-2.5">
+            <p
+              className={
+                hasOverdue
+                  ? "pas-display pas-num text-[30px] leading-none text-red-500"
+                  : hasWarning
+                    ? "pas-display pas-num text-[30px] leading-none text-[var(--pas-orange)]"
+                    : "pas-display pas-num text-[30px] leading-none text-[#3F5BA9]"
+              }
+            >
+              {deadlineAlertCount}
+            </p>
+            {nextDeadline && deadlineInfo.level && (
+              <span className={deadlineInfo.level === "overdue" ? "pas-delta bad mb-0.5" : "pas-delta ok mb-0.5"}>
+                {deadlineInfo.level === "overdue" ? `lewat ${Math.abs(deadlineInfo.diffDays)} hari` : `H-${deadlineInfo.diffDays}`}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="pas-card pas-kpi pas-bento-kpi p-4 sm:p-5">
+          <p className="text-[13px] text-[var(--pas-muted)]">Selesai</p>
+          <div className="flex items-end gap-2.5 mt-2.5">
+            <p className="pas-display pas-num text-[30px] leading-none">{stats.selesai}</p>
+            <span className="pas-delta good mb-0.5">{stats.selesai} bulan ini</span>
+          </div>
+        </div>
+      </section>
 
-      {/* Tabel order */}
-      <Kartu>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left text-[13px]">
-            <thead>
-              <tr className="text-left text-[10.5px] uppercase tracking-wide text-[#94A3B8]">
-                {["Kode", "Customer", "Produk", "Qty", "Status", "Deadline", "Total"].map((h, i) => (
-                  <th key={h} className={`px-4 py-3 font-semibold ${i === 6 ? "text-right" : ""}`}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((o, i) => (
-                <tr
-                  key={o.id}
-                  onClick={() => setDetailId(o.id)}
-                  className={`cursor-pointer transition hover:bg-[#F1F5F9] ${i % 2 ? "bg-[#FAFBFC]" : ""}`}
-                >
-                  <td className="px-4 py-3 font-bold text-[#0B1A5C]">{o.kode}</td>
-                  <td className="px-4 py-3">{o.customer}</td>
-                  <td className="px-4 py-3 text-[#475569]">{o.produk}</td>
-                  <td className="px-4 py-3 tabular-nums">{o.qty}</td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold ${badgeTahap(o.tahapSelesai, total)}`}>
-                      {statusOf(o.tahapSelesai)}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 tabular-nums text-[#475569]">{tanggalID(o.deadline)}</td>
-                  <td className="px-4 py-3 text-right font-bold tabular-nums text-[#0B1A5C]">{rp(o.total)}</td>
-                </tr>
+      {/* Toolbar: cari + bulan + chip filter — sama seperti admin asli */}
+      <section className="mt-7 flex flex-col lg:flex-row lg:items-center gap-3 lg:justify-between">
+        <div className="flex flex-col sm:flex-row gap-3 w-full lg:max-w-[620px]">
+          <div className="pas-search w-full sm:max-w-[340px]">
+            <svg className="pas-mag" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input
+              className="pas-field w-full py-2.5 pr-4 text-[14px]"
+              placeholder="Cari pesanan, nama, kota..."
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+            />
+          </div>
+          <div className="pas-select-wrap shrink-0">
+            <select
+              className="pas-field appearance-none text-[13.5px] font-semibold pl-3.5 pr-9 py-2.5 cursor-pointer"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              aria-label="Filter bulan pesanan"
+            >
+              <option value="all">Semua bulan</option>
+              {monthOptions.map((k) => (
+                <option key={k} value={k}>{monthLabelOf(k)}</option>
               ))}
-              {filtered.length === 0 && (
-                <tr><td colSpan={7} className="px-4 py-10 text-center text-[13px] text-[#94A3B8]">Gak ada order yang cocok.</td></tr>
-              )}
-            </tbody>
-          </table>
+            </select>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </div>
         </div>
-      </Kartu>
+        <div className="pas-seg pas-bento-chip-scroll">
+          {(["all", "baru", "produksi", "kirim", "selesai"] as FilterKey[]).map((f) => (
+            <button key={f} className={`pas-chip pas-bento-chip ${filter === f ? "on" : ""}`} onClick={() => setFilter(f)}>
+              {FILTER_LABEL[f]}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* jumlah yang tampil setelah filter */}
+      <p className="mt-2.5 text-[12.5px] text-[var(--pas-muted)]">
+        Menampilkan <b className="text-[var(--pas-ink-1)]">{filtered.length}</b> dari {s.orders.length} pesanan
+        <span> · {selectedMonth === "all" ? "semua bulan" : monthLabelOf(selectedMonth)}</span>
+      </p>
+
+      {/* Tabel desktop — kelas pas-tbl sama dengan admin asli */}
+      <section className="pas-card mt-4 p-2 sm:p-4 hidden md:block w-full overflow-x-auto">
+        <table className="pas-tbl w-full">
+          <thead>
+            <tr>
+              <th className="w-[16%]">Pesanan</th>
+              <th className="w-[18%]">Customer</th>
+              <th className="w-[16%]">Produk</th>
+              <th className="w-[16%]">Progres</th>
+              <th className="w-[10%]">Order</th>
+              <th className="w-[14%]">Deadline</th>
+              <th className="w-[10%]">Status</th>
+              <th className="w-[5%]"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={8}>
+                  <div className="flex flex-col items-center justify-center py-16 gap-3">
+                    <span className="text-[40px] opacity-30">📋</span>
+                    <p className="text-[var(--pas-muted)] text-[15px] font-medium">Tidak ada pesanan yang cocok</p>
+                    <p className="text-[var(--pas-muted)] text-[13px]">Coba ubah filter atau kata kunci pencarian</p>
+                  </div>
+                </td>
+              </tr>
+            )}
+            {filtered.map((o) => {
+              const st = statusOf(o.tahapSelesai, total);
+              const pct = ((o.tahapSelesai + 1) / total) * 100;
+              const stageName = s.tahapan[o.tahapSelesai] ?? `Tahap ${o.tahapSelesai + 1}`;
+              const dlStatus = deadlineStatus(o.deadline);
+              const dlNote = deadlineNote(dlStatus.level, dlStatus.diffDays);
+              return (
+                <tr key={o.id} onClick={() => setDetailId(o.id)}>
+                  <td>
+                    <span className="font-semibold pas-num">{o.kode}</span>
+                    <br />
+                    <span className="text-[12.5px] text-[var(--pas-muted)]">{pcsLabel(o.qty)}</span>
+                  </td>
+                  <td>
+                    <div className="flex items-center gap-2.5">
+                      <span className="pas-avatar">{initials(o.customer)}</span>
+                      <span>{o.customer}</span>
+                    </div>
+                  </td>
+                  <td className="text-[var(--pas-muted)]">{o.produk}</td>
+                  <td>
+                    <div className="flex items-center gap-3">
+                      <span className="pas-mini">
+                        <i style={{ width: `${pct}%` }} />
+                      </span>
+                      <span className="text-[12.5px] text-[var(--pas-muted)] pas-num whitespace-nowrap">
+                        {o.tahapSelesai + 1}/{total}
+                      </span>
+                    </div>
+                    <span className="text-[12.5px] text-[var(--pas-muted)]">{stageName}</span>
+                  </td>
+                  <td className="text-[12.5px] text-[var(--pas-muted)] whitespace-nowrap">{formatDate(o.mulai)}</td>
+                  <td className="text-[12.5px] whitespace-nowrap">
+                    {o.deadline ? (
+                      <span
+                        className={
+                          dlStatus.level === "overdue" ? "text-red-700 font-semibold"
+                            : dlStatus.level === "critical" ? "text-red-500 font-semibold"
+                              : dlStatus.level === "warning" ? "text-[var(--pas-orange)] font-semibold"
+                                : dlStatus.level === "approaching" ? "text-amber-500 font-medium"
+                                  : "text-[var(--pas-muted)]"
+                        }
+                      >
+                        <span className="block">
+                          {["overdue", "critical", "warning", "approaching"].includes(dlStatus.level as string) && (
+                            <svg
+                              width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+                              className={`inline-block mr-1 -mt-px ${dlStatus.level === "overdue" ? "text-red-700" : dlStatus.level === "critical" ? "text-red-500" : dlStatus.level === "warning" ? "text-[var(--pas-orange)]" : "text-amber-500"}`}
+                            >
+                              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                              <path d="M12 9v4M12 17h.01" />
+                            </svg>
+                          )}
+                          {formatDate(o.deadline)}
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="text-[var(--pas-muted)]">-</span>
+                    )}
+                  </td>
+                  <td>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className={`pas-pill ${st}`}>{FILTER_LABEL[st]}</span>
+                      {dlNote && <span className={`pas-pill ${dlNote.cls}`}>{dlNote.text}</span>}
+                    </div>
+                  </td>
+                  <td className="text-right">
+                    <div className="flex items-center gap-1 justify-end">
+                      <button
+                        className="text-[var(--pas-muted)] hover:text-blue-400 transition p-1.5 rounded-lg hover:bg-blue-400/10"
+                        title="Edit pesanan"
+                        onClick={(e) => { e.stopPropagation(); setDetailId(o.id); }}
+                      >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                          <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                      </button>
+                      <button
+                        className="text-[var(--pas-muted)] hover:text-red-400 transition p-1.5 rounded-lg hover:bg-red-400/10"
+                        title="Hapus pesanan"
+                        onClick={(e) => { e.stopPropagation(); demoAksiHapus(); }}
+                      >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </section>
+
+      {/* Kartu mobile — struktur sama dengan kartu bento admin asli */}
+      <section className="mt-4 flex flex-col gap-3 md:hidden">
+        {filtered.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-16 gap-3">
+            <span className="text-[40px] opacity-30">📋</span>
+            <p className="text-[var(--pas-muted)] text-[15px] font-medium">Tidak ada pesanan yang cocok</p>
+            <p className="text-[var(--pas-muted)] text-[13px]">Coba ubah filter atau kata kunci pencarian</p>
+          </div>
+        )}
+        {filtered.map((o) => {
+          const st = statusOf(o.tahapSelesai, total);
+          const pct = ((o.tahapSelesai + 1) / total) * 100;
+          const stageName = s.tahapan[o.tahapSelesai] ?? `Tahap ${o.tahapSelesai + 1}`;
+          const dlStatus = deadlineStatus(o.deadline);
+          const dlNote = deadlineNote(dlStatus.level, dlStatus.diffDays);
+          return (
+            <div key={o.id} className="pas-bento-card cursor-pointer" onClick={() => setDetailId(o.id)}>
+              {/* Baris 1: nomor pesanan + badge status */}
+              <div className="flex items-start justify-between gap-3">
+                <p className="font-bold text-[16px] pas-num min-w-0 truncate">{o.kode}</p>
+                <span className="flex items-center gap-1.5 shrink-0">
+                  <span className={`pas-pill ${st} whitespace-nowrap`}>{FILTER_LABEL[st]}</span>
+                  {dlNote && <span className={`pas-pill ${dlNote.cls} whitespace-nowrap`}>{dlNote.text}</span>}
+                </span>
+              </div>
+
+              {/* Baris 2: avatar + nama customer + pcs */}
+              <div className="flex items-center justify-between mt-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="pas-bento-avatar">{initials(o.customer)}</span>
+                  <p className="text-[14px] font-medium truncate">{o.customer}</p>
+                </div>
+                <p className="text-[14px] font-semibold pas-num shrink-0 ml-3">{pcsLabel(o.qty)}</p>
+              </div>
+
+              {/* Baris 3: nama produk */}
+              <p className="text-[13px] text-[var(--pas-muted)] mt-3">{o.produk}</p>
+
+              {/* Baris 4: progress bar + tahap */}
+              <div className="mt-3">
+                <span className="pas-mini w-full block">
+                  <i style={{ width: `${pct}%` }} />
+                </span>
+                <p className="text-[12px] text-[var(--pas-muted)] mt-1.5 pas-num">
+                  {o.tahapSelesai + 1}/{total} <span className="text-[var(--pas-ink-1)] font-medium">{stageName}</span>
+                </p>
+              </div>
+
+              <div className="pas-bento-divider"></div>
+
+              {/* Baris 5: tanggal order + deadline */}
+              <div className="flex items-center justify-between">
+                <p className="text-[12px] text-[var(--pas-muted)]">Order: {formatDate(o.mulai)}</p>
+                <p
+                  className={
+                    dlStatus.level === "overdue" ? "text-[12px] text-red-700 font-semibold"
+                      : dlStatus.level === "critical" ? "text-[12px] text-red-500 font-semibold"
+                        : dlStatus.level === "warning" ? "text-[12px] text-[var(--pas-orange)] font-semibold"
+                          : dlStatus.level === "approaching" ? "text-[12px] text-amber-500 font-medium"
+                            : "text-[12px] text-[var(--pas-muted)]"
+                  }
+                >
+                  {["overdue", "critical", "warning", "approaching"].includes(dlStatus.level as string) && "⚠ "}
+                  Deadline: {formatDate(o.deadline)}
+                </p>
+              </div>
+
+              {/* Aksi kartu — target sentuh 40px */}
+              <div className="mt-3 flex items-center justify-end gap-1">
+                <button
+                  className="w-10 h-10 grid place-items-center rounded-lg text-[var(--pas-muted)] hover:text-blue-400 hover:bg-blue-400/10 transition"
+                  title="Edit"
+                  aria-label="Edit pesanan"
+                  onClick={(e) => { e.stopPropagation(); setDetailId(o.id); }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                </button>
+                <button
+                  className="w-10 h-10 grid place-items-center rounded-lg text-[var(--pas-muted)] hover:text-red-400 hover:bg-red-400/10 transition"
+                  title="Hapus"
+                  aria-label="Hapus pesanan"
+                  onClick={(e) => { e.stopPropagation(); demoAksiHapus(); }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </section>
 
       {/* Detail + timeline 11 tahap */}
       <Modal open={!!detail} onClose={() => setDetailId(null)} title={detail ? `${detail.kode} — ${detail.customer}` : ""} lebar="max-w-md">
@@ -185,7 +541,7 @@ export default function DemoPesanan() {
           <div>
             <div className="mb-4 rounded-xl bg-[#F8FAFC] px-3.5 py-3 text-[12.5px]">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-semibold text-[#0B1A5C]">{detail.produk}</span>
+                <span className="font-semibold text-[#04123F]">{detail.produk}</span>
                 <span className="text-[#64748B]">{detail.qty} pcs · deadline {tanggalID(detail.deadline)}</span>
               </div>
               {detail.phone && <p className="mt-1 text-[#64748B]">HP: {detail.phone}</p>}
@@ -195,7 +551,7 @@ export default function DemoPesanan() {
               <span>{detail.tahapSelesai}/{total} tahap</span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-[#E2E8F0]">
-              <div className="h-full rounded-full bg-[#FFC107] transition-all duration-500" style={{ width: `${(detail.tahapSelesai / total) * 100}%` }} />
+              <div className="h-full rounded-full bg-[#FEC40B] transition-all duration-500" style={{ width: `${(detail.tahapSelesai / total) * 100}%` }} />
             </div>
             <ol className="mt-4 space-y-1.5">
               {s.tahapan.map((t, i) => {
@@ -205,16 +561,16 @@ export default function DemoPesanan() {
                   <li
                     key={t}
                     className={`flex items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-semibold ${
-                      berjalan ? "bg-[#FFC107]/20 text-[#0B1A5C] ring-1 ring-[#FFC107]" : selesai ? "text-[#334155]" : "text-[#94A3B8]"
+                      berjalan ? "bg-[#FEC40B]/20 text-[#04123F] ring-1 ring-[#FEC40B]" : selesai ? "text-[#334155]" : "text-[#94A3B8]"
                     }`}
                   >
                     <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-[10px] font-bold ${
-                      selesai ? "bg-emerald-100 text-emerald-700" : berjalan ? "bg-[#FFC107] text-[#3A2B00]" : "bg-[#F1F5F9]"
+                      selesai ? "bg-emerald-100 text-emerald-700" : berjalan ? "bg-[#FEC40B] text-[#04123F]" : "bg-[#F1F5F9]"
                     }`}>
                       {selesai ? "✓" : i + 1}
                     </span>
                     {t}
-                    {berjalan && <span className="ml-auto rounded-full bg-[#FFC107] px-2 py-0.5 text-[9.5px] font-bold text-[#3A2B00]">BERJALAN</span>}
+                    {berjalan && <span className="ml-auto rounded-full bg-[#FEC40B] px-2 py-0.5 text-[9.5px] font-bold text-[#04123F]">BERJALAN</span>}
                   </li>
                 );
               })}

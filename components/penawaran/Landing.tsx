@@ -1,10 +1,11 @@
 "use client";
 
 /**
- * Landing penjualan /penawaran — semua section, CTA band, harga, testimoni,
- * FAQ, footer, dan tombol WhatsApp floating. Tema: navy #04123F + emas
- * #FEC40B untuk hero/CTA, section isi dipecah dengan latar terang supaya
- * tidak gelap menyeluruh. SEMUA teks tinggal edit di lib/penawaran-config.ts.
+ * Landing penjualan /penawaran.
+ * Sistem warna brand: 60–70% putih/soft (#F7F8FA) sebagai latar utama,
+ * Deep Navy #04123F untuk tipografi/struktur/section gelap sesekali,
+ * Honey Gold #FEC40B hanya untuk aksi/highlight (±5–10%).
+ * Semua teks tinggal edit di lib/penawaran-config.ts.
  */
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -31,30 +32,30 @@ export default function Landing() {
       className="min-h-screen bg-white text-[#3B4A66] antialiased"
       style={{ fontFamily: "'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif" }}
     >
-      {/* ══ 1. NAVBAR ══ */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#04123F]/95 backdrop-blur">
+      {/* ══ 1. NAVBAR — putih, tipografi navy, CTA emas ══ */}
+      <header className="sticky top-0 z-40 border-b border-[#E5E7EB] bg-white/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
           <a href="/penawaran" className="flex items-center">
-            <img src="/nexa-sport-logo.png" alt="Nexa Sport" className="h-10 w-auto" />
+            <img src="/nexa-sport-logo-navy.png" alt="Nexa Sport" className="h-10 w-auto" />
           </a>
-          <nav className="hidden items-center gap-7 text-[14px] font-semibold text-white/70 md:flex">
+          <nav className="hidden items-center gap-7 text-[14px] font-semibold text-[#04123F] md:flex">
             {navbar.menu.map((m) =>
               m.href.startsWith("#") ? (
-                <a key={m.label} href={m.href} className="transition hover:text-white">{m.label}</a>
+                <a key={m.label} href={m.href} className="transition hover:text-[#B8890A]">{m.label}</a>
               ) : (
-                <Link key={m.label} href={m.href} className="transition hover:text-white">{m.label}</Link>
+                <Link key={m.label} href={m.href} className="transition hover:text-[#B8890A]">{m.label}</Link>
               )
             )}
           </nav>
           <div className="flex items-center gap-2">
             <Link
               href="/penawaran/demo"
-              className="rounded-xl bg-[#FEC40B] px-4 py-2.5 text-[14px] font-bold text-[#04123F] shadow-sm shadow-black/20 transition hover:brightness-105 active:scale-[0.98]"
+              className="rounded-xl bg-[#FEC40B] px-4 py-2.5 text-[14px] font-bold text-[#04123F] shadow-sm transition hover:brightness-105 active:scale-[0.98]"
             >
               {navbar.cta}
             </Link>
             <button
-              className="grid h-10 w-10 place-items-center rounded-lg border border-white/15 text-white/80 md:hidden"
+              className="grid h-10 w-10 place-items-center rounded-lg border border-[#E5E7EB] text-[#04123F] md:hidden"
               aria-label="Buka menu"
               onClick={() => setMenuOpen((v) => !v)}
             >
@@ -65,14 +66,14 @@ export default function Landing() {
           </div>
         </div>
         {menuOpen && (
-          <nav className="border-t border-white/10 bg-[#04123F] px-5 py-3 md:hidden">
+          <nav className="border-t border-[#E5E7EB] bg-white px-5 py-3 md:hidden">
             {navbar.menu.map((m) =>
               m.href.startsWith("#") ? (
-                <a key={m.label} href={m.href} onClick={() => setMenuOpen(false)} className="block rounded-lg px-2 py-2.5 text-[15px] font-semibold text-white/75">
+                <a key={m.label} href={m.href} onClick={() => setMenuOpen(false)} className="block rounded-lg px-2 py-2.5 text-[15px] font-semibold text-[#04123F]">
                   {m.label}
                 </a>
               ) : (
-                <Link key={m.label} href={m.href} onClick={() => setMenuOpen(false)} className="block rounded-lg px-2 py-2.5 text-[15px] font-semibold text-white/75">
+                <Link key={m.label} href={m.href} onClick={() => setMenuOpen(false)} className="block rounded-lg px-2 py-2.5 text-[15px] font-semibold text-[#04123F]">
                   {m.label}
                 </Link>
               )
@@ -81,44 +82,43 @@ export default function Landing() {
         )}
       </header>
 
-      {/* ══ 2. HERO ══ */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#0A2058] to-[#04123F]">
+      {/* ══ 2. HERO — terang, headline navy jadi focal point ══ */}
+      <section className="bg-[#F7F8FA]">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-14 sm:pt-20 lg:grid-cols-2">
           <Reveal>
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-[12px] font-bold text-white shadow-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#FEC40B]" />
+            <p className="mb-4 inline-flex items-center rounded-full border border-[#04123F]/15 bg-white px-3.5 py-1.5 text-[12px] font-bold text-[#04123F] shadow-sm">
               {hero.badge}
             </p>
-            <h1 className="text-[32px] font-extrabold leading-[1.15] tracking-tight text-white sm:text-[42px]">
+            <h1 className="text-[32px] font-extrabold leading-[1.12] tracking-tight text-[#04123F] sm:text-[46px]">
               {hero.headline}
             </h1>
-            <p className="mt-5 max-w-lg text-[16px] leading-relaxed text-white/70">
+            <p className="mt-5 max-w-lg text-[16px] leading-relaxed text-[#5A6784]">
               {hero.subheadline}
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <Link
                 href="/penawaran/demo"
-                className="rounded-xl bg-[#FEC40B] px-6 py-3.5 text-[15px] font-bold text-[#04123F] shadow-md shadow-black/30 transition hover:brightness-105 active:scale-[0.98]"
+                className="rounded-xl bg-[#FEC40B] px-6 py-3.5 text-[15px] font-bold text-[#04123F] shadow-md shadow-[#FEC40B]/30 transition hover:brightness-105 active:scale-[0.98]"
               >
                 {hero.ctaUtama}
               </Link>
               <a
                 href={waLink()}
-                className="rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-[15px] font-bold text-white transition hover:bg-white/10 active:scale-[0.98]"
+                className="rounded-xl border border-[#04123F] bg-white px-6 py-3.5 text-[15px] font-bold text-[#04123F] transition hover:bg-[#04123F]/5 active:scale-[0.98]"
               >
                 {hero.ctaKedua}
               </a>
             </div>
-            {/* Tiga poin kecil: satu baris di desktop, ditumpuk di mobile */}
-            <ul className="mt-6 flex flex-col gap-2 text-[13px] font-semibold text-white/75 sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-0">
+            {/* Poin manfaat: satu kolom di mobile, dua kolom di desktop */}
+            <ul className="mt-6 grid max-w-lg grid-cols-1 gap-2 text-[13.5px] font-semibold text-[#04123F] sm:grid-cols-2">
               {hero.poin.map((p) => (
                 <li key={p} className="flex items-center gap-2">
-                  <span className="grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full bg-[#FEC40B]/20 text-[10px] font-bold text-[#FEC40B]">✓</span>
+                  <span className="grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full bg-[#FEC40B]/25 text-[10px] font-bold text-[#B8890A]">✓</span>
                   {p}
                 </li>
               ))}
             </ul>
-            <p className="mt-4 text-[12.5px] text-white/50">{hero.catatan}</p>
+            <p className="mt-4 text-[12.5px] text-[#8794AE]">{hero.catatan}</p>
           </Reveal>
           <Reveal delay={150}>
             <MockupDashboard />
@@ -126,7 +126,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ══ 3. PAIN POINTS ══ */}
+      {/* ══ 3. PAIN POINTS — soft bg, kartu putih ══ */}
       <section className="bg-white py-20">
         <div className="mx-auto max-w-6xl px-5">
           <Reveal>
@@ -137,7 +137,7 @@ export default function Landing() {
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {pain.kartu.map((p, i) => (
               <Reveal key={p.judul} delay={i * 80}>
-                <div className="h-full rounded-2xl border border-[#E8ECF4] bg-[#F7F9FD] p-5 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-[#04123F]/10">
+                <div className="h-full rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg hover:shadow-[#04123F]/10">
                   <div className="grid h-9 w-9 place-items-center rounded-xl bg-red-500/10 text-[15px] font-bold text-red-500">✕</div>
                   <h3 className="mt-4 text-[15.5px] font-bold text-[#04123F]">{p.judul}</h3>
                   <p className="mt-2 text-[13.5px] leading-relaxed text-[#5A6784]">{p.teks}</p>
@@ -148,11 +148,11 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ══ 4. SOLUSI / FITUR ══ */}
-      <section id="fitur" className="bg-[#F3F6FB] py-20">
+      {/* ══ 4. SOLUSI / FITUR — soft bg ══ */}
+      <section id="fitur" className="bg-[#F7F8FA] py-20">
         <div className="mx-auto max-w-6xl px-5">
           <Reveal>
-            <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#04123F]/50">Solusi</p>
+            <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#B8890A]">Solusi</p>
             <h2 className="mt-2 max-w-xl text-[26px] font-extrabold tracking-tight text-[#04123F] sm:text-[32px]">
               {fitur.judul}
             </h2>
@@ -161,7 +161,7 @@ export default function Landing() {
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {fitur.kartu.map((f, i) => (
               <Reveal key={f.judul} delay={i * 60}>
-                <div className="h-full rounded-2xl border border-[#E8ECF4] bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg hover:shadow-[#04123F]/10">
+                <div className="h-full rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg hover:shadow-[#04123F]/10">
                   <div className="grid h-10 w-10 place-items-center rounded-xl bg-[#FEC40B] text-[15px] font-bold text-[#04123F]">
                     {String(i + 1).padStart(2, "0")}
                   </div>
@@ -190,7 +190,7 @@ export default function Landing() {
           <div className="mt-12 grid gap-6 sm:grid-cols-3">
             {PENAWARAN.caraKerja.langkah.map((langkah, i) => (
               <Reveal key={langkah.judul} delay={i * 100}>
-                <div className="relative rounded-2xl border border-[#E8ECF4] bg-[#F7F9FD] p-6 pt-8 text-center">
+                <div className="relative rounded-2xl border border-[#E5E7EB] bg-white p-6 pt-8 text-center shadow-sm">
                   <span className="absolute -top-5 left-1/2 grid h-10 w-10 -translate-x-1/2 place-items-center rounded-full bg-[#FEC40B] text-[15px] font-extrabold text-[#04123F] shadow-md">
                     {i + 1}
                   </span>
@@ -203,7 +203,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ══ 7. DEMO CTA BAND ══ */}
+      {/* ══ 7. DEMO CTA BAND — satu-satunya band gelap di tengah halaman ══ */}
       <section className="bg-[#04123F] py-16">
         <div className="mx-auto max-w-6xl px-5 text-center">
           <Reveal>
@@ -215,7 +215,7 @@ export default function Landing() {
             </p>
             <Link
               href="/penawaran/demo"
-              className="mt-7 inline-block rounded-xl bg-[#FEC40B] px-8 py-3.5 text-[15px] font-bold text-[#04123F] shadow-lg shadow-black/30 transition hover:brightness-105 active:scale-[0.98]"
+              className="mt-7 inline-block rounded-xl bg-[#FEC40B] px-8 py-3.5 text-[15px] font-bold text-[#04123F] shadow-lg shadow-black/20 transition hover:brightness-105 active:scale-[0.98]"
             >
               {PENAWARAN.demoBand.cta}
             </Link>
@@ -223,8 +223,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ══ 8. HARGA ══ */}
-      <section id="harga" className="bg-[#F3F6FB] py-20">
+      {/* ══ 8. HARGA — soft bg, kartu putih ══ */}
+      <section id="harga" className="bg-[#F7F8FA] py-20">
         <div className="mx-auto max-w-6xl px-5">
           <Reveal>
             <div className="text-center">
@@ -242,10 +242,10 @@ export default function Landing() {
               <Reveal key={p.nama} delay={i * 80}>
                 <div
                   className={
-                    "relative h-full rounded-2xl border p-6 " +
+                    "relative h-full rounded-2xl border p-6 bg-white " +
                     (p.highlight
-                      ? "border-[#FEC40B] bg-white shadow-xl shadow-[#04123F]/10"
-                      : "border-[#E8ECF4] bg-white")
+                      ? "border-[#FEC40B] shadow-xl shadow-[#04123F]/10"
+                      : "border-[#E5E7EB] shadow-sm")
                   }
                 >
                   {p.highlight && (
@@ -256,13 +256,13 @@ export default function Landing() {
                   <h3 className="text-[16px] font-bold text-[#04123F]">{p.nama}</h3>
                   <p className="mt-1 text-[12.5px] text-[#5A6784]">{p.desc}</p>
                   <p className="mt-4">
-                    <span className={`text-[30px] font-extrabold tracking-tight ${p.highlight ? "text-[#04123F]" : "text-[#04123F]"}`}>{p.harga}</span>
-                    <span className="ml-1.5 text-[12.5px] font-semibold text-[#94A3B8]">{p.periode}</span>
+                    <span className="text-[30px] font-extrabold tracking-tight text-[#04123F]">{p.harga}</span>
+                    <span className="ml-1.5 text-[12.5px] font-semibold text-[#8794AE]">{p.periode}</span>
                   </p>
                   <ul className="mt-5 space-y-2.5">
                     {p.fitur.map((f) => (
                       <li key={f} className="flex items-start gap-2 text-[13.5px] text-[#3B4A66]">
-                        <span className="text-[#B98A00]">✓</span>
+                        <span className="text-[#B8890A]">✓</span>
                         {f}
                       </li>
                     ))}
@@ -273,7 +273,7 @@ export default function Landing() {
                       "mt-6 block rounded-xl py-3 text-center text-[14px] font-bold transition active:scale-[0.98] " +
                       (p.highlight
                         ? "bg-[#FEC40B] text-[#04123F] hover:brightness-105"
-                        : "border border-[#04123F]/20 text-[#04123F] hover:border-[#FEC40B]")
+                        : "border border-[#04123F] text-[#04123F] hover:bg-[#04123F]/5")
                     }
                   >
                     {p.cta}
@@ -301,7 +301,7 @@ export default function Landing() {
           <div className="mt-12 grid gap-5 sm:grid-cols-3">
             {testimoni.items.map((t, i) => (
               <Reveal key={t.nama} delay={i * 80}>
-                <div className="h-full rounded-2xl border border-[#E8ECF4] bg-[#F7F9FD] p-6">
+                <div className="h-full rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-sm">
                   <span className="rounded-full border border-[#04123F]/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#5A6784]">
                     {testimoni.label}
                   </span>
@@ -321,7 +321,7 @@ export default function Landing() {
           </div>
           {/* Poin faktual dari app — bukan angka klaim */}
           <Reveal delay={200}>
-            <div className="mx-auto mt-10 flex max-w-2xl flex-wrap items-center justify-center gap-x-10 gap-y-4 rounded-2xl border border-[#E8ECF4] bg-white px-8 py-6 text-center shadow-sm">
+            <div className="mx-auto mt-10 flex max-w-2xl flex-wrap items-center justify-center gap-x-10 gap-y-4 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FA] px-8 py-6 text-center shadow-sm">
               {[
                 ["11", "tahap produksi terpantau"],
                 ["H-3 · H-2 · H-1", "pengingat deadline otomatis"],
@@ -337,8 +337,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ══ 10. FAQ ══ */}
-      <section id="faq" className="bg-[#F3F6FB] py-20">
+      {/* ══ 10. FAQ — soft bg, kartu putih ══ */}
+      <section id="faq" className="bg-[#F7F8FA] py-20">
         <div className="mx-auto max-w-3xl px-5">
           <Reveal>
             <h2 className="text-center text-[26px] font-extrabold tracking-tight text-[#04123F] sm:text-[32px]">
@@ -353,8 +353,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ══ 11. CTA PENUTUP + FOOTER ══ */}
-      <section className="bg-gradient-to-b from-[#04123F] to-[#0A2058] py-20">
+      {/* ══ 11. CTA PENUTUP — navy + FOOTER ══ */}
+      <section className="bg-[#04123F] py-20">
         <div className="mx-auto max-w-6xl px-5 text-center">
           <Reveal>
             <h2 className="text-[28px] font-extrabold tracking-tight text-white sm:text-[36px]">
@@ -364,10 +364,10 @@ export default function Landing() {
               {ctaAkhir.sub}
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link href="/penawaran/demo" className="rounded-xl bg-[#FEC40B] px-7 py-3.5 text-[15px] font-bold text-[#04123F] shadow-lg shadow-black/30 transition hover:brightness-105 active:scale-[0.98]">
+              <Link href="/penawaran/demo" className="rounded-xl bg-[#FEC40B] px-7 py-3.5 text-[15px] font-bold text-[#04123F] shadow-lg shadow-black/20 transition hover:brightness-105 active:scale-[0.98]">
                 {ctaAkhir.ctaUtama}
               </Link>
-              <a href={waLink()} className="rounded-xl border border-white/25 px-7 py-3.5 text-[15px] font-bold text-white transition hover:bg-white/10 active:scale-[0.98]">
+              <a href={waLink()} className="rounded-xl border border-white/25 bg-white/5 px-7 py-3.5 text-[15px] font-bold text-white transition hover:bg-white/10 active:scale-[0.98]">
                 {ctaAkhir.ctaKedua}
               </a>
             </div>
@@ -375,7 +375,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer className="bg-[#020B2A] py-10">
+      <footer className="bg-[#04123F] py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-5 sm:flex-row">
           <div>
             <img src="/nexa-sport-logo.png" alt="Nexa Sport" className="h-9 w-auto" />
@@ -410,7 +410,7 @@ export default function Landing() {
 function Faq({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="rounded-2xl border border-[#E8ECF4] bg-white">
+    <div className="rounded-2xl border border-[#E5E7EB] bg-white shadow-sm">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
