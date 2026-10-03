@@ -34,11 +34,13 @@ const MENU: MenuItem[] = [
 ];
 
 /** Langkah product tour — kartu melayang sederhana, bisa di-skip. */
+// Posisi kartu: selalu terpusat & aman di layar kecil/tablet, lalu menunjuk
+// elemen terkait di desktop (lg:). lg:translate-* me-reset translate mobile.
 const TOUR = [
-  { judul: "Menu Operasional", teks: "Semua puses produksi ada di sini: Pesanan, Maklon, Kalkulator HPP, Jadwal, Pengiriman.", pos: "left-[16px] top-1/2" },
-  { judul: "Kalkulator HPP", teks: "Fitur andalan: hitung HPP & harga jual otomatis, ganti Excel. Coba dari menu Kalkulator HPP.", pos: "left-1/2 top-16" },
-  { judul: "Notifikasi Deadline", teks: "Pengingat WhatsApp otomatis H-3/H-2/H-1 jam 08:00 WIB — buka dari menu Notifikasi.", pos: "left-1/2 top-1/3" },
-  { judul: "Reset Demo", teks: "Semua perubahan tidak disimpan. Tekan Reset Demo kapan saja untuk kembali ke data awal.", pos: "left-1/2 top-4" },
+  { judul: "Menu Operasional", teks: "Semua puses produksi ada di sini: Pesanan, Maklon, Kalkulator HPP, Jadwal, Pengiriman.", pos: "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:left-[260px] lg:translate-x-0" },
+  { judul: "Kalkulator HPP", teks: "Fitur andalan: hitung HPP & harga jual otomatis, ganti Excel. Coba dari menu Kalkulator HPP.", pos: "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:top-16 lg:translate-y-0" },
+  { judul: "Notifikasi Deadline", teks: "Pengingat WhatsApp otomatis H-3/H-2/H-1 jam 08:00 WIB — buka dari menu Notifikasi.", pos: "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:top-1/3 lg:translate-y-0" },
+  { judul: "Reset Demo", teks: "Semua perubahan tidak disimpan. Tekan Reset Demo kapan saja untuk kembali ke data awal.", pos: "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:top-4 lg:translate-y-0" },
 ];
 
 export default function DemoShell({ children }: { children: React.ReactNode }) {
@@ -179,7 +181,7 @@ export default function DemoShell({ children }: { children: React.ReactNode }) {
       {tour != null && TOUR[tour] && (
         <div className="fixed inset-0 z-[55] bg-black/55" onClick={() => setTour(null)}>
           <div
-            className={`absolute ${TOUR[tour].pos} w-72 max-w-[85vw] -translate-x-1/2 rounded-2xl bg-white p-5 shadow-2xl`}
+            className={`absolute ${TOUR[tour].pos} w-72 max-w-[calc(100vw-2rem)] rounded-2xl bg-white p-5 shadow-2xl`}
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#94A3B8]">
