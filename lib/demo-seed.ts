@@ -25,6 +25,8 @@ export type Order = {
   id: number;
   kode: string;
   customer: string;
+  /** Nomor HP customer (opsional — order seed lama belum punya). */
+  phone?: string;
   produk: string;
   qty: number;
   /** Jumlah tahap yang sudah SELESAI (0–11). Tahap berjalan = tahapSelesai + 1. */

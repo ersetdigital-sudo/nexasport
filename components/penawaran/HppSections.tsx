@@ -15,14 +15,14 @@ import { MockupKalkulator, BubbleWA } from "@/components/penawaran/Mockups";
 /* ══ 5. HIGHLIGHT KALKULATOR HPP ══ */
 export function HppHighlight() {
   return (
-    <section className="bg-white py-20">
+    <section className="bg-[#04123F] py-20">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 lg:grid-cols-2">
         <Reveal>
-          <span className="rounded-full bg-[#FFC107] px-3 py-1.5 text-[11.5px] font-bold text-[#3A2B00]">Fitur Baru</span>
-          <h2 className="mt-4 text-[26px] font-extrabold tracking-tight text-[#0B1A5C] sm:text-[34px]">
+          <span className="rounded-full bg-[#FEC40B] px-3 py-1.5 text-[11.5px] font-bold text-[#04123F]">Fitur Baru</span>
+          <h2 className="mt-4 text-[26px] font-extrabold tracking-tight text-white sm:text-[34px]">
             Kalkulator HPP — ganti Excel, hitung otomatis
           </h2>
-          <p className="mt-4 max-w-md text-[15px] leading-relaxed text-[#475569]">
+          <p className="mt-4 max-w-md text-[15px] leading-relaxed text-white/65">
             Pilih kain dan variasi per kategori, sisanya terisi sendiri. Total HPP, margin, dan harga jual dihitung realtime — tanpa rumus yang bisa ketimpa.
           </p>
           <ul className="mt-6 space-y-3">
@@ -31,15 +31,15 @@ export function HppHighlight() {
               "Margin nominal rupiah, harga jual langsung jadi",
               "Ubah harga sekali di Database HPP, semua hitungan ikut",
             ].map((t) => (
-              <li key={t} className="flex items-start gap-2.5 text-[14px] text-[#334155]">
-                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-50 text-[11px] font-bold text-emerald-600">✓</span>
+              <li key={t} className="flex items-start gap-2.5 text-[14px] text-white/80">
+                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-400/15 text-[11px] font-bold text-emerald-400">✓</span>
                 {t}
               </li>
             ))}
           </ul>
           <Link
             href="/penawaran/demo/hpp"
-            className="mt-8 inline-block rounded-xl bg-[#0B1A5C] px-6 py-3 text-[14.5px] font-bold text-white transition hover:bg-[#12266E] active:scale-[0.98]"
+            className="mt-8 inline-block rounded-xl bg-[#FEC40B] px-6 py-3 text-[14.5px] font-bold text-[#04123F] transition hover:brightness-105 active:scale-[0.98]"
           >
             Coba Kalkulatornya di Demo
           </Link>
@@ -63,10 +63,10 @@ const BANDING = [
 
 export function ExcelToNexa() {
   return (
-    <section className="bg-[#F8FAFC] py-20">
+    <section className="bg-[#071B50] py-20">
       <div className="mx-auto max-w-6xl px-5">
         <Reveal>
-          <h2 className="text-center text-[26px] font-extrabold tracking-tight text-[#0B1A5C] sm:text-[34px]">
+          <h2 className="text-center text-[26px] font-extrabold tracking-tight text-white sm:text-[34px]">
             Masih hitung HPP pakai Excel? Waktunya naik kelas.
           </h2>
         </Reveal>
@@ -75,17 +75,17 @@ export function ExcelToNexa() {
             <div className="grid grid-cols-[1fr_1.1fr] sm:grid-cols-[0.8fr_1fr_1.2fr]">
               <div className="hidden border-b border-[#EEF1F5] bg-[#F1F5F9] px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-[#94A3B8] sm:block" />
               <div className="border-b border-r border-[#EEF1F5] bg-[#F1F5F9] px-4 py-3 text-[12px] font-bold text-[#64748B]">Excel</div>
-              <div className="border-b border-[#EEF1F5] bg-[#FFC107]/20 px-4 py-3 text-[12px] font-bold text-[#0B1A5C]">Nexa Sport</div>
+              <div className="border-b border-[#EEF1F5] bg-[#FEC40B]/20 px-4 py-3 text-[12px] font-bold text-[#04123F]">Nexa Sport</div>
             </div>
             {BANDING.map(([label, excel, nexa], i) => (
               <div key={label} className={`grid grid-cols-[1fr_1.1fr] sm:grid-cols-[0.8fr_1fr_1.2fr] ${i % 2 ? "bg-[#FAFBFC]" : ""}`}>
-                <div className="hidden border-b border-r border-[#EEF1F5] px-4 py-3.5 text-[12.5px] font-bold text-[#0B1A5C] sm:block">{label}</div>
+                <div className="hidden border-b border-r border-[#EEF1F5] px-4 py-3.5 text-[12.5px] font-bold text-[#04123F] sm:block">{label}</div>
                 <div className="border-b border-r border-[#EEF1F5] px-4 py-3.5 text-[12.5px] text-[#64748B]">
                   <span className="mb-1 inline-flex items-center gap-1 text-[11px] font-bold text-red-400 sm:hidden">{label}</span>
                   <span className="mr-1.5 inline text-[11px] font-bold text-red-400">✕</span>
                   {excel}
                 </div>
-                <div className="border-b border-[#EEF1F5] bg-[#FFC107]/10 px-4 py-3.5 text-[12.5px] font-medium text-[#0B1A5C]">
+                <div className="border-b border-[#EEF1F5] bg-[#FEC40B]/10 px-4 py-3.5 text-[12.5px] font-medium text-[#04123F]">
                   <span className="mr-1.5 inline text-[11px] font-bold text-emerald-600">✓</span>
                   {nexa}
                 </div>
@@ -96,7 +96,7 @@ export function ExcelToNexa() {
 
         {/* Contoh hitungan dengan angka nyata, animasi menghitung naik */}
         <Reveal delay={150}>
-          <div className="mx-auto mt-8 max-w-md rounded-2xl border border-[#0B1A5C]/10 bg-white p-6 shadow-lg shadow-[#0B1A5C]/5">
+          <div className="mx-auto mt-8 max-w-md rounded-2xl border border-[#04123F]/10 bg-white p-6 shadow-lg shadow-[#04123F]/5">
             <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#94A3B8]">Contoh hitungan nyata</p>
             <div className="mt-4 space-y-2.5 text-[13.5px]">
               {[
@@ -111,13 +111,13 @@ export function ExcelToNexa() {
                   <CountUp to={nilai as number} prefix="Rp" />
                 </div>
               ))}
-              <div className="flex justify-between border-t border-[#EEF1F5] pt-3 font-bold text-[#0B1A5C]">
+              <div className="flex justify-between border-t border-[#EEF1F5] pt-3 font-bold text-[#04123F]">
                 <span>Total HPP</span><CountUp to={65_250} prefix="Rp" />
               </div>
               <div className="flex justify-between text-[#475569]">
                 <span>Margin</span><CountUp to={50_000} prefix="Rp" duration={900} />
               </div>
-              <div className="flex justify-between rounded-xl bg-[#FFC107]/15 px-3 py-2.5 font-extrabold text-[#0B1A5C]">
+              <div className="flex justify-between rounded-xl bg-[#FEC40B]/15 px-3 py-2.5 font-extrabold text-[#04123F]">
                 <span>Harga Jual</span><CountUp to={115_250} prefix="Rp" duration={1_500} />
               </div>
             </div>
@@ -128,7 +128,7 @@ export function ExcelToNexa() {
           <div className="mt-8 text-center">
             <Link
               href="/penawaran/demo/hpp"
-              className="inline-block rounded-xl bg-[#FFC107] px-7 py-3.5 text-[15px] font-bold text-[#3A2B00] shadow-md shadow-amber-200 transition hover:brightness-105 active:scale-[0.98]"
+              className="inline-block rounded-xl bg-[#FEC40B] px-7 py-3.5 text-[15px] font-bold text-[#04123F] shadow-md shadow-amber-200 transition hover:brightness-105 active:scale-[0.98]"
             >
               Coba Kalkulatornya di Demo
             </Link>
@@ -185,7 +185,7 @@ export function DeadlineNotif() {
   const { sisa, besok } = useCountdownKe08Wib();
 
   return (
-    <section className="bg-[#0B1A5C] py-20">
+    <section className="bg-[#04123F] py-20">
       <div className="mx-auto max-w-6xl px-5">
         <Reveal>
           <span className="rounded-full border border-white/20 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-white/70">
@@ -202,7 +202,7 @@ export function DeadlineNotif() {
         <Reveal delay={120}>
           <div
             className="mt-10 overflow-hidden rounded-2xl border border-white/10"
-            style={{ background: "linear-gradient(120deg, #0B1A5C 0%, #23134A 55%, #5C1220 100%)" }}
+            style={{ background: "linear-gradient(120deg, #04123F 0%, #23134A 55%, #5C1220 100%)" }}
           >
             {/* Pola grid halus */}
             <div
@@ -222,7 +222,7 @@ export function DeadlineNotif() {
                     "Bisa dimatikan/dinyalakan kapan saja",
                   ].map((t) => (
                     <li key={t} className="flex items-start gap-2.5 text-[14px] text-white/85">
-                      <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#FFC107] text-[11px] font-bold text-[#3A2B00]">✓</span>
+                      <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#FEC40B] text-[11px] font-bold text-[#04123F]">✓</span>
                       {t}
                     </li>
                   ))}
@@ -292,7 +292,7 @@ export function DeadlineNotif() {
           <div className="mt-8 text-center">
             <Link
               href="/penawaran/demo/notifikasi"
-              className="inline-block rounded-xl bg-[#FFC107] px-7 py-3.5 text-[15px] font-bold text-[#3A2B00] shadow-md shadow-black/20 transition hover:brightness-105 active:scale-[0.98]"
+              className="inline-block rounded-xl bg-[#FEC40B] px-7 py-3.5 text-[15px] font-bold text-[#04123F] shadow-md shadow-black/20 transition hover:brightness-105 active:scale-[0.98]"
             >
               Lihat Notifikasi di Demo
             </Link>
