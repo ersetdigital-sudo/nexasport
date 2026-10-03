@@ -41,7 +41,8 @@ export default function KpiCard({
           </svg>
         </span>
       </div>
-      <div className="mt-2.5 flex flex-wrap items-end gap-x-2.5 gap-y-1.5">
+      {/* Mobile: badge di baris sendiri di bawah angka (tidak sesak); sm: sejajar */}
+      <div className="mt-2.5 flex flex-col items-start gap-2 sm:flex-row sm:items-end sm:gap-x-2.5">
         <p
           className={`pas-display pas-num leading-none ${
             hero ? "text-[30px] sm:text-[34px]" : "text-[27px] sm:text-[30px]"
