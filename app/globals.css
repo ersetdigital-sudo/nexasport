@@ -2488,17 +2488,17 @@
 }
 .pas-kpi-hero .pas-kpi-ic { background: rgba(254,196,11,.18); color: #FEC40B; }
 
-/* KPI unggulan — kartu gradient (mockup .kpi.hero) */
+/* KPI unggulan — tanpa gradient: kartu terang sama seperti kartu lain,
+   hanya chip ikonnya yang tetap aksen emas */
 .pas-kpi-hero,
 .pas-kpi-hero:hover {
-  background: var(--pas-grad-135); border-color: transparent; color: #fff;
-  box-shadow: 0 8px 24px rgba(4,18,63,.28);
+  background: var(--pas-surface); border-color: var(--pas-line); color: var(--pas-ink-1);
 }
-.pas-kpi-hero .pas-num { color: #fff; }
-.pas-kpi-hero .pas-kpi-label { color: #E4EAF8; }
-.pas-kpi-hero .pas-kpi-note { color: #E4EAF8; }
-.pas-kpi-hero .pas-delta { background: rgba(255,255,255,.22); color: #E4EAF8; }
-.pas-kpi-hero::before { background: radial-gradient(closest-side, rgba(255,255,255,.12), transparent); }
+.pas-kpi-hero .pas-num { color: var(--pas-ink-1); }
+.pas-kpi-hero .pas-kpi-label { color: var(--pas-muted); }
+.pas-kpi-hero .pas-kpi-note { color: var(--pas-muted); }
+.pas-kpi-hero .pas-delta { background: #FFF8DC; color: #04123F; }
+.pas-kpi-hero::before { background: radial-gradient(closest-side, rgba(254,196,11,.14), transparent); }
 .pas-delta { font-size: 11.5px; font-weight: 600; padding: 2px 7px; border-radius: 6px; }
 /* KPI mobile: badge lebih kecil & jangan patah dua baris */
 @media (max-width: 767px) {
@@ -2782,13 +2782,7 @@ table.pas-tbl tbody tr:hover { background: #F7F9FC; }
     box-shadow: 0 6px 20px rgba(0,0,0,.16);
   }
 
-  /* kartu KPI unggulan tetap gradient di mobile (menang atas .pas-bento-kpi) */
-  .pas-bento-kpi.pas-kpi-hero,
-  .pas-bento-kpi.pas-kpi-hero:hover {
-    background: var(--pas-grad-135);
-    border-color: transparent;
-    box-shadow: 0 8px 24px rgba(4,18,63,.28);
-  }
+  /* kartu KPI unggulan tanpa gradient — tampilan terang sama seperti kartu lain */
 
   .pas-bento-card {
     background: var(--pas-surface);
