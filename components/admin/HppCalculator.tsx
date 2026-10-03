@@ -26,7 +26,7 @@ import { rupiah } from "@/lib/rupiah";
 
 /** Baris pilihan kalkulator — urutan & label mengikuti Excel (A36–A45). */
 const CALC_ROWS = [
-  { key: "kain_atasan", label: "Kain Atasan", item: "Kain Atasan", defaultVariasi: "Premium" },
+  { key: "kain_atasan", label: "Kain Atasan", item: "Kain Atasan", defaultVariasi: "" },
   { key: "kain_celana", label: "Kain Celana", item: "Kain Celana", defaultVariasi: "" },
   { key: "print_atasan", label: "Print/Press Atasan", item: "Print Atasan", defaultVariasi: "Atasan" },
   { key: "print_celana", label: "Print/Press Celana", item: "Print Celana", defaultVariasi: "" },
@@ -117,24 +117,20 @@ export default function HppCalculator({
       (it) => ({ id: it.id, variasi: it.variasi })
     );
     if (rowDef.key === "kain_atasan" || rowDef.key === "kain_celana") {
-      const namaDb = new Set(dariDb.map((it) => it.variasi));
-      const tambahan = (fabrics ?? [])
-        .filter((f) => !namaDb.has(f.nama))
-        .filter(
-          (f) =>
-            (rowDef.key === "kain_atasan" ? f.hargaAtasan : f.hargaCelana) != null
-        );
+      // Baris kain hanya memakai kain dari tab Daftar Kain, dikelompokkan
+      // per grup (Kain Basic/Premium/Pro, dst.).
+      const kain = (fabrics ?? []).filter(
+        (f) =>
+          (rowDef.key === "kain_atasan" ? f.hargaAtasan : f.hargaCelana) != null
+      );
       const grups: string[] = [];
-      for (const f of tambahan) if (!grups.includes(f.grup)) grups.push(f.grup);
-      return [
-        { label: "Standar", options: dariDb },
-        ...grups.map((g) => ({
-          label: g,
-          options: tambahan
-            .filter((f) => f.grup === g)
-            .map((f) => ({ id: -f.id, variasi: f.nama })),
-        })),
-      ];
+      for (const f of kain) if (!grups.includes(f.grup)) grups.push(f.grup);
+      return grups.map((g) => ({
+        label: g,
+        options: kain
+          .filter((f) => f.grup === g)
+          .map((f) => ({ id: -f.id, variasi: f.nama })),
+      }));
     }
     return [{ label: "", options: dariDb }];
   };

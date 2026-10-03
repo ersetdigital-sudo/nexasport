@@ -146,18 +146,25 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 mb-4">
-        <p className="text-[12.5px] opacity-60 min-w-0">
-          Harga per kg otomatis jadi harga per pcs: 1 kg = 4 pcs atasan / 5 pcs
-          celana.
-        </p>
-        <button
-          type="button"
-          onClick={() => setShowForm((v) => !v)}
-          className="pas-btn pas-btn-accent whitespace-nowrap px-3.5 py-2.5 text-[14px]"
-        >
-          {showForm ? "Tutup" : "Tambah Kain"}
-        </button>
+      <div className="pas-card overflow-hidden mb-5">
+        <div className="bg-gradient-to-r from-[#04123F] via-[#0A2465] to-[#123A8F] px-5 py-4 flex items-center justify-between gap-3 flex-wrap">
+          <div className="min-w-0">
+            <h2 className="text-white font-bold text-[15px] leading-tight">
+              Daftar Kain
+            </h2>
+            <p className="text-white/60 text-[12px] mt-0.5">
+              {fabrics.length} kain — harga per kg otomatis jadi harga per pcs:
+              1 kg = 4 pcs atasan / 5 pcs celana
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowForm((v) => !v)}
+            className="pas-btn pas-btn-accent whitespace-nowrap px-3.5 py-2.5 text-[14px]"
+          >
+            {showForm ? "Tutup" : "+ Tambah Kain"}
+          </button>
+        </div>
       </div>
 
       {/* ── FORM TAMBAH KAIN ── */}
@@ -266,7 +273,13 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
                 </thead>
                 <tbody>
                   {rows.map((f, i) => (
-                    <tr key={f.id} className={i % 2 ? "bg-[#F7F8FA]" : ""}>
+                    <tr
+                      key={f.id}
+                      className={
+                        (i % 2 ? "bg-[#F7F8FA] " : "") +
+                        "transition-colors hover:bg-[#EEF2F8]"
+                      }
+                    >
                       <td className="px-4 py-2.5 opacity-40 tabular-nums">{i + 1}</td>
                       <td className="px-2 py-2.5 font-medium">{f.nama}</td>
                       <td className="px-3 py-2.5 text-right">
