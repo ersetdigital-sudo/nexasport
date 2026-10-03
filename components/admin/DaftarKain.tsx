@@ -349,24 +349,34 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
               <div className="sm:hidden divide-y divide-[#EEF1F5]">
                 {rows.map((f) => (
                   <div key={f.id} className="px-4 py-3.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-[13.5px] font-medium">{f.nama}</span>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <span className="block truncate text-[14px] font-semibold leading-tight">
+                          {f.nama}
+                        </span>
+                        <span className="mt-0.5 block text-[10.5px] font-medium uppercase tracking-wider opacity-45">
+                          Harga per kg
+                        </span>
+                      </div>
                       {selHargaKg(f)}
                     </div>
-                    <div className="mt-2 grid grid-cols-2 gap-2">
-                      <div className="rounded-xl bg-[#F7F8FA] px-3.5 py-2.5">
-                        <span className="block text-[10.5px] uppercase tracking-wide opacity-50">
+                    <div
+                      className={`mt-3 flex items-stretch overflow-hidden rounded-xl border border-white/70 shadow-sm ${meta.bar}`}
+                    >
+                      <div className="flex-1 px-3.5 py-2.5">
+                        <span className="block text-[10px] font-semibold uppercase tracking-wider opacity-50">
                           Atasan · 4 pcs
                         </span>
-                        <span className="text-[13px] font-semibold tabular-nums">
+                        <span className="mt-0.5 block text-[13.5px] font-bold tabular-nums">
                           {f.hargaAtasan != null ? rupiah(f.hargaAtasan) : <span className="opacity-40">—</span>}
                         </span>
                       </div>
-                      <div className="rounded-xl bg-[#F7F8FA] px-3.5 py-2.5">
-                        <span className="block text-[10.5px] uppercase tracking-wide opacity-50">
+                      <div className="w-px bg-white/80" />
+                      <div className="flex-1 px-3.5 py-2.5">
+                        <span className="block text-[10px] font-semibold uppercase tracking-wider opacity-50">
                           Celana · 5 pcs
                         </span>
-                        <span className="text-[13px] font-semibold tabular-nums">
+                        <span className="mt-0.5 block text-[13.5px] font-bold tabular-nums">
                           {f.hargaCelana != null ? rupiah(f.hargaCelana) : <span className="opacity-40">—</span>}
                         </span>
                       </div>
