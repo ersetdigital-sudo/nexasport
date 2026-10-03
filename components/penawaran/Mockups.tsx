@@ -54,13 +54,14 @@ export function MockupDashboard() {
               <tbody className="text-[10px] font-medium text-[#1E293B]">
                 {[
                   ["NS-2410", "TNT Sport", 7, 4_140_000],
+
                   ["NS-2409", "FC Garuda Muda", 4, 2_420_000],
                   ["NS-2408", "Komunitas Grid", 11, 1_980_000],
                 ].map(([kode, cust, tahap, total], i) => (
                   <tr key={kode as string} className={i % 2 ? "bg-[#F8FAFC]" : ""}>
-                    <td className="py-2 font-bold text-[#04123F]">{kode}</td>
-                    <td className="py-2">{cust}</td>
-                    <td className="py-2">
+                    <td className="py-2.5 font-bold text-[#04123F]">{kode}</td>
+                    <td className="py-2.5">{cust}</td>
+                    <td className="py-2.5">
                       <div className="flex items-center gap-1.5">
                         <div className="h-1.5 w-14 overflow-hidden rounded-full bg-[#E2E8F0]">
                           <div className="h-full rounded-full bg-[#FEC40B]" style={{ width: `${((tahap as number) / 11) * 100}%` }} />
@@ -68,7 +69,7 @@ export function MockupDashboard() {
                         <span className="text-[8px] text-[#94A3B8]">{tahap}/11</span>
                       </div>
                     </td>
-                    <td className="py-2 text-right tabular-nums">{rp(total as number)}</td>
+                    <td className="py-2.5 text-right tabular-nums">{rp(total as number)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -76,12 +77,12 @@ export function MockupDashboard() {
           </div>
         </div>
       </div>
-      {/* Floating cards */}
-      <FloatCard className="-left-4 top-8 hidden w-40 px-3 py-2.5 md:block">
+      {/* Floating cards — kartu HPP digeser turun agar judul "Pesanan" terbaca */}
+      <FloatCard className="-left-4 top-24 hidden w-40 px-3 py-2.5 md:block">
         <p className="text-[8px] font-semibold uppercase tracking-wide text-[#94A3B8]">Total HPP</p>
         <p className="text-[13px] font-bold text-[#04123F]">{rp(65_250)}</p>
       </FloatCard>
-      <FloatCard className="-right-3 bottom-10 w-44 px-3 py-2.5">
+      <FloatCard className="-right-3 bottom-10 w-48 px-3 py-2.5">
         <p className="text-[8px] font-semibold uppercase tracking-wide text-[#94A3B8]">Notifikasi Deadline</p>
         <p className="text-[10px] font-semibold text-[#04123F]">NS-2410 · H-3 terkirim 08:00 WIB</p>
         <div className="mt-1 h-1 w-full rounded-full bg-[#FDE68A]" />
@@ -119,11 +120,11 @@ export function MockupKalkulator() {
         <tbody className="text-[10px] font-medium text-[#1E293B]">
           {rows.map(([kategori, variasi, harga]) => (
             <tr key={kategori} className="border-b border-[#F1F5F9]">
-              <td className="py-2">{kategori}</td>
-              <td className="py-2">
+              <td className="py-2.5">{kategori}</td>
+              <td className="py-2.5">
                 <span className="rounded-md border border-[#E2E8F0] bg-[#F8FAFC] px-1.5 py-0.5 text-[9px]">{variasi}</span>
               </td>
-              <td className="py-2 text-right font-bold tabular-nums text-[#04123F]">{harga != null ? rp(harga) : "—"}</td>
+              <td className="py-2.5 text-right font-bold tabular-nums text-[#04123F]">{harga != null ? rp(harga) : "—"}</td>
             </tr>
           ))}
         </tbody>

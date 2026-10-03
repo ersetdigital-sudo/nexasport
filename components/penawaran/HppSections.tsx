@@ -4,35 +4,33 @@
  * Section highlight landing:
  *   5  — Kalkulator HPP (badge "Fitur Baru")
  *   5b — Dari Excel ke Nexa Sport (perbandingan + contoh hitungan animasi)
- *   5c — Notifikasi Deadline Otomatis (gelap, countdown 08:00 WIB berjalan)
+ *   5c — Notifikasi Deadline Otomatis (kartu gelap berjalan countdown 08:00 WIB)
+ * Semua teks tinggal edit di lib/penawaran-config.ts.
  */
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { PENAWARAN, waLink } from "@/lib/penawaran-config";
-import { Reveal, CountUp, rp } from "@/components/penawaran/Reveal";
+import { PENAWARAN } from "@/lib/penawaran-config";
+import { Reveal, CountUp } from "@/components/penawaran/Reveal";
 import { MockupKalkulator, BubbleWA } from "@/components/penawaran/Mockups";
 
 /* ══ 5. HIGHLIGHT KALKULATOR HPP ══ */
 export function HppHighlight() {
+  const hpp = PENAWARAN.hpp;
   return (
-    <section className="bg-[#04123F] py-20">
+    <section className="bg-white py-20">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 lg:grid-cols-2">
         <Reveal>
-          <span className="rounded-full bg-[#FEC40B] px-3 py-1.5 text-[11.5px] font-bold text-[#04123F]">Fitur Baru</span>
-          <h2 className="mt-4 text-[26px] font-extrabold tracking-tight text-white sm:text-[34px]">
-            Kalkulator HPP — ganti Excel, hitung otomatis
+          <span className="rounded-full bg-[#FEC40B] px-3 py-1.5 text-[11.5px] font-bold text-[#04123F]">{hpp.badge}</span>
+          <h2 className="mt-4 text-[26px] font-extrabold tracking-tight text-[#04123F] sm:text-[34px]">
+            {hpp.judul}
           </h2>
-          <p className="mt-4 max-w-md text-[15px] leading-relaxed text-white/65">
-            Pilih kain dan variasi per kategori, sisanya terisi sendiri. Total HPP, margin, dan harga jual dihitung realtime — tanpa rumus yang bisa ketimpa.
+          <p className="mt-4 max-w-md text-[15px] leading-relaxed text-[#5A6784]">
+            {hpp.sub}
           </p>
           <ul className="mt-6 space-y-3">
-            {[
-              "Kain dikelompokkan per kelas: Basic, Premium, Pro",
-              "Margin nominal rupiah, harga jual langsung jadi",
-              "Ubah harga sekali di Database HPP, semua hitungan ikut",
-            ].map((t) => (
-              <li key={t} className="flex items-start gap-2.5 text-[14px] text-white/80">
-                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-400/15 text-[11px] font-bold text-emerald-400">✓</span>
+            {hpp.poin.map((t) => (
+              <li key={t} className="flex items-start gap-2.5 text-[14px] text-[#3B4A66]">
+                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-500/10 text-[11px] font-bold text-emerald-600">✓</span>
                 {t}
               </li>
             ))}
@@ -41,7 +39,7 @@ export function HppHighlight() {
             href="/penawaran/demo/hpp"
             className="mt-8 inline-block rounded-xl bg-[#FEC40B] px-6 py-3 text-[14.5px] font-bold text-[#04123F] transition hover:brightness-105 active:scale-[0.98]"
           >
-            Coba Kalkulatornya di Demo
+            {hpp.cta}
           </Link>
         </Reveal>
         <Reveal delay={150}>
@@ -62,28 +60,32 @@ const BANDING = [
 ];
 
 export function ExcelToNexa() {
+  const excel = PENAWARAN.excel;
   return (
-    <section className="bg-[#071B50] py-20">
+    <section className="bg-[#F3F6FB] py-20">
       <div className="mx-auto max-w-6xl px-5">
         <Reveal>
-          <h2 className="text-center text-[26px] font-extrabold tracking-tight text-white sm:text-[34px]">
-            Masih hitung HPP pakai Excel? Waktunya naik kelas.
+          <h2 className="mx-auto max-w-2xl text-center text-[26px] font-extrabold tracking-tight text-[#04123F] sm:text-[34px]">
+            {excel.judul}
           </h2>
+          <p className="mx-auto mt-3 max-w-lg text-center text-[14.5px] text-[#5A6784]">
+            {excel.sub}
+          </p>
         </Reveal>
         <Reveal delay={100}>
-          <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-2xl border border-[#EEF1F5] bg-white shadow-sm">
+          <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-2xl border border-[#E8ECF4] bg-white shadow-sm">
             <div className="grid grid-cols-[1fr_1.1fr] sm:grid-cols-[0.8fr_1fr_1.2fr]">
               <div className="hidden border-b border-[#EEF1F5] bg-[#F1F5F9] px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-[#94A3B8] sm:block" />
               <div className="border-b border-r border-[#EEF1F5] bg-[#F1F5F9] px-4 py-3 text-[12px] font-bold text-[#64748B]">Excel</div>
               <div className="border-b border-[#EEF1F5] bg-[#FEC40B]/20 px-4 py-3 text-[12px] font-bold text-[#04123F]">Nexa Sport</div>
             </div>
-            {BANDING.map(([label, excel, nexa], i) => (
+            {BANDING.map(([label, x, nexa], i) => (
               <div key={label} className={`grid grid-cols-[1fr_1.1fr] sm:grid-cols-[0.8fr_1fr_1.2fr] ${i % 2 ? "bg-[#FAFBFC]" : ""}`}>
                 <div className="hidden border-b border-r border-[#EEF1F5] px-4 py-3.5 text-[12.5px] font-bold text-[#04123F] sm:block">{label}</div>
                 <div className="border-b border-r border-[#EEF1F5] px-4 py-3.5 text-[12.5px] text-[#64748B]">
-                  <span className="mb-1 inline-flex items-center gap-1 text-[11px] font-bold text-red-400 sm:hidden">{label}</span>
-                  <span className="mr-1.5 inline text-[11px] font-bold text-red-400">✕</span>
-                  {excel}
+                  <span className="mb-1 inline-flex items-center gap-1 text-[11px] font-bold text-red-500 sm:hidden">{label}</span>
+                  <span className="mr-1.5 inline text-[11px] font-bold text-red-500">✕</span>
+                  {x}
                 </div>
                 <div className="border-b border-[#EEF1F5] bg-[#FEC40B]/10 px-4 py-3.5 text-[12.5px] font-medium text-[#04123F]">
                   <span className="mr-1.5 inline text-[11px] font-bold text-emerald-600">✓</span>
@@ -130,7 +132,7 @@ export function ExcelToNexa() {
               href="/penawaran/demo/hpp"
               className="inline-block rounded-xl bg-[#FEC40B] px-7 py-3.5 text-[15px] font-bold text-[#04123F] shadow-md shadow-amber-200 transition hover:brightness-105 active:scale-[0.98]"
             >
-              Coba Kalkulatornya di Demo
+              {excel.cta}
             </Link>
           </div>
         </Reveal>
@@ -183,19 +185,20 @@ function useCountdownKe08Wib() {
 
 export function DeadlineNotif() {
   const { sisa, besok } = useCountdownKe08Wib();
+  const notif = PENAWARAN.notif;
 
   return (
-    <section className="bg-[#04123F] py-20">
+    <section className="bg-white py-20">
       <div className="mx-auto max-w-6xl px-5">
         <Reveal>
-          <span className="rounded-full border border-white/20 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-white/70">
+          <span className="rounded-full border border-[#04123F]/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-[#5A6784]">
             Untuk kepala produksi
           </span>
-          <h2 className="mt-4 max-w-xl text-[26px] font-extrabold tracking-tight text-white sm:text-[34px]">
-            Nggak ada lagi deadline yang kelewat.
+          <h2 className="mt-4 max-w-xl text-[26px] font-extrabold tracking-tight text-[#04123F] sm:text-[34px]">
+            {notif.judul}
           </h2>
-          <p className="mt-3 max-w-lg text-[14.5px] leading-relaxed text-white/65">
-            Sistem mengingatkan penanggung jawab produksi lewat WhatsApp otomatis di H-3, H-2, dan H-1 sebelum deadline — terkirim jam 08:00 WIB.
+          <p className="mt-3 max-w-lg text-[14.5px] leading-relaxed text-[#5A6784]">
+            {notif.sub}
           </p>
         </Reveal>
 
@@ -216,11 +219,7 @@ export function DeadlineNotif() {
               {/* Kiri: manfaat */}
               <div>
                 <ul className="space-y-3.5">
-                  {[
-                    "Kepala produksi tahu order mana yang mepet — tanpa buka app",
-                    "Gak bergantung ingatan atau catatan manual",
-                    "Bisa dimatikan/dinyalakan kapan saja",
-                  ].map((t) => (
+                  {notif.poin.map((t) => (
                     <li key={t} className="flex items-start gap-2.5 text-[14px] text-white/85">
                       <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#FEC40B] text-[11px] font-bold text-[#04123F]">✓</span>
                       {t}
@@ -292,9 +291,9 @@ export function DeadlineNotif() {
           <div className="mt-8 text-center">
             <Link
               href="/penawaran/demo/notifikasi"
-              className="inline-block rounded-xl bg-[#FEC40B] px-7 py-3.5 text-[15px] font-bold text-[#04123F] shadow-md shadow-black/20 transition hover:brightness-105 active:scale-[0.98]"
+              className="inline-block rounded-xl bg-[#FEC40B] px-7 py-3.5 text-[15px] font-bold text-[#04123F] shadow-md shadow-black/10 transition hover:brightness-105 active:scale-[0.98]"
             >
-              Lihat Notifikasi di Demo
+              {notif.cta}
             </Link>
           </div>
         </Reveal>

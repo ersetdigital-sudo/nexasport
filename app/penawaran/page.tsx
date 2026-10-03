@@ -7,9 +7,9 @@ import { PENAWARAN } from "@/lib/penawaran-config";
  * Halaman "/" yang asli (beranda customer) TIDAK disentuh.
  */
 export const metadata: Metadata = {
-  title: "Nexa Sport — Tracking Produksi & Kalkulator HPP Jersey Custom",
+  title: "Nexa Sport - Sistem Tracking Produksi dan Kalkulator HPP Jersey Custom",
   description:
-    "Aplikasi manajemen produksi jersey custom: tracking 11 tahap produksi dari order sampai kirim, plus kalkulator HPP otomatis pengganti Excel. Dipakai untuk tracking produksi TNT Sport.",
+    "Hitung HPP otomatis, pantau 11 tahap produksi, dan dapat pengingat deadline lewat WhatsApp. Bayar sekali, tanpa langganan bulanan. Coba demo gratis.",
   keywords: [
     "tracking produksi jersey",
     "kalkulator HPP konveksi",
@@ -19,9 +19,9 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/penawaran" },
   openGraph: {
-    title: "Nexa Sport — Tracking Produksi & Kalkulator HPP",
+    title: "Nexa Sport - Sistem Tracking Produksi dan Kalkulator HPP Jersey Custom",
     description:
-      "Hitung HPP, atur produksi, dan kirim orderan jersey tanpa ribet spreadsheet. Coba demo gratis, tanpa daftar.",
+      "Hitung HPP otomatis, pantau 11 tahap produksi, dan dapat pengingat deadline lewat WhatsApp. Bayar sekali, tanpa langganan bulanan. Coba demo gratis.",
     type: "website",
     locale: "id_ID",
   },
