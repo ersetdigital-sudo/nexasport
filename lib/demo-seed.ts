@@ -37,6 +37,11 @@ export type Order = {
   mulai: string; // tanggal mulai produksi (untuk Jadwal)
   total: number;
   maklon?: boolean;
+  /** Bahan (khas maklon, opsional). */
+  material?: string;
+  /** Foto preview design & WO (maklon, opsional). */
+  designPhotos?: string[];
+  woPhotos?: string[];
 };
 
 export type HppItem = {

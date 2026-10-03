@@ -15,6 +15,7 @@ import { pcsLabel } from "@/lib/utils";
 import { formatNumericDateID } from "@/lib/format-date";
 import { PageHead, BtnKuning, Modal } from "@/components/penawaran/demo/ui";
 import { DetailSheet } from "@/components/penawaran/demo/DetailSheet";
+import EditSheet from "@/components/penawaran/demo/EditSheet";
 import { FotoUpload } from "@/components/penawaran/demo/FotoUpload";
 import { uploadToCloudinary, optimizeImageUrl, DEMO_UPLOAD_FOLDER } from "@/lib/cloudinary";
 
@@ -50,6 +51,7 @@ export default function DemoMaklon() {
   const [filter, setFilter] = useState<FilterKey>("all");
   const [query, setQuery] = useState("");
   const [detailId, setDetailId] = useState<number | null>(null);
+  const [editId, setEditId] = useState<number | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   // Form Tambah Maklon — meniru AddForm admin asli: nama + HP + ukuran manual
   // (khas maklon) + baris produk multi-entry + foto design & WO + tanggal.
@@ -277,7 +279,7 @@ export default function DemoMaklon() {
                       <button
                         className="text-[var(--pas-muted)] hover:text-blue-400 transition p-1.5 rounded-lg hover:bg-blue-400/10"
                         title="Edit maklon"
-                        onClick={(e) => { e.stopPropagation(); setDetailId(o.id); }}
+                        onClick={(e) => { e.stopPropagation(); setEditId(o.id); }}
                       >
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
@@ -363,7 +365,7 @@ export default function DemoMaklon() {
                   className="w-10 h-10 grid place-items-center rounded-lg text-[var(--pas-muted)] hover:text-blue-400 hover:bg-blue-400/10 transition"
                   title="Edit maklon"
                   aria-label="Edit maklon"
-                  onClick={(e) => { e.stopPropagation(); setDetailId(o.id); }}
+                  onClick={(e) => { e.stopPropagation(); setEditId(o.id); }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
@@ -409,6 +411,13 @@ export default function DemoMaklon() {
           setDetailId(null);
           demoToast("Maklon ditandai selesai (mode demo)");
         }}
+      />
+
+      {/* Edit — sheet sama dengan EditSheet admin asli (ikon pensil di tabel) */}
+      <EditSheet
+        open={!!editId}
+        order={s.orders.find((o) => o.id === editId) ?? null}
+        onClose={() => setEditId(null)}
       />
 
       {/* Form tambah maklon — struktur sama dengan AddForm admin asli */}
