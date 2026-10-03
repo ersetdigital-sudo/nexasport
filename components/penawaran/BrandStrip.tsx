@@ -7,7 +7,7 @@
  */
 const BRANDS: { src: string; alt: string; invert?: boolean; imgClass?: string; bgClass?: string; fullColor?: boolean }[] = [
   { src: "/brands/taff-background.png", alt: "TAFF Sportwear", invert: true, bgClass: "bg-[#111111]" },
-  { src: "/brands/menara.png", alt: "Menara", imgClass: "scale-[1.15]", fullColor: true },
+  { src: "/brands/menara.png", alt: "Menara", imgClass: "scale-[1.15]", fullColor: true, bgClass: "bg-[#04123F]" },
   { src: "/brands/wp.png", alt: "VSP", fullColor: true },
   { src: "/brands/tnt.png", alt: "TNT Sport Apparel", invert: true },
   { src: "/brands/rabona-original.png", alt: "Rabona Sportwear", imgClass: "!opacity-100" },
