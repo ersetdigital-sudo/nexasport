@@ -99,12 +99,12 @@ export function seedDemo(): DemoState {
   return {
     tahapan: [...TAHAPAN_DEFAULT],
     orders: [
-      { id: 1, kode: "NS-2410", customer: "TNT Sport", produk: "Jersey Setelan — Manggarai", qty: 36, tahapSelesai: 7, deadline: hari(3), mulai: hari(-4), total: 4_140_000 },
-      { id: 2, kode: "NS-2409", customer: "FC Garuda Muda", produk: "Jersey Atasan — Grade Ori", qty: 22, tahapSelesai: 4, deadline: hari(12), mulai: hari(-1), total: 2_420_000, maklon: true },
-      { id: 3, kode: "NS-2408", customer: "Komunitas Grid", produk: "Jersey Atasan — Toraja", qty: 18, tahapSelesai: 11, deadline: hari(-2), mulai: hari(-14), total: 1_980_000 },
-      { id: 4, kode: "NS-2407", customer: "Squad Bikers ID", produk: "Jersey Setelan — Custom Nama", qty: 30, tahapSelesai: 9, deadline: hari(8), mulai: hari(-2), total: 3_600_000, maklon: true },
-      { id: 5, kode: "NS-2406", customer: "Toko Sepatu Andalan", produk: "Kaos Tim — Basic Cotton", qty: 50, tahapSelesai: 2, deadline: hari(15), mulai: hari(1), total: 3_250_000 },
-      { id: 6, kode: "NS-2405", customer: "Panitia Porseni UNM", produk: "Jersey Atasan — Voting", qty: 40, tahapSelesai: 0, deadline: hari(20), mulai: hari(2), total: 4_400_000 },
+      { id: 1, kode: "NSP261002K7RD", customer: "TNT Sport", produk: "Jersey Setelan — Manggarai", qty: 36, tahapSelesai: 7, deadline: hari(3), mulai: hari(-4), total: 4_140_000 },
+      { id: 2, kode: "NSP261001M4XA", customer: "FC Garuda Muda", produk: "Jersey Atasan — Grade Ori", qty: 22, tahapSelesai: 4, deadline: hari(12), mulai: hari(-1), total: 2_420_000, maklon: true },
+      { id: 3, kode: "NSP260918T2WC", customer: "Komunitas Grid", produk: "Jersey Atasan — Toraja", qty: 18, tahapSelesai: 11, deadline: hari(-2), mulai: hari(-14), total: 1_980_000 },
+      { id: 4, kode: "NSP260926H3VE", customer: "Squad Bikers ID", produk: "Jersey Setelan — Custom Nama", qty: 30, tahapSelesai: 9, deadline: hari(8), mulai: hari(-2), total: 3_600_000, maklon: true },
+      { id: 5, kode: "NSP260929A5XG", customer: "Toko Sepatu Andalan", produk: "Kaos Tim — Basic Cotton", qty: 50, tahapSelesai: 2, deadline: hari(15), mulai: hari(1), total: 3_250_000 },
+      { id: 6, kode: "NSP261003DFR7", customer: "Panitia Porseni UNM", produk: "Jersey Atasan — Voting", qty: 40, tahapSelesai: 0, deadline: hari(20), mulai: hari(2), total: 4_400_000 },
     ],
     hppItems: [
       { id: 1, kategori: "Kain", item: "Kain Atasan", variasi: "PUMA", harga: 21_250, satuan: "pcs" },
@@ -159,10 +159,10 @@ export function seedDemo(): DemoState {
     ],
     notifAktif: true,
     notifRiwayat: [
-      { kode: "NS-2410", tahap: "Jahit / Sewing", hke: 3, jam: "08:00 WIB", status: "Terkirim" },
-      { kode: "NS-2407", tahap: "Quality Control", hke: 3, jam: "08:00 WIB", status: "Terkirim" },
-      { kode: "NS-2410", tahap: "Jahit / Sewing", hke: 2, jam: "08:00 WIB", status: "Terkirim" },
-      { kode: "NS-2410", tahap: "Jahit / Sewing", hke: 1, jam: "08:00 WIB", status: "Terjadwal" },
+      { kode: "NSP261002K7RD", tahap: "Jahit / Sewing", hke: 3, jam: "08:00 WIB", status: "Terkirim" },
+      { kode: "NSP260926H3VE", tahap: "Quality Control", hke: 3, jam: "08:00 WIB", status: "Terkirim" },
+      { kode: "NSP261002K7RD", tahap: "Jahit / Sewing", hke: 2, jam: "08:00 WIB", status: "Terkirim" },
+      { kode: "NSP261002K7RD", tahap: "Jahit / Sewing", hke: 1, jam: "08:00 WIB", status: "Terjadwal" },
     ],
   };
 }

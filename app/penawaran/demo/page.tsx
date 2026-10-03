@@ -11,7 +11,8 @@ import { setDemo, useDemo, demoToast } from "@/lib/demo-store";
 import { DEFAULT_PRODUCTS } from "@/lib/product-options";
 import { pcsLabel } from "@/lib/utils";
 import { formatNumericDateID } from "@/lib/format-date";
-import { PageHead, BtnKuning, Modal, tanggalID } from "@/components/penawaran/demo/ui";
+import { PageHead, BtnKuning, Modal } from "@/components/penawaran/demo/ui";
+import { DetailSheet } from "@/components/penawaran/demo/DetailSheet";
 
 /* ── Helper yang disamakan dengan PesananDashboard asli ── */
 const MONTH_NAMES = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -65,6 +66,15 @@ const initials = (name: string) =>
   name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 
 const formatDate = (iso: string) => formatNumericDateID(iso) || "-";
+
+/** Nomor pesanan demo — format sama dengan app asli: NSP + YYMMDD (WIB) + 4 acak. */
+const ORDER_CHARSET = "ACDEFGHJKMNPQRSTUVWXYZ23456789";
+const nomorPesananDemo = () =>
+  "NSP" +
+  new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta", year: "2-digit", month: "2-digit", day: "2-digit" })
+    .format(new Date())
+    .replace(/\D/g, "") +
+  Array.from({ length: 4 }, () => ORDER_CHARSET[Math.floor(Math.random() * ORDER_CHARSET.length)]).join("");
 
 export default function DemoPesanan() {
   const s = useDemo();
@@ -150,15 +160,6 @@ export default function DemoPesanan() {
 
   const detail = s.orders.find((o) => o.id === detailId) ?? null;
 
-  const lanjut = (id: number) => {
-    setDemo({
-      orders: s.orders.map((o) =>
-        o.id === id ? { ...o, tahapSelesai: Math.min(total, o.tahapSelesai + 1) } : o
-      ),
-    });
-    demoToast("Status produksi diperbarui");
-  };
-
   const updateProductRow = (rowIdx: number, patch: Partial<{ product: string; custom: boolean; qty: string }>) =>
     setProductRows((rows) => rows.map((r, i) => (i === rowIdx ? { ...r, ...patch } : r)));
 
@@ -196,7 +197,7 @@ export default function DemoPesanan() {
       orders: [
         {
           id,
-          kode: `NS-${2410 + id}`,
+          kode: nomorPesananDemo(),
           customer: form.customer.trim(),
           phone: form.phone.trim(),
           produk: names.join(", "),
@@ -535,56 +536,29 @@ export default function DemoPesanan() {
         })}
       </section>
 
-      {/* Detail + timeline 11 tahap */}
-      <Modal open={!!detail} onClose={() => setDetailId(null)} kicker={detail ? "Detail Pesanan" : undefined} title={detail ? `${detail.kode} — ${detail.customer}` : ""}>
-        {detail && (
-          <div>
-            <div className="mb-4 rounded-xl bg-[#F8FAFC] px-3.5 py-3 text-[12.5px]">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-semibold text-[#04123F]">{detail.produk}</span>
-                <span className="text-[#64748B]">{detail.qty} pcs · deadline {tanggalID(detail.deadline)}</span>
-              </div>
-              {detail.phone && <p className="mt-1 text-[#64748B]">HP: {detail.phone}</p>}
-            </div>
-            <div className="mb-2 flex items-center justify-between text-[12px] font-semibold text-[#475569]">
-              <span>Progres produksi</span>
-              <span>{detail.tahapSelesai}/{total} tahap</span>
-            </div>
-            <div className="h-2 overflow-hidden rounded-full bg-[#E2E8F0]">
-              <div className="h-full rounded-full bg-[#FEC40B] transition-all duration-500" style={{ width: `${(detail.tahapSelesai / total) * 100}%` }} />
-            </div>
-            <ol className="mt-4 space-y-1.5">
-              {s.tahapan.map((t, i) => {
-                const selesai = i < detail.tahapSelesai;
-                const berjalan = i === detail.tahapSelesai;
-                return (
-                  <li
-                    key={t}
-                    className={`flex items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-semibold ${
-                      berjalan ? "bg-[#FEC40B]/20 text-[#04123F] ring-1 ring-[#FEC40B]" : selesai ? "text-[#334155]" : "text-[#94A3B8]"
-                    }`}
-                  >
-                    <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-[10px] font-bold ${
-                      selesai ? "bg-emerald-100 text-emerald-700" : berjalan ? "bg-[#FEC40B] text-[#04123F]" : "bg-[#F1F5F9]"
-                    }`}>
-                      {selesai ? "✓" : i + 1}
-                    </span>
-                    {t}
-                    {berjalan && <span className="ml-auto rounded-full bg-[#FEC40B] px-2 py-0.5 text-[9.5px] font-bold text-[#04123F]">BERJALAN</span>}
-                  </li>
-                );
-              })}
-            </ol>
-            {detail.tahapSelesai < total ? (
-              <BtnKuning onClick={() => lanjut(detail.id)}>Lanjut ke Tahap Berikutnya →</BtnKuning>
-            ) : (
-              <p className="rounded-xl bg-emerald-50 px-4 py-3 text-[13px] font-bold text-emerald-700">
-                Order ini sudah lewat semua tahap — terkirim.
-              </p>
-            )}
-          </div>
-        )}
-      </Modal>
+      {/* Detail — sheet sama seperti DetailSheet admin asli */}
+      <DetailSheet
+        open={!!detail}
+        order={detail}
+        tahapan={s.tahapan}
+        st={detail ? statusOf(detail.tahapSelesai, total) : "baru"}
+        stLabel={detail ? FILTER_LABEL[statusOf(detail.tahapSelesai, total)] : ""}
+        onClose={() => setDetailId(null)}
+        onSimpan={(tahapSelesai) => {
+          setDemo({
+            orders: s.orders.map((o) => (o.id === detailId ? { ...o, tahapSelesai } : o)),
+          });
+          setDetailId(null);
+          demoToast("Perubahan disimpan (mode demo)");
+        }}
+        onSelesai={() => {
+          setDemo({
+            orders: s.orders.map((o) => (o.id === detailId ? { ...o, tahapSelesai: total } : o)),
+          });
+          setDetailId(null);
+          demoToast("Pesanan ditandai selesai (mode demo)");
+        }}
+      />
 
       {/* Form tambah pesanan — struktur sama dengan app asli */}
       <Modal open={formOpen} onClose={() => setFormOpen(false)} kicker="Pesanan Baru" title="Tambah Pesanan">
