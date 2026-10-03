@@ -42,23 +42,23 @@ export const PENAWARAN = {
   },
 
   pain: {
-    judul: "Empat bocor kecil yang diam-diam makan untung konveksi",
+    judul: "Empat hal kecil yang sering bikin operasional konveksi berantakan",
     kartu: [
       {
-        judul: "HPP dihitung kira-kira",
-        teks: "Salah pilih kain saja bisa selisih ribuan rupiah per pcs, dan kamu baru sadar saat margin sudah tipis.",
+        judul: "Hitung HPP masih manual",
+        teks: "Perubahan bahan, ukuran, atau jumlah order membuat perhitungan harus diulang.",
       },
       {
-        judul: "Status order tercecer di chat",
-        teks: "Tim tanya terus, kamu jawab terus. Padahal semua itu seharusnya terlihat di satu layar.",
+        judul: "Status order sulit dipantau",
+        teks: "Informasi pesanan tersebar di chat dan spreadsheet, bikin progres susah dilihat cepat.",
       },
       {
-        judul: "Deadline baru ketahuan mepet saat customer nagih",
-        teks: "Tanpa pengingat, semuanya bergantung ingatan satu orang.",
+        judul: "Deadline mudah terlewat",
+        teks: "Tanpa pengingat yang jelas, jadwal produksi masih bergantung pada ingatan tim.",
       },
       {
-        judul: "Excel rawan rusak",
-        teks: "Satu rumus tertimpa atau file versi lama terkirim, hitungan langsung salah.",
+        judul: "Data produksi tidak terpusat",
+        teks: "Terlalu banyak file dan versi membuat informasi sulit dijaga tetap sinkron.",
       },
     ],
   },
