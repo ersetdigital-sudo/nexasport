@@ -32,13 +32,13 @@ export default function Landing() {
       className="min-h-screen bg-white text-[#3B4A66] antialiased"
       style={{ fontFamily: "'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif" }}
     >
-      {/* ══ 1. NAVBAR — putih, tipografi navy, CTA emas ══ */}
-      <header className="sticky top-0 z-40 border-b border-[#E5E7EB] bg-white/95 backdrop-blur">
+      {/* ══ 1. NAVBAR — navy, logo resmi, CTA emas ══ */}
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#04123F]/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
           <a href="/penawaran" className="flex items-center">
-            <img src="/nexa-sport-logo-navy.png" alt="Nexa Sport" className="h-10 w-auto" />
+            <img src="/nexa-sport-logo-official.png" alt="Nexa Sport" className="h-10 w-auto" />
           </a>
-          <nav className="hidden items-center gap-7 text-[14px] font-semibold text-[#04123F] md:flex">
+          <nav className="hidden items-center gap-7 text-[14px] font-semibold text-white/90 md:flex">
             {navbar.menu.map((m) =>
               m.href.startsWith("#") ? (
                 <a key={m.label} href={m.href} className="transition hover:text-[#B8890A]">{m.label}</a>
@@ -55,7 +55,7 @@ export default function Landing() {
               {navbar.cta}
             </Link>
             <button
-              className="grid h-10 w-10 place-items-center rounded-lg border border-[#E5E7EB] text-[#04123F] md:hidden"
+              className="grid h-10 w-10 place-items-center rounded-lg border border-white/20 text-white md:hidden"
               aria-label="Buka menu"
               onClick={() => setMenuOpen((v) => !v)}
             >
@@ -66,14 +66,14 @@ export default function Landing() {
           </div>
         </div>
         {menuOpen && (
-          <nav className="border-t border-[#E5E7EB] bg-white px-5 py-3 md:hidden">
+          <nav className="border-t border-white/10 bg-[#04123F] px-5 py-3 md:hidden">
             {navbar.menu.map((m) =>
               m.href.startsWith("#") ? (
-                <a key={m.label} href={m.href} onClick={() => setMenuOpen(false)} className="block rounded-lg px-2 py-2.5 text-[15px] font-semibold text-[#04123F]">
+                <a key={m.label} href={m.href} onClick={() => setMenuOpen(false)} className="block rounded-lg px-2 py-2.5 text-[15px] font-semibold text-white/90">
                   {m.label}
                 </a>
               ) : (
-                <Link key={m.label} href={m.href} onClick={() => setMenuOpen(false)} className="block rounded-lg px-2 py-2.5 text-[15px] font-semibold text-[#04123F]">
+                <Link key={m.label} href={m.href} onClick={() => setMenuOpen(false)} className="block rounded-lg px-2 py-2.5 text-[15px] font-semibold text-white/90">
                   {m.label}
                 </Link>
               )
@@ -378,7 +378,7 @@ export default function Landing() {
       <footer className="bg-[#04123F] py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-5 sm:flex-row">
           <div>
-            <img src="/nexa-sport-logo.png" alt="Nexa Sport" className="h-9 w-auto" />
+            <img src="/nexa-sport-logo-official.png" alt="Nexa Sport" className="h-9 w-auto" />
             <p className="mt-2 text-[12px] text-white/40">{hero.catatan} · © {new Date().getFullYear()} Nexa Sport</p>
           </div>
           <div className="flex items-center gap-3">

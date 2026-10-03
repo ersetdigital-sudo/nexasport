@@ -161,6 +161,13 @@ async function downscaleImage(file: File): Promise<{ blob: Blob; filename: strin
 export const CLOUDINARY_FOLDER = "nexasport/desain";
 
 /**
+ * Sub-folder khusus form demo (/penawaran/demo). Jalur publik di
+ * /api/cloudinary/sign hanya mau menandatangani folder ini, supaya orang luar
+ * tidak bisa menulis ke folder aset admin.
+ */
+export const DEMO_UPLOAD_FOLDER = "nexasport/desain/demo";
+
+/**
  * Batas ukuran berkas yang DITERIMA dari operator.
  *
  * Foto kamera HP sampai 10 MB tetap boleh dipilih: berkasnya diperkecil dulu

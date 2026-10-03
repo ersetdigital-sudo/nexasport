@@ -13,6 +13,7 @@ import { pcsLabel } from "@/lib/utils";
 import { formatNumericDateID } from "@/lib/format-date";
 import { PageHead, BtnKuning, Modal } from "@/components/penawaran/demo/ui";
 import { DetailSheet } from "@/components/penawaran/demo/DetailSheet";
+import { uploadToCloudinary, optimizeImageUrl, IMAGE_ACCEPT, DEMO_UPLOAD_FOLDER } from "@/lib/cloudinary";
 
 /* ── Helper yang disamakan dengan PesananDashboard asli ── */
 const MONTH_NAMES = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -84,7 +85,7 @@ export default function DemoPesanan() {
   const [formOpen, setFormOpen] = useState(false);
   // Form tambah pesanan — meniru AddForm app asli: customer + HP,
   // baris produk multi-entry (pilih dari daftar / tulis sendiri) + qty,
-  // foto desain & WO (mode demo: preview in-memory), tanggal order/deadline.
+  // foto desain & WO (upload sungguhan ke Cloudinary, sama seperti app asli), tanggal order/deadline.
   const [form, setForm] = useState({ customer: "", phone: "", created: new Date().toISOString().slice(0, 10), deadline: "" });
   const [productRows, setProductRows] = useState<{ product: string; custom: boolean; qty: string }[]>([{ product: "", custom: false, qty: "" }]);
   const [productOptions, setProductOptions] = useState<string[]>([...DEFAULT_PRODUCTS]);
@@ -163,15 +164,27 @@ export default function DemoPesanan() {
   const updateProductRow = (rowIdx: number, patch: Partial<{ product: string; custom: boolean; qty: string }>) =>
     setProductRows((rows) => rows.map((r, i) => (i === rowIdx ? { ...r, ...patch } : r)));
 
-  const uploadDemoFoto = (
+  // Upload foto sungguhan ke Cloudinary — alur sama dengan AddForm admin asli.
+  const uploadDemoFoto = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    setter: (fn: (ps: string[]) => string[]) => void
+    setter: (fn: (ps: string[]) => string[]) => void,
+    setUploading: (v: boolean) => void
   ) => {
     const files = Array.from(e.target.files || []);
     e.target.value = "";
     if (files.length === 0) return;
-    // Mode demo: foto tidak diunggah ke mana pun — cukup preview in-memory.
-    files.forEach((f) => setter((ps) => [...ps, URL.createObjectURL(f)]));
+    setUploading(true);
+    try {
+      for (const file of files) {
+        const result = await uploadToCloudinary(file, { folder: DEMO_UPLOAD_FOLDER });
+        setter((ps) => [...ps, optimizeImageUrl(result.url)]);
+      }
+    } catch (err) {
+      console.error("[upload demo] exception", err);
+      setFormError(err instanceof Error ? err.message : "Upload gagal. Coba lagi.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const resetForm = () => {
@@ -667,7 +680,7 @@ export default function DemoPesanan() {
               fotos={designPhotos}
               alt="Design"
               uploading={designUpload}
-              onPick={(e) => uploadDemoFoto(e, setDesignPhotos)}
+              onPick={(e) => uploadDemoFoto(e, setDesignPhotos, setDesignUpload)}
               onRemove={(i) => setDesignPhotos((ps) => ps.filter((_, idx) => idx !== i))}
             />
             <FotoUpload
@@ -676,7 +689,7 @@ export default function DemoPesanan() {
               fotos={woPhotos}
               alt="WO"
               uploading={woUpload}
-              onPick={(e) => uploadDemoFoto(e, setWoPhotos)}
+              onPick={(e) => uploadDemoFoto(e, setWoPhotos, setWoUpload)}
               onRemove={(i) => setWoPhotos((ps) => ps.filter((_, idx) => idx !== i))}
             />
           </div>
@@ -709,8 +722,8 @@ export default function DemoPesanan() {
   );
 }
 
-/* ── Upload foto (Preview Design / WO) — mirror app asli, mode demo:
-      file tidak diunggah ke server, hanya preview in-memory. ── */
+/* ── Upload foto (Preview Design / WO) — mirror app asli:
+      file diunggah sungguhan ke Cloudinary lewat /api/cloudinary/sign. ── */
 function FotoUpload({
   label,
   catatan,
@@ -761,7 +774,7 @@ function FotoUpload({
           )}
         </button>
       </div>
-      <input id={inputId} type="file" accept="image/*" multiple className="hidden" onChange={onPick} />
+      <input id={inputId} type="file" accept={IMAGE_ACCEPT} multiple className="hidden" onChange={onPick} />
     </div>
   );
 }
