@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Allow the Base44 preview origin to access dev assets and HMR.
+  // The platform sets BASE44_PUBLIC_HOST_SUFFIX at runtime.
+  allowedDevOrigins: process.env.BASE44_PUBLIC_HOST_SUFFIX
+    ? ["3000-" + process.env.BASE44_PUBLIC_HOST_SUFFIX]
+    : [],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
