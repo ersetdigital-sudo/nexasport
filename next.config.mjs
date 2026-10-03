@@ -14,6 +14,8 @@ const nextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
   },
   async headers() {
+    // Dev chunks use stable filenames: immutable caching serves stale UI after edits.
+    if (process.env.NODE_ENV === "development") return [];
     return [
       {
         source: "/(.*)\\.(jpg|jpeg|png|gif|ico|svg|webp|avif)",

@@ -579,6 +579,9 @@ export default function PesananDashboard({
           <Link className="pas-navlink" href="/pesanan/maklon" prefetch>
             <span className="pas-ic"><NavIcon name="maklon" /></span> Maklon
           </Link>
+          <Link className="pas-navlink" href="/pesanan/hpp" prefetch>
+            <span className="pas-ic"><NavIcon name="hpp" /></span> Kalkulator HPP
+          </Link>
           {(["jadwal", "kirim"] as ViewKey[]).map((key) => (
             <a
               key={key}
@@ -608,9 +611,6 @@ export default function PesananDashboard({
               <span className="pas-ic"><NavIcon name={key} /></span> {VIEW_META[key].title}
             </a>
           ))}
-          <Link className="pas-navlink" href="/pesanan/hpp" prefetch>
-            <span className="pas-ic"><NavIcon name="hpp" /></span> Kalkulator HPP
-          </Link>
         </nav>
         <div className="pas-userbox mt-auto p-3 flex items-center gap-3">
           <span className="pas-avatar pas-avatar-invert">AD</span>
@@ -724,6 +724,9 @@ export default function PesananDashboard({
             </a>
             <Link className="pas-navlink" href="/pesanan/maklon" prefetch>
               <span className="pas-ic"><NavIcon name="maklon" /></span> Maklon
+            </Link>
+            <Link className="pas-navlink" href="/pesanan/hpp" prefetch>
+              <span className="pas-ic"><NavIcon name="hpp" /></span> Kalkulator HPP
             </Link>
             {(["jadwal", "kirim"] as ViewKey[]).map((key) => (
               <a

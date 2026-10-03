@@ -136,9 +136,10 @@ export default function HppCalculator({
       {isEmpty ? (
         <div className="max-w-3xl mx-auto py-16 text-center">
           <p className="text-sm opacity-70">
-            Database HPP belum bisa dibaca. Kalau ini bukan halaman pertama
-            setelah login, jalankan migrasi <code>0012_kalkulator_hpp.sql</code>{" "}
-            di SQL Editor Supabase, lalu muat ulang halaman ini.
+            Data HPP belum bisa dibaca atau masih kosong. Jika migrasi tabel
+            sudah dijalankan, jalankan <code>0013_hpp_permissions.sql</code>{" "}
+            di SQL Editor Supabase untuk memberikan izin baca dan edit harga
+            kepada aplikasi, lalu muat ulang halaman ini.
           </p>
           <a
             href="/pesanan/orders"

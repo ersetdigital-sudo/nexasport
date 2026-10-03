@@ -36,6 +36,9 @@ create table if not exists nexa_sport.hpp_items (
 -- endpoint dashboard melewati RLS. Baca akses dikelola lewat cookie admin.
 alter table nexa_sport.hpp_items enable row level security;
 
+-- BYPASSRLS tidak menggantikan hak akses tabel di custom schema.
+grant select, update on nexa_sport.hpp_items to service_role;
+
 -- ---------------------------------------------------------------------------
 -- Seed — 28 baris database HPP + 2 baris biaya tetap dari Excel.
 -- on conflict: harga di-refresh supaya menjalankan file ini berulang tetap

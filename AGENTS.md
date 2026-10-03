@@ -18,7 +18,11 @@ Non-obvious findings for running this repo in the Base44 sandbox. Manifests/READ
 - Migrations (`supabase/migrations/`) were already applied by the project's own remote Supabase — nothing local to seed. `scripts/seed-maklon-demo.mjs` is optional demo data.
 - Dashboard password for the preview: whatever the user sets for `PESANAN_PASSWORD` (dev default in `.env.base44-defaults` is `base44-dev-password`).
 
+## HPP
+- Custom-schema tables need explicit grants even for the service role (BYPASSRLS alone is not enough). If `hpp_items` returns 42501, apply `0013_hpp_permissions.sql`; it grants only SELECT/UPDATE and does not reset edited prices.
+
 ## Quirks
+- Keep immutable JS/CSS headers production-only in `next.config.mjs`. Dev chunk filenames are stable; caching them for a year leaves the browser on old components and causes hydration mismatches even after clearing `.next`.
 - Root middleware rewrites any non-browser UA (incl. the healthcheck's `node` fetch and curl) to `/link-preview` — that's the `GET /` line you see in logs, it's normal.
 - `next.config.mjs` gets `allowedDevOrigins: ['3000-' + process.env.BASE44_PUBLIC_HOST_SUFFIX]` for the preview origin; don't hardcode resolved host values.
 - After changing secrets in the dashboard, the platform recreates the `web` container itself (~30s); verify with `printenv KEY >/dev/null` inside the container, never print values.
