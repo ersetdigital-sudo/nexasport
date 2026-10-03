@@ -17,8 +17,8 @@ import { MockupKalkulator, BubbleWA } from "@/components/penawaran/Mockups";
 export function HppHighlight() {
   const hpp = PENAWARAN.hpp;
   return (
-    <section className="bg-[#F7F8FA] py-20">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 lg:grid-cols-2">
+    <section className="bg-[#F7F8FA] py-14 sm:py-20">
+      <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 lg:grid-cols-2">
         <Reveal>
           <span className="rounded-full bg-[#FEC40B] px-3 py-1.5 text-[11.5px] font-bold text-[#04123F]">{hpp.badge}</span>
           <h2 className="mt-4 text-[26px] font-extrabold tracking-tight text-[#04123F] sm:text-[34px]">
@@ -73,7 +73,7 @@ export function ExcelToNexa() {
           </p>
         </Reveal>
         <Reveal delay={100}>
-          <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-2xl border border-[#E8ECF4] bg-white shadow-sm">
+          <div className="mx-auto mt-8 max-w-4xl overflow-hidden rounded-2xl border border-[#E8ECF4] bg-white shadow-sm sm:mt-10">
             <div className="grid grid-cols-[1fr_1.1fr] sm:grid-cols-[0.8fr_1fr_1.2fr]">
               <div className="hidden border-b border-[#EEF1F5] bg-[#F1F5F9] px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-[#94A3B8] sm:block" />
               <div className="border-b border-r border-[#EEF1F5] bg-[#F1F5F9] px-4 py-3 text-[12px] font-bold text-[#64748B]">Excel</div>
@@ -188,7 +188,7 @@ export function DeadlineNotif() {
   const notif = PENAWARAN.notif;
 
   return (
-    <section className="bg-[#F7F8FA] py-20">
+    <section className="bg-[#F7F8FA] py-14 sm:py-20">
       <div className="mx-auto max-w-6xl px-5">
         <Reveal>
           <span className="rounded-full border border-[#04123F]/15 bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-[#5A6784]">
@@ -204,12 +204,12 @@ export function DeadlineNotif() {
 
         <Reveal delay={120}>
           <div
-            className="mt-10 overflow-hidden rounded-2xl border border-[#04123F]/20 shadow-xl shadow-[#04123F]/10"
+            className="mt-8 overflow-hidden rounded-2xl border border-[#04123F]/20 shadow-xl shadow-[#04123F]/10 sm:mt-10"
             style={{ background: "linear-gradient(120deg, #04123F 0%, #0A1E5C 100%)" }}
           >
             {/* Pola grid halus */}
             <div
-              className="grid gap-8 p-6 sm:p-8 lg:grid-cols-2"
+              className="grid gap-8 p-5 sm:p-8 lg:grid-cols-2"
               style={{
                 backgroundImage:
                   "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",

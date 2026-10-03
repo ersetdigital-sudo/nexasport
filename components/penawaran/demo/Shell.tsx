@@ -2,13 +2,13 @@
 
 /**
  * Shell demo /penawaran/demo — tiru tampilan app asli: sidebar navy fixed,
- * banner "Mode Demo", drawer mobile, product tour singkat, dan toast.
+ * banner "Mode Demo", drawer mobile, dan toast.
  * Semuanya client-only & terisolasi (tidak menyentuh API/session app asli).
  */
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useDemo, useDemoToast, resetDemo, demoToast, tourSudahDitampilkan, tandaiTourSelesai } from "@/lib/demo-store";
+import { useDemo, useDemoToast, resetDemo, demoToast } from "@/lib/demo-store";
 import { waLink } from "@/lib/penawaran-config";
 
 type MenuItem = { label: string; href: string; icon: React.ReactNode; grup: "OPERASIONAL" | "DATA"; badge?: true };
@@ -33,27 +33,11 @@ const MENU: MenuItem[] = [
   { grup: "DATA", label: "Pengaturan", href: "/penawaran/demo/pengaturan", icon: <Ikon d="M12 9a3 3 0 100 6 3 3 0 000-6zM19 12a7 7 0 01-.1 1.2l2 1.6-2 3.4-2.4-1a7 7 0 01-2 1.2L14 21h-4l-.5-2.6a7 7 0 01-2-1.2l-2.4 1-2-3.4 2-1.6A7 7 0 015 12c0-.4 0-.8.1-1.2l-2-1.6 2-3.4 2.4 1a7 7 0 012-1.2L10 3h4l.5 2.6a7 7 0 012 1.2l2.4-1 2 3.4-2 1.6c.1.4.1.8.1 1.2z" /> },
 ];
 
-/** Langkah product tour — kartu melayang sederhana, bisa di-skip. */
-// Posisi kartu: selalu terpusat & aman di layar kecil/tablet, lalu menunjuk
-// elemen terkait di desktop (lg:). lg:translate-* me-reset translate mobile.
-const TOUR = [
-  { judul: "Menu Operasional", teks: "Semua puses produksi ada di sini: Pesanan, Maklon, Kalkulator HPP, Jadwal, Pengiriman.", pos: "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:left-[260px] lg:translate-x-0" },
-  { judul: "Kalkulator HPP", teks: "Fitur andalan: hitung HPP & harga jual otomatis, ganti Excel. Coba dari menu Kalkulator HPP.", pos: "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:top-16 lg:translate-y-0" },
-  { judul: "Notifikasi Deadline", teks: "Pengingat WhatsApp otomatis H-3/H-2/H-1 jam 08:00 WIB — buka dari menu Notifikasi.", pos: "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:top-1/3 lg:translate-y-0" },
-  { judul: "Reset Demo", teks: "Semua perubahan tidak disimpan. Tekan Reset Demo kapan saja untuk kembali ke data awal.", pos: "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:top-4 lg:translate-y-0" },
-];
-
 export default function DemoShell({ children }: { children: React.ReactNode }) {
   const s = useDemo();
   const toast = useDemoToast();
   const pathname = usePathname();
   const [navOpen, setNavOpen] = useState(false);
-  const [tour, setTour] = useState<number | null>(null);
-
-  // Product tour muncul otomatis saat pertama masuk (in-memory).
-  useEffect(() => {
-    if (!tourSudahDitampilkan()) setTour(0);
-  }, []);
 
   // Badge Pesanan: order belum selesai yang deadline-nya ≤ 3 hari lagi.
   const mendekati = s.orders.filter((o) => !o.maklon && o.tahapSelesai < 11 && new Date(o.deadline).getTime() - Date.now() <= 3 * 86_400_000).length;
@@ -112,7 +96,8 @@ export default function DemoShell({ children }: { children: React.ReactNode }) {
       {/* ── BANNER MODE DEMO ── */}
       <div className="sticky top-0 z-40 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 bg-[#04123F] px-4 py-2 text-[11.5px] text-white/80">
         <span>
-          <b className="text-[#FEC40B]">Mode Demo</b> — data contoh, perubahan tidak disimpan
+          <b className="text-[#FEC40B]">Mode Demo</b>
+          <span className="hidden sm:inline"> — data contoh, perubahan tidak disimpan</span>
         </span>
         <div className="flex items-center gap-1.5">
           <button
@@ -125,16 +110,6 @@ export default function DemoShell({ children }: { children: React.ReactNode }) {
           >
             Reset Demo
           </button>
-          <button
-            type="button"
-            onClick={() => setTour(0)}
-            className="rounded-lg bg-white/10 px-2.5 py-1 font-bold text-white transition hover:bg-white/20 active:scale-95"
-          >
-            Tur
-          </button>
-          <a href={waLink()} target="_blank" rel="noreferrer" className="rounded-lg bg-white/10 px-2.5 py-1 font-bold text-white transition hover:bg-white/20">
-            Hubungi Kami
-          </a>
           <a href={waLink("Halo Nexa Sport, saya mau minta penawaran.")} target="_blank" rel="noreferrer" className="rounded-lg bg-[#FEC40B] px-2.5 py-1 font-bold text-[#04123F] transition hover:brightness-105">
             Minta Penawaran
           </a>
@@ -177,49 +152,6 @@ export default function DemoShell({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      {/* ── PRODUCT TOUR ── */}
-      {tour != null && TOUR[tour] && (
-        <div className="fixed inset-0 z-[55] bg-black/55" onClick={() => setTour(null)}>
-          <div
-            className={`absolute ${TOUR[tour].pos} w-72 max-w-[calc(100vw-2rem)] rounded-2xl bg-white p-5 shadow-2xl`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#94A3B8]">
-              Tur demo · {tour + 1}/{TOUR.length}
-            </p>
-            <h3 className="mt-1.5 text-[15px] font-bold text-[#04123F]">{TOUR[tour].judul}</h3>
-            <p className="mt-2 text-[13px] leading-relaxed text-[#64748B]">{TOUR[tour].teks}</p>
-            <div className="mt-4 flex items-center justify-between">
-              <button type="button" className="text-[12.5px] font-semibold text-[#94A3B8] hover:text-[#475569]" onClick={() => { setTour(null); tandaiTourSelesai(); }}>
-                Lewati
-              </button>
-              <div className="flex items-center gap-2">
-                {tour > 0 && (
-                  <button
-                    type="button"
-                    className="rounded-lg border border-[#E2E8F0] px-3 py-1.5 text-[12.5px] font-semibold text-[#475569]"
-                    onClick={() => setTour(tour - 1)}
-                  >
-                    Kembali
-                  </button>
-                )}
-                <button
-                  type="button"
-                  className="rounded-lg bg-[#FEC40B] px-3.5 py-1.5 text-[12.5px] font-bold text-[#04123F]"
-                  onClick={() => {
-                    if (tour + 1 >= TOUR.length) {
-                      setTour(null);
-                      tandaiTourSelesai();
-                    } else setTour(tour + 1);
-                  }}
-                >
-                  {tour + 1 >= TOUR.length ? "Selesai" : "Lanjut"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

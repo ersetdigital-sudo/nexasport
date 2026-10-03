@@ -84,7 +84,7 @@ export default function Landing() {
 
       {/* ══ 2. HERO — terang, headline navy jadi focal point ══ */}
       <section className="bg-[#F7F8FA]">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-14 sm:pt-20 lg:grid-cols-2">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-14 pt-10 sm:pb-20 sm:pt-20 lg:grid-cols-2">
           <Reveal>
             <p className="mb-4 inline-flex items-center rounded-full border border-[#04123F]/15 bg-white px-3.5 py-1.5 text-[12px] font-bold text-[#04123F] shadow-sm">
               {hero.badge}
@@ -127,14 +127,14 @@ export default function Landing() {
       </section>
 
       {/* ══ 3. PAIN POINTS — soft bg, kartu putih ══ */}
-      <section className="bg-white py-20">
+      <section className="bg-white py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-5">
           <Reveal>
             <h2 className="max-w-xl text-[26px] font-extrabold tracking-tight text-[#04123F] sm:text-[32px]">
               {pain.judul}
             </h2>
           </Reveal>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-2 lg:grid-cols-4">
             {pain.kartu.map((p, i) => (
               <Reveal key={p.judul} delay={i * 80}>
                 <div className="h-full rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg hover:shadow-[#04123F]/10">
@@ -149,7 +149,7 @@ export default function Landing() {
       </section>
 
       {/* ══ 4. SOLUSI / FITUR — soft bg ══ */}
-      <section id="fitur" className="bg-[#F7F8FA] py-20">
+      <section id="fitur" className="bg-[#F7F8FA] py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-5">
           <Reveal>
             <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#B8890A]">Solusi</p>
@@ -158,7 +158,7 @@ export default function Landing() {
             </h2>
             <p className="mt-2 text-[14.5px] text-[#5A6784]">{fitur.sub}</p>
           </Reveal>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-2 lg:grid-cols-3">
             {fitur.kartu.map((f, i) => (
               <Reveal key={f.judul} delay={i * 60}>
                 <div className="h-full rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg hover:shadow-[#04123F]/10">
@@ -180,14 +180,14 @@ export default function Landing() {
       <DeadlineNotif />
 
       {/* ══ 6. CARA KERJA ══ */}
-      <section className="bg-white py-20">
+      <section className="bg-white py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-5">
           <Reveal>
             <h2 className="text-center text-[26px] font-extrabold tracking-tight text-[#04123F] sm:text-[32px]">
               {PENAWARAN.caraKerja.judul}
             </h2>
           </Reveal>
-          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+          <div className="mt-10 grid gap-6 sm:mt-12 sm:grid-cols-3">
             {PENAWARAN.caraKerja.langkah.map((langkah, i) => (
               <Reveal key={langkah.judul} delay={i * 100}>
                 <div className="relative rounded-2xl border border-[#E5E7EB] bg-white p-6 pt-8 text-center shadow-sm">
@@ -204,7 +204,7 @@ export default function Landing() {
       </section>
 
       {/* ══ 7. DEMO CTA BAND — satu-satunya band gelap di tengah halaman ══ */}
-      <section className="bg-[#04123F] py-16">
+      <section className="bg-[#04123F] py-12 sm:py-16">
         <div className="mx-auto max-w-6xl px-5 text-center">
           <Reveal>
             <h2 className="text-[26px] font-extrabold tracking-tight text-white sm:text-[34px]">
@@ -224,7 +224,7 @@ export default function Landing() {
       </section>
 
       {/* ══ 8. HARGA — soft bg, kartu putih ══ */}
-      <section id="harga" className="bg-[#F7F8FA] py-20">
+      <section id="harga" className="bg-[#F7F8FA] py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-5">
           <Reveal>
             <div className="text-center">
@@ -237,7 +237,7 @@ export default function Landing() {
               <p className="mt-2 text-[14.5px] text-[#5A6784]">{harga.sub}</p>
             </div>
           </Reveal>
-          <div className="mt-12 grid gap-5 lg:grid-cols-3">
+          <div className="mt-10 grid gap-5 sm:mt-12 lg:grid-cols-3">
             {PENAWARAN.paket.map((p, i) => (
               <Reveal key={p.nama} delay={i * 80}>
                 <div
@@ -291,14 +291,14 @@ export default function Landing() {
       </section>
 
       {/* ══ 9. TESTIMONI (contoh — mudah diganti lewat config) ══ */}
-      <section className="bg-white py-20">
+      <section className="bg-white py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-5">
           <Reveal>
             <h2 className="text-center text-[26px] font-extrabold tracking-tight text-[#04123F] sm:text-[32px]">
               {testimoni.judul}
             </h2>
           </Reveal>
-          <div className="mt-12 grid gap-5 sm:grid-cols-3">
+          <div className="mt-10 grid gap-5 sm:mt-12 sm:grid-cols-3">
             {testimoni.items.map((t, i) => (
               <Reveal key={t.nama} delay={i * 80}>
                 <div className="h-full rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-sm">
@@ -321,7 +321,7 @@ export default function Landing() {
           </div>
           {/* Poin faktual dari app — bukan angka klaim */}
           <Reveal delay={200}>
-            <div className="mx-auto mt-10 flex max-w-2xl flex-wrap items-center justify-center gap-x-10 gap-y-4 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FA] px-8 py-6 text-center shadow-sm">
+            <div className="mx-auto mt-8 flex max-w-2xl flex-wrap items-center justify-center gap-x-10 gap-y-4 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FA] px-5 py-6 text-center shadow-sm sm:mt-10 sm:px-8">
               {[
                 ["11", "tahap produksi terpantau"],
                 ["H-3 · H-2 · H-1", "pengingat deadline otomatis"],
@@ -338,7 +338,7 @@ export default function Landing() {
       </section>
 
       {/* ══ 10. FAQ — soft bg, kartu putih ══ */}
-      <section id="faq" className="bg-[#F7F8FA] py-20">
+      <section id="faq" className="bg-[#F7F8FA] py-14 sm:py-20">
         <div className="mx-auto max-w-3xl px-5">
           <Reveal>
             <h2 className="text-center text-[26px] font-extrabold tracking-tight text-[#04123F] sm:text-[32px]">
@@ -354,7 +354,7 @@ export default function Landing() {
       </section>
 
       {/* ══ 11. CTA PENUTUP — navy + FOOTER ══ */}
-      <section className="bg-[#04123F] py-20">
+      <section className="bg-[#04123F] py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-5 text-center">
           <Reveal>
             <h2 className="text-[28px] font-extrabold tracking-tight text-white sm:text-[36px]">
