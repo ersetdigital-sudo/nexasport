@@ -1094,7 +1094,7 @@ function ViewPesanan({
           }
           note={
             nextDeadlineOrder
-              ? `${nextDeadlineOrder.order_number} · ${formatDate(nextDeadlineOrder.deadline!)}`
+              ? `${nextDeadlineOrder.id} · ${formatDate(nextDeadlineOrder.deadline!)}`
               : "Tidak ada pesanan aktif"
           }
         />

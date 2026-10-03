@@ -42,3 +42,4 @@ supabase/.temp/
 # Contoh env TETAP di-commit (isinya placeholder) supaya orang lain tahu
 # variabel apa saja yang dibutuhkan. Nilai asli ada di .env.local (di-ignore).
 !.env.local.example
+!.env.base44-defaults
