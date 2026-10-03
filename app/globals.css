@@ -2473,6 +2473,15 @@
   transform: translateY(-2px);
   box-shadow: 0 12px 26px rgba(4,18,63,.10);
 }
+/* Marquee logo brand (landing penawaran) */
+@keyframes pas-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.pas-brand-marquee { animation: pas-marquee 28s linear infinite; }
+.pas-brand-marquee:hover { animation-play-state: paused; }
+.pas-brand-mask {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
 /* chip ikon KPI */
 .pas-kpi-ic {
   width: 34px; height: 34px; flex: none; border-radius: 11px;

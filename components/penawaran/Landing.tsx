@@ -13,6 +13,7 @@ import { PENAWARAN, waLink } from "@/lib/penawaran-config";
 import { Reveal } from "@/components/penawaran/Reveal";
 import { MockupDashboard } from "@/components/penawaran/Mockups";
 import { HppHighlight, ExcelToNexa, DeadlineNotif } from "@/components/penawaran/HppSections";
+import { BrandStrip } from "@/components/penawaran/BrandStrip";
 
 const { navbar, hero, pain, fitur, harga, testimoni, faq, ctaAkhir } = PENAWARAN;
 
@@ -125,6 +126,9 @@ export default function Landing() {
           </Reveal>
         </div>
       </section>
+
+      {/* ══ 2b. STRIP BRAND — logo konveksi/tim yang sudah pakai ══ */}
+      <BrandStrip />
 
       {/* ══ 3. PAIN POINTS — soft bg, kartu putih ══ */}
       <section className="bg-white py-14 sm:py-20">
