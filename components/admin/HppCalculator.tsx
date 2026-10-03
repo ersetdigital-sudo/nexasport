@@ -1,0 +1,309 @@
+"use client";
+
+/**
+ * Kalkulator HPP — reinkarnasi sheet "Kalkulator HPP" dari Excel.
+ *
+ * Cara kerjanya sama persis:
+ *   - pilih variasi per kategori (boleh dikosongkan → baris tidak dihitung,
+ *     padanan rumus `IF(C36="","",SUMIFS(...))`);
+ *   - DTF dan Biaya Tak Terduga selalu ditambahkan (Rp5.000, tidak bisa
+ *     dipilih/dihapus — padanan baris D46/D47 yang tertulis manual);
+ *   - TOTAL HPP = jumlah semua baris terisi (padanan `SUM(D36:D47)`);
+ *   - MARGIN bisa diedit (default 50.000, seperti D49);
+ *   - HARGA JUAL = TOTAL HPP + MARGIN (padanan `=D48+D49`).
+ *
+ * Bedanya: harganya dibaca dari tabel `nexa_sport.hpp_items` (bukan sheet
+ * DAFTAR KAIN), dan harga bisa diedit langsung dari bawah halaman —
+ * padanan sheet DAFTAR KAIN/Lists yang di Excel diedit manual.
+ */
+import { useMemo, useState } from "react";
+import type { HppItem } from "@/lib/hpp-server";
+
+/** Baris pilihan kalkulator — urutan & label mengikuti Excel (A36–A45). */
+const CALC_ROWS = [
+  { key: "kain_atasan", label: "Kain Atasan", item: "Kain Atasan", defaultVariasi: "Premium" },
+  { key: "kain_celana", label: "Kain Celana", item: "Kain Celana", defaultVariasi: "" },
+  { key: "print_atasan", label: "Print/Press Atasan", item: "Print Atasan", defaultVariasi: "Atasan" },
+  { key: "print_celana", label: "Print/Press Celana", item: "Print Celana", defaultVariasi: "" },
+  { key: "jahit_atasan", label: "Jahit Atasan", item: "Jahit Atasan", defaultVariasi: "Basic" },
+  { key: "jahit_celana", label: "Jahit Celana", item: "Jahit Celana", defaultVariasi: "" },
+  { key: "logo", label: "Logo", item: "Logo", defaultVariasi: "" },
+  { key: "collar", label: "Collar", item: "Rib Collar", defaultVariasi: "" },
+  { key: "cuff", label: "Cuff", item: "Rib Cuff", defaultVariasi: "" },
+  { key: "namset", label: "Namset", item: "Namset", defaultVariasi: "" },
+] as const;
+
+/** Biaya tetap yang selalu ikut (padanan baris DTF & Lain Lain di Excel). */
+const FIXED_ROWS = ["DTF", "Biaya Tak Terduga"];
+const DEFAULT_MARGIN = 50000;
+
+const rupiah = (value: number) =>
+  "Rp" + new Intl.NumberFormat("id-ID").format(Math.round(value));
+
+export default function HppCalculator({
+  initialItems,
+}: {
+  initialItems: HppItem[] | null;
+}) {
+  const [items, setItems] = useState<HppItem[] | null>(initialItems);
+  const [margin, setMargin] = useState<number>(DEFAULT_MARGIN);
+  const [selected, setSelected] = useState<Record<string, string>>(() => {
+    // Nilai awal mengikuti Excel: sebagian kolom variasi sudah terisi.
+    const initial: Record<string, string> = {};
+    for (const row of CALC_ROWS) initial[row.key] = row.defaultVariasi;
+    return initial;
+  });
+  const [showPriceEditor, setShowPriceEditor] = useState(false);
+  const [draftHarga, setDraftHarga] = useState<Record<number, string>>({});
+  const [savingId, setSavingId] = useState<number | null>(null);
+  const [toast, setToast] = useState("");
+
+  const priceByKey = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const item of items ?? []) map.set(`${item.item}|${item.variasi}`, item.harga);
+    return map;
+  }, [items]);
+
+  const lines = useMemo(() => {
+    const chosen = CALC_ROWS.map((row) => {
+      const variasi = selected[row.key] ?? "";
+      const harga = variasi ? (priceByKey.get(`${row.item}|${variasi}`) ?? null) : null;
+      return { key: row.key, label: row.label, variasi, harga };
+    });
+    const fixed = FIXED_ROWS.map((item) => ({
+      key: item,
+      label: item === "DTF" ? "DTF" : "Lain Lain",
+      variasi: item,
+      harga: priceByKey.get(`${item}|${item}`) ?? null,
+    }));
+    return [...chosen, ...fixed];
+  }, [selected, priceByKey]);
+
+  const totalHpp = lines.reduce((sum, line) => sum + (line.harga ?? 0), 0);
+  const hargaJual = totalHpp + (Number.isFinite(margin) ? margin : 0);
+
+  const flash = (message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(""), 2200);
+  };
+
+  const saveHarga = async (item: HppItem) => {
+    const raw = (draftHarga[item.id] ?? "").replace(/[^\d]/g, "");
+    if (raw === "" || !Number.isFinite(Number(raw))) {
+      flash("Isi harga dengan angka dulu");
+      return;
+    }
+    setSavingId(item.id);
+    try {
+      const res = await fetch("/api/pesanan/hpp", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: item.id, harga: Number(raw) }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        flash(data?.error ?? "Gagal menyimpan harga");
+        return;
+      }
+      setItems((prev) =>
+        (prev ?? []).map((it) => (it.id === item.id ? { ...it, harga: Number(raw) } : it))
+      );
+      flash("Harga tersimpan ✅");
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  if (!items || items.length === 0) {
+    return (
+      <div className="max-w-3xl mx-auto px-5 py-16 text-center">
+        <h1 className="text-2xl font-bold">Kalkulator HPP</h1>
+        <p className="mt-3 text-sm opacity-70">
+          Database HPP belum bisa dibaca. Kalau ini bukan halaman pertama
+          setelah login, jalankan migrasi <code>0012_kalkulator_hpp.sql</code>{" "}
+          di SQL Editor Supabase, lalu muat ulang halaman ini.
+        </p>
+        <a
+          href="/pesanan/orders"
+          className="pas-btn pas-btn-accent inline-block mt-6"
+        >
+          Kembali ke Dashboard
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto px-5 py-10">
+      {/* ── HEADER ── */}
+      <div className="flex items-center justify-between gap-4 mb-8">
+        <div>
+          <a
+            href="/pesanan/orders"
+            className="text-[12.5px] opacity-60 hover:opacity-100"
+          >
+            ← Dashboard
+          </a>
+          <h1 className="pas-display text-2xl sm:text-3xl font-bold mt-1">
+            Kalkulator HPP
+          </h1>
+          <p className="text-[12.5px] opacity-60 mt-1">
+            Pilih variasi pada tiap kategori. Boleh dikosongkan.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="pas-btn pas-btn-ghost shrink-0"
+          onClick={() => setShowPriceEditor((v) => !v)}
+        >
+          {showPriceEditor ? "Tutup Harga" : "Edit Harga"}
+        </button>
+      </div>
+
+      {/* ── KALKULATOR ── */}
+      <div className="pas-card overflow-hidden">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-[11.5px] uppercase tracking-wide opacity-50">
+              <th className="px-4 py-3 font-semibold">Kategori</th>
+              <th className="px-2 py-3 font-semibold">Item / Variasi</th>
+              <th className="px-4 py-3 text-right font-semibold">Harga</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lines.map((line, index) => {
+              const rowDef = CALC_ROWS.find((r) => r.key === line.key);
+              const options = rowDef
+                ? items.filter((it) => it.item === rowDef.item)
+                : [];
+              return (
+                <tr
+                  key={line.key}
+                  className={index % 2 ? "bg-[#F7F8FA]" : ""}
+                >
+                  <td className="px-4 py-2.5 font-medium align-middle">
+                    {line.label}
+                    {options.length === 0 && rowDef && (
+                      <span className="block text-[11px] opacity-50">
+                        belum ada di database
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-2 py-2.5 align-middle">
+                    {rowDef && options.length > 0 ? (
+                      <select
+                        className="w-full max-w-[180px] rounded-lg border border-[#E3E7EE] bg-white px-2.5 py-1.5 text-sm"
+                        value={line.variasi}
+                        onChange={(e) =>
+                          setSelected((prev) => ({
+                            ...prev,
+                            [line.key]: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">—</option>
+                        {options.map((opt) => (
+                          <option key={opt.id} value={opt.variasi}>
+                            {opt.variasi}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span className="opacity-70">{line.variasi}</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2.5 text-right font-semibold align-middle">
+                    {line.harga != null ? rupiah(line.harga) : "—"}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot>
+            <tr className="border-t border-[#E3E7EE]">
+              <td className="px-4 py-3 font-bold" colSpan={2}>
+                TOTAL HPP
+              </td>
+              <td className="px-4 py-3 text-right font-bold">
+                {rupiah(totalHpp)}
+              </td>
+            </tr>
+            <tr>
+              <td className="px-4 py-2 font-medium" colSpan={2}>
+                MARGIN
+              </td>
+              <td className="px-4 py-2 text-right">
+                <input
+                  type="number"
+                  min={0}
+                  className="w-32 text-right rounded-lg border border-[#E3E7EE] bg-white px-2.5 py-1.5 text-sm"
+                  value={Number.isFinite(margin) ? margin : 0}
+                  onChange={(e) => setMargin(Number(e.target.value || 0))}
+                />
+              </td>
+            </tr>
+            <tr className="bg-[#FEC40B]/10">
+              <td className="px-4 py-3 font-bold" colSpan={2}>
+                HARGA JUAL
+              </td>
+              <td className="px-4 py-3 text-right font-bold text-[15px]">
+                {rupiah(hargaJual)}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      {/* ── EDITOR HARGA ── */}
+      {showPriceEditor && (
+        <div className="pas-card mt-6 p-4 sm:p-5">
+          <h2 className="font-bold text-[15px]">
+            Database HPP
+            <span className="ml-2 text-[11.5px] font-normal opacity-50">
+              {items.length} item — padanan sheet DAFTAR KAIN di Excel
+            </span>
+          </h2>
+          <div className="mt-4 grid gap-x-8 gap-y-1 sm:grid-cols-2">
+            {items.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center gap-2 py-1.5 border-b border-[#EEF1F5]"
+              >
+                <span className="min-w-0 flex-1 text-[13px] truncate">
+                  {item.item} <span className="opacity-50">{item.variasi}</span>
+                </span>
+                <input
+                  type="number"
+                  min={0}
+                  className="w-28 text-right rounded-lg border border-[#E3E7EE] bg-white px-2.5 py-1 text-[13px]"
+                  value={draftHarga[item.id] ?? String(item.harga)}
+                  onChange={(e) =>
+                    setDraftHarga((prev) => ({ ...prev, [item.id]: e.target.value }))
+                  }
+                />
+                <button
+                  type="button"
+                  className="pas-btn pas-btn-ghost text-[12px] px-2.5 py-1"
+                  disabled={savingId === item.id}
+                  onClick={() => saveHarga(item)}
+                >
+                  {savingId === item.id ? "…" : "Simpan"}
+                </button>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-[11.5px] opacity-50">
+            Harga baru langsung dipakai kalkulator di atas (padanan mengganti
+            harga kain di sheet DAFTAR KAIN).
+          </p>
+        </div>
+      )}
+
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 rounded-xl bg-[#04123F] text-white text-[13px] px-4 py-2.5 shadow-lg z-50">
+          {toast}
+        </div>
+      )}
+    </div>
+  );
+}

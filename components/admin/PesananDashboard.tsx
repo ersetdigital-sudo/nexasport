@@ -406,6 +406,12 @@ function NavIcon({ name, size = 18 }: { name: string; size?: number }) {
         <path d="M18 20V10M12 20V4M6 20v-6" />
       </>
     ),
+    hpp: (
+      <>
+        <rect x="4" y="2" width="16" height="20" rx="2" />
+        <path d="M8 6h8M8 11h2m3 0h3M8 16h2m3 0h3" />
+      </>
+    ),
     setting: (
       <>
         <circle cx="12" cy="12" r="3" />
@@ -602,6 +608,9 @@ export default function PesananDashboard({
               <span className="pas-ic"><NavIcon name={key} /></span> {VIEW_META[key].title}
             </a>
           ))}
+          <Link className="pas-navlink" href="/pesanan/hpp" prefetch>
+            <span className="pas-ic"><NavIcon name="hpp" /></span> Kalkulator HPP
+          </Link>
         </nav>
         <div className="pas-userbox mt-auto p-3 flex items-center gap-3">
           <span className="pas-avatar pas-avatar-invert">AD</span>
