@@ -190,7 +190,7 @@ export default function HppCalculator({
       </p>
 
       {/* ── KALKULATOR ── */}
-      <div className="pas-card overflow-hidden">
+      <div className="pas-card overflow-hidden hidden sm:block">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-[11.5px] uppercase tracking-wide opacity-50">
@@ -281,6 +281,78 @@ export default function HppCalculator({
             </tr>
           </tfoot>
         </table>
+      </div>
+
+      {/* ── KALKULATOR (MOBILE) ── */}
+      <div className="pas-card overflow-hidden sm:hidden">
+        <div className="divide-y divide-[#EEF1F5]">
+          {lines.map((line) => {
+            const rowDef = CALC_ROWS.find((r) => r.key === line.key);
+            const options = rowDef
+              ? items.filter((it) => it.item === rowDef.item)
+              : [];
+            return (
+              <div key={line.key} className="px-4 py-3">
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <span className="text-[13.5px] font-medium leading-snug">
+                    {line.label}
+                    {options.length === 0 && rowDef && (
+                      <span className="block text-[11px] opacity-50">
+                        belum ada di database
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-[13.5px] font-bold whitespace-nowrap">
+                    {line.harga != null ? rupiah(line.harga) : "—"}
+                  </span>
+                </div>
+                {rowDef && options.length > 0 ? (
+                  <select
+                    className="w-full rounded-lg border border-[#E3E7EE] bg-white px-3 py-2.5 text-sm"
+                    value={line.variasi}
+                    onChange={(e) =>
+                      setSelected((prev) => ({
+                        ...prev,
+                        [line.key]: e.target.value,
+                      }))
+                    }
+                  >
+                    <option value="">—</option>
+                    {options.map((opt) => (
+                      <option key={opt.id} value={opt.variasi}>
+                        {opt.variasi}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className="block text-[13px] opacity-70">
+                    {line.variasi || "—"}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="px-4 py-4 border-t border-[#E3E7EE] space-y-3">
+          <div className="flex items-center justify-between font-bold">
+            <span>TOTAL HPP</span>
+            <span>{rupiah(totalHpp)}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="font-medium text-sm">MARGIN</span>
+            <input
+              type="number"
+              min={0}
+              className="w-28 text-right rounded-lg border border-[#E3E7EE] bg-white px-2.5 py-2 text-sm"
+              value={Number.isFinite(margin) ? margin : 0}
+              onChange={(e) => setMargin(Number(e.target.value || 0))}
+            />
+          </div>
+          <div className="flex items-center justify-between font-bold rounded-xl bg-[#FEC40B]/10 px-3 py-3">
+            <span>HARGA JUAL</span>
+            <span className="text-[15px]">{rupiah(hargaJual)}</span>
+          </div>
+        </div>
       </div>
 
       {/* ── EDITOR HARGA ── */}
