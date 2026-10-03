@@ -78,9 +78,25 @@ export default function HppCalculator({
   }, [items]);
 
   const lines = useMemo(() => {
+    // Kain dari tab Daftar Kain ikut jadi pilihan kalkulator: harga per kg
+    // sudah dikonversi ke per pcs (atasan 4 pcs / celana 5 pcs), jadi kain
+    // yang baru ditambahkan otomatis muncul di dropdown.
+    const kainAtasan = new Map<string, number>();
+    const kainCelana = new Map<string, number>();
+    for (const f of fabrics ?? []) {
+      if (f.hargaAtasan != null) kainAtasan.set(f.nama, f.hargaAtasan);
+      if (f.hargaCelana != null) kainCelana.set(f.nama, f.hargaCelana);
+    }
+    const hargaUntuk = (key: string, item: string, variasi: string) => {
+      const dariDb = priceByKey.get(`${item}|${variasi}`);
+      if (dariDb != null) return dariDb;
+      if (key === "kain_atasan") return kainAtasan.get(variasi) ?? null;
+      if (key === "kain_celana") return kainCelana.get(variasi) ?? null;
+      return null;
+    };
     const chosen = CALC_ROWS.map((row) => {
       const variasi = selected[row.key] ?? "";
-      const harga = variasi ? (priceByKey.get(`${row.item}|${variasi}`) ?? null) : null;
+      const harga = variasi ? hargaUntuk(row.key, row.item, variasi) : null;
       return { key: row.key, label: row.label, variasi, harga };
     });
     const fixed = FIXED_ROWS.map((item) => ({
@@ -90,7 +106,29 @@ export default function HppCalculator({
       harga: priceByKey.get(`${item}|${item}`) ?? null,
     }));
     return [...chosen, ...fixed];
-  }, [selected, priceByKey]);
+  }, [selected, priceByKey, fabrics]);
+
+  // Opsi dropdown tiap baris: item dari database HPP + kain dari Daftar Kain
+  // (nama kain yang belum ada di database dilekatkan pada baris kain).
+  const optionsFor = (rowDef: (typeof CALC_ROWS)[number]) => {
+    const dariDb = items?.filter((it) => it.item === rowDef.item) ?? [];
+    if (rowDef.key === "kain_atasan" || rowDef.key === "kain_celana") {
+      const namaDb = new Set(dariDb.map((it) => it.variasi));
+      const tambahan = (fabrics ?? [])
+        .filter((f) => !namaDb.has(f.nama))
+        .filter(
+          (f) =>
+            (rowDef.key === "kain_atasan" ? f.hargaAtasan : f.hargaCelana) != null
+        )
+        .map((f) => ({
+          id: -f.id,
+          variasi: f.nama,
+          harga: (rowDef.key === "kain_atasan" ? f.hargaAtasan : f.hargaCelana)!,
+        }));
+      return [...dariDb, ...tambahan];
+    }
+    return dariDb;
+  };
 
   const totalHpp = lines.reduce((sum, line) => sum + (line.harga ?? 0), 0);
   const hargaJual = totalHpp + (Number.isFinite(margin) ? margin : 0);
@@ -209,7 +247,7 @@ export default function HppCalculator({
             {lines.map((line, index) => {
               const rowDef = CALC_ROWS.find((r) => r.key === line.key);
               const options = rowDef
-                ? items.filter((it) => it.item === rowDef.item)
+                ? optionsFor(rowDef)
                 : [];
               return (
                 <tr
@@ -295,7 +333,7 @@ export default function HppCalculator({
           {lines.map((line) => {
             const rowDef = CALC_ROWS.find((r) => r.key === line.key);
             const options = rowDef
-              ? items.filter((it) => it.item === rowDef.item)
+              ? optionsFor(rowDef)
               : [];
             return (
               <div key={line.key} className="px-4 py-3">
@@ -414,7 +452,13 @@ export default function HppCalculator({
       </div>
       )}
 
-      {tab === "database" && <HppDatabase items={items} onHargaSaved={updateItemHarga} />}
+      {tab === "database" && (
+        <HppDatabase
+          items={items}
+          onHargaSaved={updateItemHarga}
+          onItemAdded={(item) => setItems((prev) => [...(prev ?? []), item])}
+        />
+      )}
 
       {tab === "kain" && <DaftarKain fabrics={fabrics} />}
       </div>
