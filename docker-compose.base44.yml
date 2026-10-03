@@ -29,6 +29,40 @@ services:
       retries: 10
       start_period: 60s
 
+  tnt:
+    # TNT Sport clone (branch feat/hpp-kalkulator) served for preview on its own port.
+    # The clone lives outside the repo at /tmp/tntsport — recreate it if the sandbox is reset:
+    #   git clone https://github.com/ersetdigital-sudo/tntsport.git /tmp/tntsport
+    #   cd /tmp/tntsport && git checkout feat/hpp-kalkulator
+    image: node:22-slim
+    working_dir: /app
+    restart: on-failure
+    ports:
+      - "3001:3001"
+    volumes:
+      - /tmp/tntsport:/app
+      - tnt_node_modules:/app/node_modules
+      - tnt_next:/app/.next
+    # NOTE: tnt deliberately does NOT load /run/base44/app.env — those secrets
+    # belong to the Nexa Sport Supabase project (nexa_sport schema); wiring them
+    # in would make TNT render Nexa data. Empty Supabase vars -> TNT fallback data.
+    env_file:
+      - ./.env.base44-defaults   # empty placeholders -> TNT code fallback data
+    environment:
+      - NODE_ENV=development
+      - BASE44_PUBLIC_HOST_SUFFIX=${BASE44_PUBLIC_HOST_SUFFIX}
+      - PORT=3001
+      - HOSTNAME=0.0.0.0
+    command: ["sh", "-ec", "corepack enable && pnpm install --frozen-lockfile && exec pnpm dev --hostname 0.0.0.0 --port 3001"]
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3001/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
 volumes:
   web_node_modules:
   web_next:
+  tnt_node_modules:
+  tnt_next:

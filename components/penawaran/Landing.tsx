@@ -34,7 +34,7 @@ export default function Landing() {
       style={{ fontFamily: "'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif" }}
     >
       {/* ══ 1. NAVBAR — navy, logo resmi, CTA emas ══ */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#04123F]/95 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#04123F]">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
           <a href="/penawaran" className="flex items-center">
             <img src="/nexa-sport-logo-official.png" alt="Nexa Sport" className="h-10 w-auto" />

@@ -23,6 +23,14 @@ Non-obvious findings for running this repo in the Base44 sandbox. Manifests/READ
 - The live `nexa_sport.hpp_items` table uses column `position` for ordering, NOT `urutan` from migration 0012 (the user's applied version differs). `lib/hpp-server.ts` orders by/maps `position` — keep it that way unless the DB is altered.
 - A `SUPABASE_ACCESS_TOKEN` (sbp_…) secret can be supplied via the dashboard to run one-off SQL on the remote project through the Management API: `POST https://api.supabase.com/v1/projects/<ref>/database/query` (project ref is the host subdomain of `NEXT_PUBLIC_SUPABASE_URL`). Good for grants/DDL the service role cannot do itself.
 
+## TNT Sport twin app (preview only, port 3001)
+- `tnt` service in docker-compose.base44.yml serves a clone of https://github.com/ersetdigital-sudo/tntsport (branch `feat/hpp-kalkulator`) bind-mounted from `/tmp/tntsport` — OUTSIDE the repo; recreate with git clone + checkout if the sandbox is reset.
+- It deliberately does NOT load `/run/base44/app.env`: those secrets are the Nexa Sport Supabase project (`nexa_sport` schema, no public `hpp_items` — verified via REST 42703/PGRST205). With empty Supabase vars TNT renders its own fallback data (brand "TNT SPORT APPAREL"). Loading the secrets instead made TNT show "Nexa Sport" brand data.
+- TNT uses the `public` schema of ITS OWN Supabase project (not reachable from this sandbox without that project's credentials); HPP tables for TNT were migrated on that remote project in a prior session.
+- `next.config.mjs` in the TNT clone got `allowedDevOrigins` with the `3001-` prefix for the preview origin.
+- Sanity for TNT: `curl -s http://localhost:3001/ | grep "<title>"` must say TNT SPORT APPAREL; `/pesanan/hpp` returns 307 (login-gated) — that is correct, not a failure.
+- Building TNT from a compose run container inherits NODE_ENV=development, which breaks prerender (`<Html> should not be imported outside of pages/_document` on /404). Pass `-e NODE_ENV=production` for build checks.
+
 ## Quirks
 - Keep immutable JS/CSS headers production-only in `next.config.mjs`. Development responses explicitly use `no-store`; client webpack outputs use `static/chunks/live/` to bypass previously immutable-cached URLs. Merely removing immutable headers cannot invalidate chunks already cached in browsers: those old HPP chunks replaced the server-rendered sidebar during hydration.
 - Clearing the `.next` cache MUST happen while the `web` container is stopped: `/app/.next` is a bind-mount target, so `rm -rf /app/.next` fails ("Device or resource busy"), and emptying it *while the dev server runs* leaves half-written webpack caches that crash on next boot with `ReferenceError: require is not defined in ES module scope` + missing `routes-manifest.json`. Correct sequence: `compose stop web` → `compose run --rm web sh -c 'find /app/.next -mindepth 1 -maxdepth 1 -exec rm -rf {} +'` → `compose up -d web`.

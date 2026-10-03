@@ -64,7 +64,8 @@ export default async function HomePage() {
       <div className="trk-grid min-h-screen">
         <div className="trk-glow min-h-screen">
           {/* ── Nav ─────────────────────────────────────────────────────── */}
-          <header className="max-w-6xl mx-auto px-5 sm:px-8 py-5 flex items-center justify-between">
+          <header className="sticky top-0 z-40 border-b border-white/5 bg-[#020C2A]/90 backdrop-blur">
+            <div className="max-w-6xl mx-auto px-5 sm:px-8 py-5 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3">
               {/* Logo wordmark Nexa Sport (emblem + nama menyatu di dalam
                   berkas), jadi nama toko tidak diulang sebagai teks di
@@ -99,6 +100,7 @@ export default async function HomePage() {
               >
                 Konsultasi
               </a>
+            </div>
             </div>
           </header>
 
