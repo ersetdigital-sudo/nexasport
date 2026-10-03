@@ -10,7 +10,7 @@ const BRANDS: { src: string; alt: string; invert?: boolean; imgClass?: string }[
   { src: "/brands/menara.png", alt: "Menara" },
   { src: "/brands/wp.png", alt: "WP" },
   { src: "/brands/tnt.png", alt: "TNT Sport Apparel", invert: true },
-  { src: "/brands/white.png", alt: "Rabona Sportwear", invert: true, imgClass: "scale-[1.45]" },
+  { src: "/brands/rabona.png", alt: "Rabona Sportwear", invert: true },
 ];
 
 export function BrandStrip() {
