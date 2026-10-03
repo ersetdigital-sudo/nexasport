@@ -18,6 +18,7 @@
  */
 import { useMemo, useState } from "react";
 import type { HppItem } from "@/lib/hpp-server";
+import DashboardShell from "@/components/admin/DashboardShell";
 
 /** Baris pilihan kalkulator — urutan & label mengikuti Excel (A36–A45). */
 const CALC_ROWS = [
@@ -114,51 +115,44 @@ export default function HppCalculator({
     }
   };
 
-  if (!items || items.length === 0) {
-    return (
-      <div className="max-w-3xl mx-auto px-5 py-16 text-center">
-        <h1 className="text-2xl font-bold">Kalkulator HPP</h1>
-        <p className="mt-3 text-sm opacity-70">
-          Database HPP belum bisa dibaca. Kalau ini bukan halaman pertama
-          setelah login, jalankan migrasi <code>0012_kalkulator_hpp.sql</code>{" "}
-          di SQL Editor Supabase, lalu muat ulang halaman ini.
-        </p>
-        <a
-          href="/pesanan/orders"
-          className="pas-btn pas-btn-accent inline-block mt-6"
-        >
-          Kembali ke Dashboard
-        </a>
-      </div>
-    );
-  }
+  const isEmpty = !items || items.length === 0;
 
   return (
-    <div className="max-w-3xl mx-auto px-5 py-10">
-      {/* ── HEADER ── */}
-      <div className="flex items-center justify-between gap-4 mb-8">
-        <div>
+    <DashboardShell
+      active="hpp"
+      title="Kalkulator HPP"
+      actions={
+        isEmpty ? undefined : (
+          <button
+            type="button"
+            className="pas-btn pas-btn-accent whitespace-nowrap px-3.5 py-2.5 text-[14px]"
+            onClick={() => setShowPriceEditor((v) => !v)}
+          >
+            {showPriceEditor ? "Tutup Harga" : "Edit Harga"}
+          </button>
+        )
+      }
+    >
+      {isEmpty ? (
+        <div className="max-w-3xl mx-auto py-16 text-center">
+          <p className="text-sm opacity-70">
+            Database HPP belum bisa dibaca. Kalau ini bukan halaman pertama
+            setelah login, jalankan migrasi <code>0012_kalkulator_hpp.sql</code>{" "}
+            di SQL Editor Supabase, lalu muat ulang halaman ini.
+          </p>
           <a
             href="/pesanan/orders"
-            className="text-[12.5px] opacity-60 hover:opacity-100"
+            className="pas-btn pas-btn-accent inline-block mt-6"
           >
-            ← Dashboard
+            Kembali ke Dashboard
           </a>
-          <h1 className="pas-display text-2xl sm:text-3xl font-bold mt-1">
-            Kalkulator HPP
-          </h1>
-          <p className="text-[12.5px] opacity-60 mt-1">
-            Pilih variasi pada tiap kategori. Boleh dikosongkan.
-          </p>
         </div>
-        <button
-          type="button"
-          className="pas-btn pas-btn-ghost shrink-0"
-          onClick={() => setShowPriceEditor((v) => !v)}
-        >
-          {showPriceEditor ? "Tutup Harga" : "Edit Harga"}
-        </button>
-      </div>
+      ) : (
+      <div className="max-w-3xl mx-auto">
+      {/* ── HEADER ── */}
+      <p className="text-[12.5px] opacity-60 mb-6">
+        Pilih variasi pada tiap kategori. Boleh dikosongkan.
+      </p>
 
       {/* ── KALKULATOR ── */}
       <div className="pas-card overflow-hidden">
@@ -304,6 +298,8 @@ export default function HppCalculator({
           {toast}
         </div>
       )}
-    </div>
+      </div>
+      )}
+    </DashboardShell>
   );
 }
