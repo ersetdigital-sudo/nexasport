@@ -221,23 +221,27 @@ export default function HppCalculator({
       }
     >
       <div className="max-w-4xl mx-auto">
-      {/* ── TAB SHEET (padanan tab sheet di Excel) ── */}
-      <div className="grid w-full grid-cols-3 rounded-2xl border border-[var(--pas-line)] bg-white p-1 shadow-sm mb-6 sm:inline-flex sm:w-auto">
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            onClick={() => setTab(t.key)}
-            className={
-              "rounded-xl px-4 py-2 text-[13px] font-semibold transition whitespace-nowrap " +
-              (tab === t.key
-                ? "bg-[#04123F] text-white shadow-sm"
-                : "text-[var(--pas-muted)] hover:text-[var(--pas-ink-1)]")
-            }
-          >
-            {t.label}
-          </button>
-        ))}
+      {/* ── TAB SHEET (padanan tab sheet di Excel) ──
+          Di mobile: menempel di atas saat discroll supaya selalu terjangkau
+          jempol, target sentuh besar, dan ada umpan balik saat ditekan. */}
+      <div className="sticky top-0 z-20 -mx-5 px-5 py-2.5 bg-[var(--pas-bg)]/90 backdrop-blur-sm sm:static sm:mx-0 sm:px-0 sm:py-0 sm:bg-transparent sm:backdrop-blur-none mb-1 sm:mb-6">
+        <div className="grid w-full grid-cols-3 gap-1 rounded-2xl border border-[var(--pas-line)] bg-white/95 p-1.5 shadow-sm sm:inline-flex sm:w-auto sm:gap-0">
+          {TABS.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setTab(t.key)}
+              className={
+                "rounded-xl px-2 py-3 sm:px-4 sm:py-2 text-[13px] font-semibold transition text-center whitespace-nowrap touch-manipulation active:scale-[0.97] " +
+                (tab === t.key
+                  ? "bg-gradient-to-b from-[#04123F] to-[#0A2465] text-white shadow-sm"
+                  : "text-[var(--pas-muted)] hover:text-[var(--pas-ink-1)]")
+              }
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {tab === "kalkulator" && isEmpty && (
