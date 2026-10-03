@@ -12,19 +12,35 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { DB_SCHEMA } from "@/lib/supabase/schema";
 
-/** True when the Supabase env vars are present. */
+/**
+ * URL yang benar-benar bisa dipakai supabase-js (http/https) — bukan cuma
+ * non-empty. Tanpa cek ini, nilai env yang salah format lolos cek kehadiran
+ * lalu `createClient` melempar "Invalid supabaseUrl" dan SEMUA halaman ikut
+ * 500, padahal setiap pembacaan data punya jalur cadangan.
+ */
+function isValidHttpUrl(value: string | undefined): boolean {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+/** True when the Supabase env vars are present AND the URL is usable. */
 export function supabaseConfigured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  return (
+    isValidHttpUrl(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   );
 }
 
-/** True when the service-role env var is present. */
+/** True when the service-role env vars are present AND the URL is usable. */
 export function serviceRoleConfigured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.SUPABASE_SERVICE_ROLE_KEY
+  return (
+    isValidHttpUrl(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
+    Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY)
   );
 }
 

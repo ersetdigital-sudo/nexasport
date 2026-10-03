@@ -127,6 +127,12 @@ function NavIcon({ name, size = 18 }: { name: string; size?: number }) {
       </>
     ),
     laporan: <path d="M18 20V10M12 20V4M6 20v-6" />,
+    hpp: (
+      <>
+        <rect x="4" y="2" width="16" height="20" rx="2" />
+        <path d="M8 6h8M8 11h2m3 0h3M8 16h2m3 0h3" />
+      </>
+    ),
     setting: (
       <>
         <circle cx="12" cy="12" r="3" />
@@ -304,6 +310,9 @@ export default function MaklonDashboard({
             {orders.length > 0 && (
               <em className="pas-badge-y ml-auto">{orders.length}</em>
             )}
+          </Link>
+          <Link className="pas-navlink" href="/pesanan/hpp" prefetch>
+            <span className="pas-ic"><NavIcon name="hpp" /></span> Kalkulator HPP
           </Link>
           <Link className="pas-navlink" href="/pesanan/orders#jadwal" prefetch>
             <span className="pas-ic"><NavIcon name="jadwal" /></span> Jadwal Produksi
@@ -625,6 +634,9 @@ export default function MaklonDashboard({
             </Link>
             <Link className="pas-navlink on" href="/pesanan/maklon" prefetch>
               <span className="pas-ic"><NavIcon name="maklon" /></span> Maklon
+            </Link>
+            <Link className="pas-navlink" href="/pesanan/hpp" prefetch>
+              <span className="pas-ic"><NavIcon name="hpp" /></span> Kalkulator HPP
             </Link>
             <Link className="pas-navlink" href="/pesanan/orders#jadwal" prefetch>
               <span className="pas-ic"><NavIcon name="jadwal" /></span> Jadwal Produksi

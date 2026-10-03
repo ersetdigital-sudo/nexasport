@@ -31,6 +31,7 @@ import { pcsLabel } from "@/lib/utils";
 import type { PesananDashboardInitial } from "@/lib/pesanan-server";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import UploadIndicator from "@/components/admin/UploadIndicator";
+import KpiCard from "@/components/KpiCard";
 import { Search, AlertTriangle } from "lucide-react";
 
 type StepRow = { id: string; name: string; position: number };
@@ -406,6 +407,12 @@ function NavIcon({ name, size = 18 }: { name: string; size?: number }) {
         <path d="M18 20V10M12 20V4M6 20v-6" />
       </>
     ),
+    hpp: (
+      <>
+        <rect x="4" y="2" width="16" height="20" rx="2" />
+        <path d="M8 6h8M8 11h2m3 0h3M8 16h2m3 0h3" />
+      </>
+    ),
     setting: (
       <>
         <circle cx="12" cy="12" r="3" />
@@ -573,6 +580,9 @@ export default function PesananDashboard({
           <Link className="pas-navlink" href="/pesanan/maklon" prefetch>
             <span className="pas-ic"><NavIcon name="maklon" /></span> Maklon
           </Link>
+          <Link className="pas-navlink" href="/pesanan/hpp" prefetch>
+            <span className="pas-ic"><NavIcon name="hpp" /></span> Kalkulator HPP
+          </Link>
           {(["jadwal", "kirim"] as ViewKey[]).map((key) => (
             <a
               key={key}
@@ -715,6 +725,9 @@ export default function PesananDashboard({
             </a>
             <Link className="pas-navlink" href="/pesanan/maklon" prefetch>
               <span className="pas-ic"><NavIcon name="maklon" /></span> Maklon
+            </Link>
+            <Link className="pas-navlink" href="/pesanan/hpp" prefetch>
+              <span className="pas-ic"><NavIcon name="hpp" /></span> Kalkulator HPP
             </Link>
             {(["jadwal", "kirim"] as ViewKey[]).map((key) => (
               <a
@@ -955,9 +968,10 @@ function ViewPesanan({
     : 0;
 
   // Deadline terdekat dari semua pesanan aktif (belum selesai)
-  const nextDeadline = orders
+  const nextDeadlineOrder = orders
     .filter((o) => o.deadline && !o.is_done)
-    .sort((a, b) => (a.deadline! < b.deadline! ? -1 : 1))[0]?.deadline ?? null;
+    .sort((a, b) => (a.deadline! < b.deadline! ? -1 : 1))[0] ?? null;
+  const nextDeadline = nextDeadlineOrder?.deadline ?? null;
   const deadlineInfo = deadlineStatus(nextDeadline, false);
 
   // Jumlah pesanan aktif yang deadline-nya lewat atau mendekat (H-3, H-2, H-1) - perlu perhatian
@@ -1051,58 +1065,45 @@ function ViewPesanan({
       )}
       {/* KPI */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
-        <div className="pas-card pas-kpi pas-kpi-hero pas-bento-kpi p-4 sm:p-5">
-          <p className="pas-kpi-label text-[13px]">Total Pesanan</p>
-          <div className="flex items-end gap-2.5 mt-2.5">
-            <p className="pas-display pas-num text-[34px] leading-none">{stats.total}</p>
-            <span className="pas-delta mb-0.5">+{baruMingguIni} minggu ini</span>
-          </div>
-        </div>
-        <div className="pas-card pas-kpi pas-bento-kpi p-4 sm:p-5">
-          <p className="text-[13px] text-[var(--pas-muted)]">Sedang Produksi</p>
-          <div className="flex items-end gap-2.5 mt-2.5">
-            <p className="pas-display pas-num text-[30px] leading-none">
-              {stats.produksi}
-            </p>
-            <span className={produksiBadge.cls}>{produksiBadge.text}</span>
-          </div>
-        </div>
-        <div className="pas-card pas-kpi pas-bento-kpi p-4 sm:p-5">
-          <p className="text-[13px] text-[var(--pas-muted)]">Deadline</p>
-          <div className="flex items-end gap-2.5 mt-2.5">
-            <p
-              className={
-                hasOverdue
-                  ? "pas-display pas-num text-[30px] leading-none text-red-500"
-                  : hasWarning
-                    ? "pas-display pas-num text-[30px] leading-none text-[var(--pas-orange)]"
-                    : "pas-display pas-num text-[30px] leading-none text-[#3F5BA9]"
-              }
-            >
-              {deadlineAlertCount}
-            </p>
-            {nextDeadline && deadlineInfo.level && (
-              <span
-                className={
-                  deadlineInfo.level === "overdue"
-                    ? "pas-delta bad mb-0.5"
-                    : "pas-delta ok mb-0.5"
-                }
-              >
-                {deadlineInfo.level === "overdue"
-                  ? `lewat ${Math.abs(deadlineInfo.diffDays)} hari`
-                  : `H-${deadlineInfo.diffDays}`}
-              </span>
-            )}
-          </div>
-        </div>
-        <div className="pas-card pas-kpi pas-bento-kpi p-4 sm:p-5">
-          <p className="text-[13px] text-[var(--pas-muted)]">Selesai</p>
-          <div className="flex items-end gap-2.5 mt-2.5">
-            <p className="pas-display pas-num text-[30px] leading-none">{stats.selesai}</p>
-            <span className="pas-delta good mb-0.5">{selesaiBulanIni} bulan ini</span>
-          </div>
-        </div>
+        <KpiCard
+          hero
+          icon="total"
+          label="Total Pesanan"
+          value={stats.total}
+          badge={<span className="pas-delta mb-0.5">+{baruMingguIni} minggu ini</span>}
+        />
+        <KpiCard
+          icon="produksi"
+          label="Sedang Produksi"
+          value={stats.produksi}
+          badge={<span className={produksiBadge.cls}>{produksiBadge.text}</span>}
+        />
+        <KpiCard
+          icon="deadline"
+          label="Deadline"
+          value={deadlineAlertCount}
+          valueClass={hasOverdue ? "text-red-500" : hasWarning ? "text-[var(--pas-orange)]" : "text-[#3F5BA9]"}
+          badge={
+            nextDeadline && deadlineInfo.level ? (
+              deadlineInfo.level === "overdue" ? (
+                <span className="pas-delta bad mb-0.5">lewat {Math.abs(deadlineInfo.diffDays)} hari</span>
+              ) : (
+                <span className="pas-delta ok mb-0.5">H-{deadlineInfo.diffDays}</span>
+              )
+            ) : undefined
+          }
+          note={
+            nextDeadlineOrder
+              ? `${nextDeadlineOrder.order_number} · ${formatDate(nextDeadlineOrder.deadline!)}`
+              : "Tidak ada pesanan aktif"
+          }
+        />
+        <KpiCard
+          icon="selesai"
+          label="Selesai"
+          value={stats.selesai}
+          badge={<span className="pas-delta good mb-0.5">{selesaiBulanIni} bulan ini</span>}
+        />
       </section>
 
       {/* toolbar */}

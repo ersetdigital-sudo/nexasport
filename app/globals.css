@@ -2463,10 +2463,34 @@
   border-radius: var(--pas-radius); box-shadow: 0 4px 18px rgba(4,18,63,.05);
   transition: border-color .18s, transform .18s;
 }
-.pas-kpi { position: relative; overflow: hidden; }
-.pas-kpi:hover { border-color: #E0E5EE; }
+.pas-kpi {
+  position: relative; overflow: hidden;
+  border-radius: 18px;
+  transition: border-color .18s, transform .18s, box-shadow .18s;
+}
+.pas-kpi:hover {
+  border-color: #E0E5EE;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(4,18,63,.10);
+}
+/* Marquee logo brand (landing penawaran) */
+@keyframes pas-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.pas-brand-marquee { animation: pas-marquee 28s linear infinite; }
+.pas-brand-marquee:hover { animation-play-state: paused; }
+.pas-brand-mask {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
 
-/* KPI unggulan — kartu gradient (mockup .kpi.hero) */
+/* chip ikon KPI */
+.pas-kpi-ic {
+  width: 34px; height: 34px; flex: none; border-radius: 11px;
+  display: grid; place-items: center;
+  background: rgba(63,91,169,.08); color: #3F5BA9;
+}
+.pas-kpi-hero .pas-kpi-ic { background: rgba(254,196,11,.18); color: #FEC40B; }
+
+/* KPI unggulan — kartu navy gradient (tanpa watermark dekat ikon) */
 .pas-kpi-hero,
 .pas-kpi-hero:hover {
   background: var(--pas-grad-135); border-color: transparent; color: #fff;
@@ -2476,7 +2500,12 @@
 .pas-kpi-hero .pas-kpi-label { color: #E4EAF8; }
 .pas-kpi-hero .pas-kpi-note { color: #E4EAF8; }
 .pas-kpi-hero .pas-delta { background: rgba(255,255,255,.22); color: #E4EAF8; }
+
 .pas-delta { font-size: 11.5px; font-weight: 600; padding: 2px 7px; border-radius: 6px; }
+/* KPI mobile: badge lebih kecil & jangan patah dua baris */
+@media (max-width: 767px) {
+  .pas-kpi .pas-delta { font-size: 10.5px; padding: 2px 6px; white-space: nowrap; }
+}
 .pas-delta.up { background: #FFF8DC; color: #04123F; }
 .pas-delta.flat { background: #F3F4F6; color: #6B7280; }
 .pas-delta.ok { background: #FFF7DE; color: #8A6A00; }
@@ -2755,7 +2784,7 @@ table.pas-tbl tbody tr:hover { background: #F7F9FC; }
     box-shadow: 0 6px 20px rgba(0,0,0,.16);
   }
 
-  /* kartu KPI unggulan tetap gradient di mobile (menang atas .pas-bento-kpi) */
+  /* kartu KPI unggulan tetap navy gradient di mobile (menang atas .pas-bento-kpi) */
   .pas-bento-kpi.pas-kpi-hero,
   .pas-bento-kpi.pas-kpi-hero:hover {
     background: var(--pas-grad-135);
