@@ -87,7 +87,7 @@ export default function HppDatabase({ items }: { items: HppItem[] | null }) {
       </div>
 
       {/* ── TABEL DATABASE HPP ── */}
-      <div className="pas-card overflow-hidden">
+      <div className="pas-card overflow-hidden hidden sm:block">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-[#04123F] text-white text-left text-[11.5px] uppercase tracking-wide">
@@ -131,6 +131,44 @@ export default function HppDatabase({ items }: { items: HppItem[] | null }) {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* ── DAFTAR (MOBILE) ── */}
+      <div className="pas-card overflow-hidden divide-y divide-[#EEF1F5] sm:hidden">
+        {filtered.map((it) => {
+          const meta = KATEGORI_META[it.kategori] ?? FALLBACK_META;
+          return (
+            <div key={it.id} className="px-4 py-3">
+              <div className="flex items-center justify-between gap-3">
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${meta.chip}`}
+                >
+                  <span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />
+                  {it.kategori}
+                </span>
+                <span className="text-[13.5px] font-bold tabular-nums whitespace-nowrap">
+                  {rupiah(it.harga)}
+                </span>
+              </div>
+              <div className="mt-1.5 flex items-baseline justify-between gap-2">
+                <span className="text-[13.5px] font-medium min-w-0 truncate">
+                  {it.item}
+                  <span className="ml-1.5 text-[12px] font-normal opacity-60">
+                    {it.variasi}
+                  </span>
+                </span>
+                <span className="text-[11.5px] opacity-50 whitespace-nowrap">
+                  {it.satuan}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+        {filtered.length === 0 && (
+          <div className="px-4 py-10 text-center text-sm opacity-50">
+            Tidak ada baris yang cocok dengan filter.
+          </div>
+        )}
       </div>
 
       <p className="mt-3 text-[11.5px] opacity-50">

@@ -63,6 +63,7 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
                   {rows.length} kain
                 </span>
               </div>
+              <div className="hidden sm:block">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-left text-[11.5px] uppercase tracking-wide opacity-50">
@@ -91,6 +92,38 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
                   ))}
                 </tbody>
               </table>
+              </div>
+              {/* ── DAFTAR KAIN (MOBILE) ── */}
+              <div className="sm:hidden divide-y divide-[#EEF1F5]">
+                {rows.map((f) => (
+                  <div key={f.id} className="px-4 py-3">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="text-[13.5px] font-medium">{f.nama}</span>
+                      <span className="text-[12px] opacity-60 whitespace-nowrap tabular-nums">
+                        {rupiah(f.hargaPerKg)}/kg
+                      </span>
+                    </div>
+                    <div className="mt-2 grid grid-cols-2 gap-2">
+                      <div className="rounded-lg bg-[#F7F8FA] px-3 py-2">
+                        <span className="block text-[10.5px] uppercase tracking-wide opacity-50">
+                          Atasan · 4 pcs
+                        </span>
+                        <span className="text-[13px] font-semibold tabular-nums">
+                          {f.hargaAtasan != null ? rupiah(f.hargaAtasan) : <span className="opacity-40">—</span>}
+                        </span>
+                      </div>
+                      <div className="rounded-lg bg-[#F7F8FA] px-3 py-2">
+                        <span className="block text-[10.5px] uppercase tracking-wide opacity-50">
+                          Celana · 5 pcs
+                        </span>
+                        <span className="text-[13px] font-semibold tabular-nums">
+                          {f.hargaCelana != null ? rupiah(f.hargaCelana) : <span className="opacity-40">—</span>}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           );
         })}
