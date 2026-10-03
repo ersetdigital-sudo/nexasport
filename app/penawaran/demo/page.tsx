@@ -536,7 +536,7 @@ export default function DemoPesanan() {
       </section>
 
       {/* Detail + timeline 11 tahap */}
-      <Modal open={!!detail} onClose={() => setDetailId(null)} title={detail ? `${detail.kode} — ${detail.customer}` : ""} lebar="max-w-md">
+      <Modal open={!!detail} onClose={() => setDetailId(null)} kicker={detail ? "Detail Pesanan" : undefined} title={detail ? `${detail.kode} — ${detail.customer}` : ""}>
         {detail && (
           <div>
             <div className="mb-4 rounded-xl bg-[#F8FAFC] px-3.5 py-3 text-[12.5px]">
@@ -587,7 +587,7 @@ export default function DemoPesanan() {
       </Modal>
 
       {/* Form tambah pesanan — struktur sama dengan app asli */}
-      <Modal open={formOpen} onClose={() => setFormOpen(false)} title="Tambah Pesanan" lebar="max-w-xl">
+      <Modal open={formOpen} onClose={() => setFormOpen(false)} kicker="Pesanan Baru" title="Tambah Pesanan">
         <div className="flex flex-col gap-4">
           <div className="rounded-xl bg-[#F8FAFC] p-3.5">
             <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#94A3B8]">Nomor Pesanan</p>

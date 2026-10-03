@@ -195,7 +195,7 @@ export default function DemoNotifikasi() {
       </Kartu>
 
       {/* Preview kirim tes */}
-      <Modal open={tesOpen} onClose={() => setTesOpen(false)} title="Preview Notifikasi Tes" lebar="max-w-sm">
+      <Modal open={tesOpen} onClose={() => setTesOpen(false)} title="Preview Notifikasi Tes">
         <p className="mb-3 text-[12.5px] text-[#64748B]">
           Ini contoh pesan yang dikirim WhatsApp ke penanggung jawab produksi (mode demo — tidak benar-benar terkirim).
         </p>

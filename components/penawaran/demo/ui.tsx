@@ -64,27 +64,29 @@ export function BtnKuning({ children, onClick, disabled }: { children: React.Rea
   );
 }
 
-/** Modal sederhana (drawer/modal demo). */
-export function Modal({ open, onClose, title, children, lebar = "max-w-lg" }: {
+/** Sheet samping kanan — disamakan dengan sheet admin asli (pas-sheet/pas-panel). */
+export function Modal({ open, onClose, kicker, title, children }: {
   open: boolean;
   onClose: () => void;
+  kicker?: string;
   title: string;
   children: React.ReactNode;
-  lebar?: string;
 }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-6" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/50" />
-      <div
-        className={`relative max-h-[92vh] w-full ${lebar} overflow-y-auto rounded-t-2xl bg-white p-5 shadow-2xl sm:rounded-2xl`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-[16px] font-bold text-[#0B1A5C]">{title}</h3>
-          <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-lg bg-[#F1F5F9] text-[#475569]">✕</button>
+    <div className="pas-sheet open">
+      <div className="pas-veil" onClick={onClose} />
+      <div className="pas-panel p-5 sm:p-7">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            {kicker && <p className="text-[12px] text-[var(--pas-accent)] font-semibold">{kicker}</p>}
+            <h2 className={`pas-display text-[22px] ${kicker ? "mt-1.5" : ""}`}>{title}</h2>
+          </div>
+          <button type="button" className="pas-btn-ghost px-3 py-2 text-sm shrink-0" onClick={onClose}>
+            Tutup
+          </button>
         </div>
-        {children}
+        <div className="mt-6">{children}</div>
       </div>
     </div>
   );
