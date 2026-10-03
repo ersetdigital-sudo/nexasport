@@ -64,8 +64,8 @@ export default function Landing() {
       {/* ══ 1. NAVBAR ══ */}
       <header className="sticky top-0 z-40 border-b border-[#0B1A5C]/5 bg-white/85 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
-          <a href="/penawaran" className="text-lg font-extrabold tracking-tight text-[#0B1A5C]">
-            NEXA <span className="text-[#B8860B]">SPORT</span>
+          <a href="/penawaran" className="flex items-center">
+            <img src="/nexa-sport-logo.png" alt="Nexa Sport" className="h-9 w-auto" />
           </a>
           <nav className="hidden items-center gap-7 text-[14px] font-semibold text-[#475569] md:flex">
             {MENU.map((m) =>
@@ -398,9 +398,7 @@ export default function Landing() {
       <footer className="bg-[#08123D] py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-5 sm:flex-row">
           <div>
-            <p className="text-[16px] font-extrabold tracking-tight text-white">
-              NEXA <span className="text-[#FFC107]">SPORT</span>
-            </p>
+            <img src="/nexa-sport-logo.png" alt="Nexa Sport" className="h-8 w-auto rounded-lg bg-white px-2.5 py-1" />
             <p className="mt-1 text-[12px] text-white/50">{PENAWARAN.tntSport} · © {new Date().getFullYear()} Nexa Sport</p>
           </div>
           <div className="flex items-center gap-3">
