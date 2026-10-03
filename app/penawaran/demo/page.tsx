@@ -140,9 +140,10 @@ export default function DemoPesanan() {
     return s.orders.filter((o) => o.mulai && o.mulai.slice(0, 10) >= cutoffKey).length;
   }, [s.orders]);
 
-  const nextDeadline = s.orders
+  const nextDeadlineOrder = s.orders
     .filter((o) => o.deadline && o.tahapSelesai < total)
-    .sort((a, b) => (a.deadline < b.deadline ? -1 : 1))[0]?.deadline ?? null;
+    .sort((a, b) => (a.deadline < b.deadline ? -1 : 1))[0] ?? null;
+  const nextDeadline = nextDeadlineOrder?.deadline ?? null;
   const deadlineInfo = deadlineStatus(nextDeadline);
 
   const deadlineAlertCount = s.orders.filter((o) => {
@@ -267,6 +268,11 @@ export default function DemoPesanan() {
                 <span className="pas-delta ok mb-0.5">H-{deadlineInfo.diffDays}</span>
               )
             ) : undefined
+          }
+          note={
+            nextDeadlineOrder
+              ? `${nextDeadlineOrder.kode} · ${formatDate(nextDeadlineOrder.deadline)}`
+              : "Tidak ada pesanan aktif"
           }
         />
         <KpiCard

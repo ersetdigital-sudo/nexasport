@@ -968,9 +968,10 @@ function ViewPesanan({
     : 0;
 
   // Deadline terdekat dari semua pesanan aktif (belum selesai)
-  const nextDeadline = orders
+  const nextDeadlineOrder = orders
     .filter((o) => o.deadline && !o.is_done)
-    .sort((a, b) => (a.deadline! < b.deadline! ? -1 : 1))[0]?.deadline ?? null;
+    .sort((a, b) => (a.deadline! < b.deadline! ? -1 : 1))[0] ?? null;
+  const nextDeadline = nextDeadlineOrder?.deadline ?? null;
   const deadlineInfo = deadlineStatus(nextDeadline, false);
 
   // Jumlah pesanan aktif yang deadline-nya lewat atau mendekat (H-3, H-2, H-1) - perlu perhatian
@@ -1090,6 +1091,11 @@ function ViewPesanan({
                 <span className="pas-delta ok mb-0.5">H-{deadlineInfo.diffDays}</span>
               )
             ) : undefined
+          }
+          note={
+            nextDeadlineOrder
+              ? `${nextDeadlineOrder.order_number} · ${formatDate(nextDeadlineOrder.deadline!)}`
+              : "Tidak ada pesanan aktif"
           }
         />
         <KpiCard

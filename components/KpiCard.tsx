@@ -46,6 +46,7 @@ export default function KpiCard({
   value,
   valueClass = "",
   badge,
+  note,
   hero = false,
 }: {
   icon: KpiIcon;
@@ -54,6 +55,8 @@ export default function KpiCard({
   /** kelas tambahan untuk warna angka (mis. deadline overdue merah) */
   valueClass?: string;
   badge?: React.ReactNode;
+  /** keterangan kecil di bawah angka (mis. order terdekat pada kartu Deadline) */
+  note?: React.ReactNode;
   /** kartu unggulan — gradient navy */
   hero?: boolean;
 }) {
@@ -78,6 +81,11 @@ export default function KpiCard({
         </p>
         {badge}
       </div>
+      {note && (
+        <p className={`mt-2 text-[10.5px] font-medium leading-snug sm:truncate sm:text-[11px] ${hero ? "text-white/70" : "text-[var(--pas-muted)]"}`}>
+          {note}
+        </p>
+      )}
     </div>
   );
 }
