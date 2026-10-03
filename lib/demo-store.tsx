@@ -62,9 +62,3 @@ export function useDemoToast(): string {
   return msg;
 }
 
-/* ── Product tour: tampil sekali per kunjungan (in-memory, bukan localStorage) ── */
-let tourSudah = false;
-export const tourSudahDitampilkan = () => tourSudah;
-export function tandaiTourSelesai() {
-  tourSudah = true;
-}
