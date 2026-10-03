@@ -15,6 +15,7 @@ import { useRef, useState } from "react";
 import type { KainFabric } from "@/lib/kain-server";
 import { konversiHargaPcs } from "@/lib/kain-konversi";
 import { rupiah } from "@/lib/rupiah";
+import RupiahInput from "@/components/admin/RupiahInput";
 
 /** Aksen header tiap grup kain. */
 const GRUP_META: Record<string, { bar: string; badge: string; label: string }> = {
@@ -49,13 +50,13 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
   const [grupPilihan, setGrupPilihan] = useState("");
   const [grupBaru, setGrupBaru] = useState("");
   const [nama, setNama] = useState("");
-  const [hargaPerKg, setHargaPerKg] = useState("");
+  const [hargaPerKg, setHargaPerKg] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   // Edit harga/kg inline: satu baris aktif dalam satu waktu (klik harga →
   // ketik → Enter simpan, Esc batal — sama seperti tab Database HPP).
   const [editingKgId, setEditingKgId] = useState<number | null>(null);
-  const [kgDraft, setKgDraft] = useState("");
+  const [kgDraft, setKgDraft] = useState(0);
   const [savingKg, setSavingKg] = useState<number | null>(null);
   const batalKg = useRef(false);
   const [toast, setToast] = useState("");
@@ -79,7 +80,7 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
   const grups: string[] = [];
   for (const f of fabrics) if (!grups.includes(f.grup)) grups.push(f.grup);
 
-  const kgNum = Number(hargaPerKg.replace(/[^\d]/g, ""));
+  const kgNum = hargaPerKg;
   const pratinjau = kgNum > 0 ? konversiHargaPcs(kgNum) : null;
 
   const tambahKain = async (e: React.FormEvent) => {
@@ -108,7 +109,7 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
       }
       setShowForm(false);
       setNama("");
-      setHargaPerKg("");
+      setHargaPerKg(0);
       setGrupBaru("");
       flash("Kain ditambahkan ✅");
       router.refresh();
@@ -120,8 +121,7 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
   /** Simpan harga per kg → server menghitung ulang harga per pcs otomatis. */
   const commitKg = async (f: KainFabric) => {
     if (editingKgId !== f.id) return;
-    const raw = kgDraft.replace(/[^\d]/g, "");
-    if (raw === "" || Number(raw) === f.hargaPerKg) {
+    if (kgDraft <= 0 || kgDraft === f.hargaPerKg) {
       setEditingKgId(null);
       return;
     }
@@ -130,7 +130,7 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
       const res = await fetch("/api/pesanan/kain", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: f.id, hargaPerKg: Number(raw) }),
+        body: JSON.stringify({ id: f.id, hargaPerKg: kgDraft }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
@@ -149,14 +149,12 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
   const selHargaKg = (f: KainFabric) =>
     editingKgId === f.id ? (
       <span className="inline-flex items-center gap-1.5">
-        <input
-          type="number"
-          min={0}
+        <RupiahInput
           autoFocus
           disabled={savingKg === f.id}
-          className="w-24 text-right rounded-lg border border-[#04123F] bg-white px-2 py-1.5 text-[13px] tabular-nums"
+          className="w-28"
           value={kgDraft}
-          onChange={(e) => setKgDraft(e.target.value)}
+          onValueChange={setKgDraft}
           onBlur={() => {
             if (batalKg.current) {
               batalKg.current = false;
@@ -191,12 +189,12 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
         title="Klik untuk edit harga/kg"
         onClick={() => {
           setEditingKgId(f.id);
-          setKgDraft(String(f.hargaPerKg));
+          setKgDraft(f.hargaPerKg);
         }}
         className="group inline-flex items-center gap-1.5 font-semibold tabular-nums rounded-lg px-2 py-1 -mx-2 hover:bg-[#EEF1F5] transition"
       >
         {rupiah(f.hargaPerKg)}
-        <span className="opacity-0 group-hover:opacity-60 text-[11px] transition">✏️</span>
+        <span className="text-[11px] opacity-40 transition sm:opacity-0 sm:group-hover:opacity-60">✏️</span>
       </button>
     );
 
@@ -273,13 +271,10 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
               <span className="block text-[11.5px] font-semibold uppercase tracking-wide opacity-50 mb-1.5">
                 Harga per kg (Rp)
               </span>
-              <input
-                type="number"
-                min={0}
+              <RupiahInput
                 value={hargaPerKg}
-                onChange={(e) => setHargaPerKg(e.target.value)}
-                placeholder="75000"
-                className="w-full rounded-lg border border-[#E3E7EE] bg-white px-3 py-2.5 text-sm"
+                onValueChange={setHargaPerKg}
+                className="w-full sm:w-44"
               />
             </label>
             <button
@@ -353,13 +348,13 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
               {/* ── DAFTAR KAIN (MOBILE) ── */}
               <div className="sm:hidden divide-y divide-[#EEF1F5]">
                 {rows.map((f) => (
-                  <div key={f.id} className="px-4 py-3">
+                  <div key={f.id} className="px-4 py-3.5">
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[13.5px] font-medium">{f.nama}</span>
                       {selHargaKg(f)}
                     </div>
                     <div className="mt-2 grid grid-cols-2 gap-2">
-                      <div className="rounded-lg bg-[#F7F8FA] px-3 py-2">
+                      <div className="rounded-xl bg-[#F7F8FA] px-3.5 py-2.5">
                         <span className="block text-[10.5px] uppercase tracking-wide opacity-50">
                           Atasan · 4 pcs
                         </span>
@@ -367,7 +362,7 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
                           {f.hargaAtasan != null ? rupiah(f.hargaAtasan) : <span className="opacity-40">—</span>}
                         </span>
                       </div>
-                      <div className="rounded-lg bg-[#F7F8FA] px-3 py-2">
+                      <div className="rounded-xl bg-[#F7F8FA] px-3.5 py-2.5">
                         <span className="block text-[10.5px] uppercase tracking-wide opacity-50">
                           Celana · 5 pcs
                         </span>

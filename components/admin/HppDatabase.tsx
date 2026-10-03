@@ -14,6 +14,7 @@
 import { useMemo, useRef, useState } from "react";
 import type { HppItem } from "@/lib/hpp-server";
 import { rupiah } from "@/lib/rupiah";
+import RupiahInput from "@/components/admin/RupiahInput";
 
 /** Warna kategori mengikuti warna baris di sheet DATABASE HPP. */
 const KATEGORI_META: Record<string, { dot: string; chip: string }> = {
@@ -50,7 +51,7 @@ export default function HppDatabase({
 
   // ── Edit harga inline: satu baris aktif dalam satu waktu ──
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [draft, setDraft] = useState("");
+  const [draft, setDraft] = useState(0);
   const [savingId, setSavingId] = useState<number | null>(null);
   const batal = useRef(false);
 
@@ -60,7 +61,7 @@ export default function HppDatabase({
   const [formKategoriBaru, setFormKategoriBaru] = useState("");
   const [formItem, setFormItem] = useState("");
   const [formVariasi, setFormVariasi] = useState("");
-  const [formHarga, setFormHarga] = useState("");
+  const [formHarga, setFormHarga] = useState(0);
   const [formSatuan, setFormSatuan] = useState("pcs");
   const [savingItem, setSavingItem] = useState(false);
 
@@ -73,8 +74,7 @@ export default function HppDatabase({
 
   const commitHarga = async (item: HppItem) => {
     if (editingId !== item.id) return;
-    const raw = draft.replace(/[^\d]/g, "");
-    if (raw === "" || !Number.isFinite(Number(raw)) || Number(raw) === item.harga) {
+    if (draft <= 0 || draft === item.harga) {
       setEditingId(null);
       return;
     }
@@ -83,13 +83,13 @@ export default function HppDatabase({
       const res = await fetch("/api/pesanan/hpp", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: item.id, harga: Number(raw) }),
+        body: JSON.stringify({ id: item.id, harga: draft }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         flash(data?.error ?? "Gagal menyimpan harga");
       } else {
-        onHargaSaved?.(item.id, Number(raw));
+        onHargaSaved?.(item.id, draft);
         flash("Harga tersimpan ✅");
       }
     } finally {
@@ -101,13 +101,13 @@ export default function HppDatabase({
   const mulaiEdit = (item: HppItem) => {
     if (editingId === item.id) return;
     setEditingId(item.id);
-    setDraft(String(item.harga));
+    setDraft(item.harga);
   };
 
   const tambahItem = async (e: React.FormEvent) => {
     e.preventDefault();
     const kategoriFinal = (formKategori === KATEGORI_BARU ? formKategoriBaru : formKategori).trim();
-    const hargaNum = Number(formHarga.replace(/[^\d]/g, ""));
+    const hargaNum = formHarga;
     if (!kategoriFinal || !formItem.trim() || !formVariasi.trim() || hargaNum <= 0) {
       flash("Lengkapi kategori, item, variasi, dan harga dulu");
       return;
@@ -134,7 +134,7 @@ export default function HppDatabase({
       setShowForm(false);
       setFormItem("");
       setFormVariasi("");
-      setFormHarga("");
+      setFormHarga(0);
       setFormKategoriBaru("");
       flash("Item ditambahkan ✅");
     } finally {
@@ -181,13 +181,11 @@ export default function HppDatabase({
   const selHarga = (item: HppItem) =>
     editingId === item.id ? (
       <span className="inline-flex items-center gap-1.5">
-        <input
-          type="number"
-          min={0}
+        <RupiahInput
           autoFocus
-          className="w-24 text-right rounded-lg border border-[#04123F] bg-white px-2 py-1.5 text-[13px] tabular-nums"
+          className="w-32"
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onValueChange={setDraft}
           onBlur={() => {
             if (batal.current) {
               batal.current = false;
@@ -224,7 +222,7 @@ export default function HppDatabase({
         className="group inline-flex items-center gap-1.5 font-semibold tabular-nums rounded-lg px-2 py-1 -mx-2 hover:bg-[#EEF1F5] transition"
       >
         {rupiah(item.harga)}
-        <span className="opacity-0 group-hover:opacity-60 text-[11px] transition">✏️</span>
+        <span className="text-[11px] opacity-40 transition sm:opacity-0 sm:group-hover:opacity-60">✏️</span>
       </button>
     );
 
@@ -258,7 +256,7 @@ export default function HppDatabase({
             placeholder="Cari item atau variasi…"
             className="w-full sm:w-80 rounded-xl border border-[var(--pas-line)] bg-[#F7F8FA] px-3.5 py-2.5 text-sm outline-none focus:bg-white focus:border-[#04123F]"
           />
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex gap-1.5 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
             <FilterChip
               label="Semua"
               count={items.length}
@@ -354,13 +352,10 @@ export default function HppDatabase({
               <span className="block text-[11.5px] font-semibold uppercase tracking-wide opacity-50 mb-1.5">
                 Harga (Rp)
               </span>
-              <input
-                type="number"
-                min={0}
+              <RupiahInput
                 value={formHarga}
-                onChange={(e) => setFormHarga(e.target.value)}
-                placeholder="5000"
-                className={`${INPUT_KELAS} w-full sm:w-28`}
+                onValueChange={setFormHarga}
+                className="w-full sm:w-40"
               />
             </label>
             <label className="block">
@@ -446,7 +441,7 @@ export default function HppDatabase({
         {filtered.map((it) => {
           const meta = KATEGORI_META[it.kategori] ?? FALLBACK_META;
           return (
-            <div key={it.id} className="px-4 py-3">
+            <div key={it.id} className="px-4 py-3.5">
               <div className="flex items-center justify-between gap-3">
                 <span
                   className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${meta.chip}`}
@@ -509,7 +504,7 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={
-        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12.5px] font-medium transition " +
+        "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-[12.5px] font-medium transition " +
         (active
           ? "bg-[#04123F] text-white border-[#04123F]"
           : "bg-white text-[var(--pas-muted)] border-[var(--pas-line)] hover:text-[var(--pas-ink-1)] hover:border-[#CBD2DD]")

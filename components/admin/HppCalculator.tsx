@@ -23,6 +23,7 @@ import DashboardShell from "@/components/admin/DashboardShell";
 import HppDatabase from "@/components/admin/HppDatabase";
 import DaftarKain from "@/components/admin/DaftarKain";
 import { rupiah } from "@/lib/rupiah";
+import RupiahInput from "@/components/admin/RupiahInput";
 
 /** Baris pilihan kalkulator — urutan & label mengikuti Excel (A36–A45). */
 const CALC_ROWS = [
@@ -67,7 +68,7 @@ export default function HppCalculator({
     return initial;
   });
   const [showPriceEditor, setShowPriceEditor] = useState(false);
-  const [draftHarga, setDraftHarga] = useState<Record<number, string>>({});
+  const [draftHarga, setDraftHarga] = useState<Record<number, number>>({});
   const [savingId, setSavingId] = useState<number | null>(null);
   const [toast, setToast] = useState("");
 
@@ -169,9 +170,9 @@ export default function HppCalculator({
   };
 
   const saveHarga = async (item: HppItem) => {
-    const raw = (draftHarga[item.id] ?? "").replace(/[^\d]/g, "");
-    if (raw === "" || !Number.isFinite(Number(raw))) {
-      flash("Isi harga dengan angka dulu");
+    const hargaBaru = draftHarga[item.id] ?? 0;
+    if (hargaBaru <= 0) {
+      flash("Isi harga dulu");
       return;
     }
     setSavingId(item.id);
@@ -179,7 +180,7 @@ export default function HppCalculator({
       const res = await fetch("/api/pesanan/hpp", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: item.id, harga: Number(raw) }),
+        body: JSON.stringify({ id: item.id, harga: hargaBaru }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
@@ -187,7 +188,7 @@ export default function HppCalculator({
         return;
       }
       setItems((prev) =>
-        (prev ?? []).map((it) => (it.id === item.id ? { ...it, harga: Number(raw) } : it))
+        (prev ?? []).map((it) => (it.id === item.id ? { ...it, harga: hargaBaru } : it))
       );
       flash("Harga tersimpan ✅");
     } finally {
@@ -221,7 +222,7 @@ export default function HppCalculator({
     >
       <div className="max-w-4xl mx-auto">
       {/* ── TAB SHEET (padanan tab sheet di Excel) ── */}
-      <div className="inline-flex max-w-full overflow-x-auto rounded-2xl bg-white border border-[var(--pas-line)] shadow-sm p-1 mb-6">
+      <div className="grid w-full grid-cols-3 rounded-2xl border border-[var(--pas-line)] bg-white p-1 shadow-sm mb-6 sm:inline-flex sm:w-auto">
         {TABS.map((t) => (
           <button
             key={t.key}
@@ -332,12 +333,10 @@ export default function HppCalculator({
                 MARGIN
               </td>
               <td className="px-4 py-2 text-right">
-                <input
-                  type="number"
-                  min={0}
-                  className="w-32 text-right rounded-lg border border-[#E3E7EE] bg-white px-2.5 py-1.5 text-sm"
+                <RupiahInput
+                  className="w-36"
                   value={Number.isFinite(margin) ? margin : 0}
-                  onChange={(e) => setMargin(Number(e.target.value || 0))}
+                  onValueChange={setMargin}
                 />
               </td>
             </tr>
@@ -362,7 +361,7 @@ export default function HppCalculator({
               ? optionsFor(rowDef)
               : [];
             return (
-              <div key={line.key} className="px-4 py-3">
+              <div key={line.key} className="px-4 py-3.5">
                 <div className="flex items-center justify-between gap-3 mb-2">
                   <span className="text-[13.5px] font-medium leading-snug">
                     {line.label}
@@ -372,13 +371,13 @@ export default function HppCalculator({
                       </span>
                     )}
                   </span>
-                  <span className="text-[13.5px] font-bold whitespace-nowrap">
+                  <span className="text-[13.5px] font-bold tabular-nums whitespace-nowrap">
                     {line.harga != null ? rupiah(line.harga) : "—"}
                   </span>
                 </div>
                 {rowDef && options.length > 0 ? (
                   <select
-                    className="w-full rounded-lg border border-[#E3E7EE] bg-white px-3 py-2.5 text-sm"
+                    className="w-full rounded-xl border border-[#E3E7EE] bg-[#F7F8FA] px-3 py-2.5 text-sm outline-none transition-colors focus:border-[#04123F] focus:bg-white"
                     value={line.variasi}
                     onChange={(e) =>
                       setSelected((prev) => ({
@@ -406,12 +405,10 @@ export default function HppCalculator({
           </div>
           <div className="flex items-center justify-between">
             <span className="font-medium text-sm">MARGIN</span>
-            <input
-              type="number"
-              min={0}
-              className="w-28 text-right rounded-lg border border-[#E3E7EE] bg-white px-2.5 py-2 text-sm"
+            <RupiahInput
+              className="w-32 shrink-0"
               value={Number.isFinite(margin) ? margin : 0}
-              onChange={(e) => setMargin(Number(e.target.value || 0))}
+              onValueChange={setMargin}
             />
           </div>
           <div className="flex items-center justify-between font-bold rounded-xl bg-[#FEC40B]/10 px-3 py-3">
@@ -439,13 +436,11 @@ export default function HppCalculator({
                 <span className="min-w-0 flex-1 text-[13px] truncate">
                   {item.item} <span className="opacity-50">{item.variasi}</span>
                 </span>
-                <input
-                  type="number"
-                  min={0}
-                  className="w-28 text-right rounded-lg border border-[#E3E7EE] bg-white px-2.5 py-1 text-[13px]"
-                  value={draftHarga[item.id] ?? String(item.harga)}
-                  onChange={(e) =>
-                    setDraftHarga((prev) => ({ ...prev, [item.id]: e.target.value }))
+                <RupiahInput
+                  className="w-32 shrink-0"
+                  value={draftHarga[item.id] ?? item.harga}
+                  onValueChange={(n) =>
+                    setDraftHarga((prev) => ({ ...prev, [item.id]: n }))
                   }
                 />
                 <button
