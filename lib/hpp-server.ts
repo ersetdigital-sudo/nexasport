@@ -25,10 +25,12 @@ export async function loadHppItems(): Promise<HppItem[] | null> {
     const db = await getAdminDb();
     if (!db) return null;
 
+    // Kolom urutan di database nyata bernama `position` (bukan `urutan`
+    // seperti di migrasi 0012) — urut dengan itu.
     const res = await db
       .from("hpp_items")
-      .select("id, kategori, item, variasi, harga, satuan, urutan")
-      .order("urutan", { ascending: true });
+      .select("id, kategori, item, variasi, harga, satuan, position")
+      .order("position", { ascending: true });
 
     if (res.error || !res.data) return null;
 
@@ -39,7 +41,7 @@ export async function loadHppItems(): Promise<HppItem[] | null> {
       variasi: String(row.variasi),
       harga: Number(row.harga),
       satuan: String(row.satuan ?? "pcs"),
-      urutan: Number(row.urutan ?? 0),
+      urutan: Number(row.position ?? 0),
     }));
   } catch {
     return null;

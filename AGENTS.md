@@ -20,6 +20,8 @@ Non-obvious findings for running this repo in the Base44 sandbox. Manifests/READ
 
 ## HPP
 - Custom-schema tables need explicit grants even for the service role (BYPASSRLS alone is not enough). If `hpp_items` returns 42501, apply `0013_hpp_permissions.sql`; it grants only SELECT/UPDATE and does not reset edited prices.
+- The live `nexa_sport.hpp_items` table uses column `position` for ordering, NOT `urutan` from migration 0012 (the user's applied version differs). `lib/hpp-server.ts` orders by/maps `position` — keep it that way unless the DB is altered.
+- A `SUPABASE_ACCESS_TOKEN` (sbp_…) secret can be supplied via the dashboard to run one-off SQL on the remote project through the Management API: `POST https://api.supabase.com/v1/projects/<ref>/database/query` (project ref is the host subdomain of `NEXT_PUBLIC_SUPABASE_URL`). Good for grants/DDL the service role cannot do itself.
 
 ## Quirks
 - Keep immutable JS/CSS headers production-only in `next.config.mjs`. Dev chunk filenames are stable; caching them for a year leaves the browser on old components and causes hydration mismatches even after clearing `.next`.
