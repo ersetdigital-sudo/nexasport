@@ -18,7 +18,11 @@
  */
 import { useMemo, useState } from "react";
 import type { HppItem } from "@/lib/hpp-server";
+import type { KainFabric } from "@/lib/kain-server";
 import DashboardShell from "@/components/admin/DashboardShell";
+import HppDatabase from "@/components/admin/HppDatabase";
+import DaftarKain from "@/components/admin/DaftarKain";
+import { rupiah } from "@/lib/rupiah";
 
 /** Baris pilihan kalkulator — urutan & label mengikuti Excel (A36–A45). */
 const CALC_ROWS = [
@@ -38,15 +42,23 @@ const CALC_ROWS = [
 const FIXED_ROWS = ["DTF", "Biaya Tak Terduga"];
 const DEFAULT_MARGIN = 50000;
 
-const rupiah = (value: number) =>
-  "Rp" + new Intl.NumberFormat("id-ID").format(Math.round(value));
+/** Tab sheet — padanan tab sheet Excel: Kalkulator, DATABASE HPP, DAFTAR KAIN. */
+const TABS = [
+  { key: "kalkulator", label: "Kalkulator" },
+  { key: "database", label: "Database HPP" },
+  { key: "kain", label: "Daftar Kain" },
+] as const;
+type TabKey = (typeof TABS)[number]["key"];
 
 export default function HppCalculator({
   initialItems,
+  initialFabrics: fabrics,
 }: {
   initialItems: HppItem[] | null;
+  initialFabrics: KainFabric[] | null;
 }) {
   const [items, setItems] = useState<HppItem[] | null>(initialItems);
+  const [tab, setTab] = useState<TabKey>("kalkulator");
   const [margin, setMargin] = useState<number>(DEFAULT_MARGIN);
   const [selected, setSelected] = useState<Record<string, string>>(() => {
     // Nilai awal mengikuti Excel: sebagian kolom variasi sudah terisi.
@@ -122,7 +134,7 @@ export default function HppCalculator({
       active="hpp"
       title="Kalkulator HPP"
       actions={
-        isEmpty ? undefined : (
+        tab !== "kalkulator" || isEmpty ? undefined : (
           <button
             type="button"
             className="pas-btn pas-btn-accent whitespace-nowrap px-3.5 py-2.5 text-[14px]"
@@ -133,8 +145,28 @@ export default function HppCalculator({
         )
       }
     >
-      {isEmpty ? (
-        <div className="max-w-3xl mx-auto py-16 text-center">
+      <div className="max-w-4xl mx-auto">
+      {/* ── TAB SHEET (padanan tab sheet di Excel) ── */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {TABS.map((t) => (
+          <button
+            key={t.key}
+            type="button"
+            onClick={() => setTab(t.key)}
+            className={
+              "rounded-xl px-4 py-2 text-[13px] font-semibold transition border " +
+              (tab === t.key
+                ? "bg-[#04123F] text-white border-[#04123F] shadow-sm"
+                : "bg-white text-[var(--pas-muted)] border-[var(--pas-line)] hover:text-[var(--pas-ink-1)] hover:border-[#CBD2DD]")
+            }
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "kalkulator" && isEmpty && (
+        <div className="py-16 text-center">
           <p className="text-sm opacity-70">
             Data HPP belum bisa dibaca atau masih kosong. Jika migrasi tabel
             sudah dijalankan, jalankan <code>0013_hpp_permissions.sql</code>{" "}
@@ -148,7 +180,9 @@ export default function HppCalculator({
             Kembali ke Dashboard
           </a>
         </div>
-      ) : (
+      )}
+
+      {tab === "kalkulator" && !isEmpty && (
       <div className="max-w-3xl mx-auto">
       {/* ── HEADER ── */}
       <p className="text-[12.5px] opacity-60 mb-6">
@@ -301,6 +335,11 @@ export default function HppCalculator({
       )}
       </div>
       )}
+
+      {tab === "database" && <HppDatabase items={items} />}
+
+      {tab === "kain" && <DaftarKain fabrics={fabrics} />}
+      </div>
     </DashboardShell>
   );
 }

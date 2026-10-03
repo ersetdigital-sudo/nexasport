@@ -1,5 +1,6 @@
 import HppCalculator from "@/components/admin/HppCalculator";
 import { loadHppItems } from "@/lib/hpp-server";
+import { loadKainFabrics } from "@/lib/kain-server";
 
 export const metadata = {
   // absolute: judul template root mengikuti nama brand di database, sesuai
@@ -18,6 +19,6 @@ export const metadata = {
  */
 export const dynamic = "force-dynamic";
 export default async function HppPage() {
-  const items = await loadHppItems();
-  return <HppCalculator initialItems={items} />;
+  const [items, fabrics] = await Promise.all([loadHppItems(), loadKainFabrics()]);
+  return <HppCalculator initialItems={items} initialFabrics={fabrics} />;
 }
