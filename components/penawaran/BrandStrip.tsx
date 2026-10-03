@@ -5,12 +5,12 @@
  * Marquee berjalan otomatis, berhenti saat hover. Logos tampil grayscale
  * lalu berwarna penuh saat hover (logo putih ditampilkan di chip navy).
  */
-const BRANDS: { src: string; alt: string; invert?: boolean; imgClass?: string }[] = [
-  { src: "/brands/taff.png", alt: "TAFF Sportwear", imgClass: "scale-[1.3]" },
+const BRANDS: { src: string; alt: string; invert?: boolean; imgClass?: string; bgClass?: string }[] = [
+  { src: "/brands/taff-background.png", alt: "TAFF Sportwear", invert: true, bgClass: "bg-[#111111]" },
   { src: "/brands/menara.png", alt: "Menara" },
   { src: "/brands/wp.png", alt: "WP" },
   { src: "/brands/tnt.png", alt: "TNT Sport Apparel", invert: true },
-  { src: "/brands/rabona.png", alt: "Rabona Sportwear" },
+  { src: "/brands/rabona-original.png", alt: "Rabona Sportwear", imgClass: "!opacity-100" },
 ];
 
 export function BrandStrip() {
@@ -27,7 +27,7 @@ export function BrandStrip() {
               key={`${b.alt}-${i}`}
               className={
                 "flex h-16 w-40 shrink-0 items-center justify-center rounded-2xl border border-[#E5E7EB] p-4 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md sm:h-20 sm:w-52 " +
-                (b.invert ? "bg-[#04123F]" : "bg-white")
+                (b.bgClass ?? (b.invert ? "bg-[#04123F]" : "bg-white"))
               }
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
