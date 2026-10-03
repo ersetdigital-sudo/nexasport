@@ -23,6 +23,7 @@ Non-obvious findings for running this repo in the Base44 sandbox. Manifests/READ
 
 ## Quirks
 - Keep immutable JS/CSS headers production-only in `next.config.mjs`. Dev chunk filenames are stable; caching them for a year leaves the browser on old components and causes hydration mismatches even after clearing `.next`.
+- Clearing the `.next` cache MUST happen while the `web` container is stopped: `/app/.next` is a bind-mount target, so `rm -rf /app/.next` fails ("Device or resource busy"), and emptying it *while the dev server runs* leaves half-written webpack caches that crash on next boot with `ReferenceError: require is not defined in ES module scope` + missing `routes-manifest.json`. Correct sequence: `compose stop web` → `compose run --rm web sh -c 'find /app/.next -mindepth 1 -maxdepth 1 -exec rm -rf {} +'` → `compose up -d web`.
 - Root middleware rewrites any non-browser UA (incl. the healthcheck's `node` fetch and curl) to `/link-preview` — that's the `GET /` line you see in logs, it's normal.
 - `next.config.mjs` gets `allowedDevOrigins: ['3000-' + process.env.BASE44_PUBLIC_HOST_SUFFIX]` for the preview origin; don't hardcode resolved host values.
 - After changing secrets in the dashboard, the platform recreates the `web` container itself (~30s); verify with `printenv KEY >/dev/null` inside the container, never print values.
