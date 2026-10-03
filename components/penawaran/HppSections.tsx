@@ -55,7 +55,7 @@ const BANDING = [
   ["Pilihan kain", "Hanya Basic/Premium/Pro", "Dropdown per kelas dengan nama kain asli: JARUM, MILANO, PUMA, JAQUARD, dst."],
   ["Keamanan rumus", "Rawan rumus tertimpa atau baris bergeser", "Harga diedit lewat form — rumus terkunci, gak bisa rusak."],
   ["Akses", "File dikirim lewat WA, versi beda-beda", "Satu data terpusat, bisa dari HP dan banyak orang sekaligus."],
-  ["Nyambung ke produksi", "Berdiri sendiri", "HPP langsung terhubung ke Pesanan, Jadwal Produksi, dan Laporan."],
+  ["Harga jual", "Hitung manual lagi di luar file", "Dari HPP langsung keluar margin dan harga jual — siap dipakai buat penawaran ke customer."],
   ["Update harga", "Ubah manual di banyak tempat", "Ubah sekali di Database HPP, semua hitungan ikut berubah."],
 ];
 
