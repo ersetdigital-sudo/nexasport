@@ -5,7 +5,7 @@
  * modul ini memakai service-role client yang tidak boleh masuk bundle browser.
  */
 import type { Db } from "@/lib/supabase/schema";
-import { createServiceClient } from "@/lib/supabase/server";
+import { createServiceClient, serviceRoleConfigured } from "@/lib/supabase/server";
 import { CANONICAL_STEP_ORDER, resolveStepOrder, type StepOrder } from "@/lib/step-order";
 
 export type { StepOrder };
@@ -16,6 +16,7 @@ export type { StepOrder };
  * tidak membuat koneksi baru tiap kali. Gagal baca = urutan bawaan.
  */
 export async function loadStepOrder(supabase?: Db): Promise<StepOrder> {
+  if (!supabase && !serviceRoleConfigured()) return CANONICAL_STEP_ORDER;
   const client = supabase ?? createServiceClient();
   const { data, error } = await client
     .from("production_steps")

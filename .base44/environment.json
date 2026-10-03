@@ -1,0 +1,63 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "PESANAN_PASSWORD",
+      "description": "Shared password for the pesanan dashboard (/login)",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "SETTINGS_ENCRYPTION_KEY",
+      "description": "AES-256-GCM key for the Fonnte token stored in app_settings",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "TRACK_SESSION_SECRET",
+      "description": "HMAC secret for signed customer tracking links",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "CRON_SECRET",
+      "description": "Secret for the deadline-reminder cron endpoint",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "NEXT_PUBLIC_SUPABASE_URL",
+      "description": "Supabase project URL (Dashboard → Project Settings → API)"
+    },
+    {
+      "name": "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "description": "Supabase anon/public API key"
+    },
+    {
+      "name": "SUPABASE_SERVICE_ROLE_KEY",
+      "description": "Supabase service-role key (server-only)"
+    },
+    {
+      "name": "CLOUDINARY_CLOUD_NAME",
+      "description": "Cloudinary cloud name for photo uploads"
+    },
+    {
+      "name": "CLOUDINARY_API_KEY",
+      "description": "Cloudinary API key"
+    },
+    {
+      "name": "CLOUDINARY_API_SECRET",
+      "description": "Cloudinary API secret"
+    },
+    {
+      "name": "CLOUDINARY_UPLOAD_PRESET",
+      "description": "Cloudinary signed upload preset name"
+    },
+    {
+      "name": "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME",
+      "description": "Cloudinary cloud name exposed to the browser bundle"
+    }
+  ]
+}
