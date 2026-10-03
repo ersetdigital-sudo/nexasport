@@ -5,10 +5,10 @@
  * Marquee berjalan otomatis, berhenti saat hover. Logos tampil grayscale
  * lalu berwarna penuh saat hover (logo putih ditampilkan di chip navy).
  */
-const BRANDS: { src: string; alt: string; invert?: boolean; imgClass?: string; bgClass?: string }[] = [
+const BRANDS: { src: string; alt: string; invert?: boolean; imgClass?: string; bgClass?: string; fullColor?: boolean }[] = [
   { src: "/brands/taff-background.png", alt: "TAFF Sportwear", invert: true, bgClass: "bg-[#111111]" },
-  { src: "/brands/menara.png", alt: "Menara", imgClass: "scale-[1.15]" },
-  { src: "/brands/wp.png", alt: "VSP" },
+  { src: "/brands/menara.png", alt: "Menara", imgClass: "scale-[1.15]", fullColor: true },
+  { src: "/brands/wp.png", alt: "VSP", fullColor: true },
   { src: "/brands/tnt.png", alt: "TNT Sport Apparel", invert: true },
   { src: "/brands/rabona-original.png", alt: "Rabona Sportwear", imgClass: "!opacity-100" },
 ];
@@ -37,7 +37,7 @@ export function BrandStrip() {
                 className={
                   "h-full w-full object-contain transition duration-300 " +
                   (b.imgClass ? b.imgClass + " " : "") +
-                  (b.invert ? "" : "opacity-70 grayscale hover:opacity-100 hover:grayscale-0")
+                  (b.fullColor || b.invert ? "" : "opacity-70 grayscale hover:opacity-100 hover:grayscale-0")
                 }
               />
             </div>
