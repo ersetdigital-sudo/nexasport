@@ -69,6 +69,11 @@ const initials = (name: string) =>
   name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 
 const formatDate = (iso: string) => formatNumericDateID(iso) || "-";
+/** Tanggal singkat untuk note KPI: "6 Okt" */
+const shortDate = (iso: string) =>
+  iso
+    ? new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short" }).format(new Date(`${iso}T00:00:00`))
+    : "-";
 
 /** Nomor pesanan demo — format sama dengan app asli: NSP + YYMMDD (WIB) + 4 acak. */
 const ORDER_CHARSET = "ACDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -271,8 +276,8 @@ export default function DemoPesanan() {
           }
           note={
             nextDeadlineOrder
-              ? `${nextDeadlineOrder.kode} · ${formatDate(nextDeadlineOrder.deadline)}`
-              : "Tidak ada pesanan aktif"
+              ? `${nextDeadlineOrder.customer} · ${shortDate(nextDeadlineOrder.deadline)}`
+              : "Belum ada deadline aktif"
           }
         />
         <KpiCard
