@@ -1,73 +1,124 @@
 "use client";
 
-/** Demo Pengiriman — resi, ekspedisi, status; tombol Update Status. */
+/**
+ * Demo Pengiriman — DISAMAKAN dengan ViewKirim admin asli
+ * (components/admin/PesananDashboard.tsx): antrian "siap kirim" = tahap
+ * sebelum terakhir (Packing) yang belum tuntas, kartu pas-card dengan pill
+ * status, isi paket, ekspedisi, dan tombol "Buka Detail Pesanan".
+ * Data tetap dummy in-memory (demo store) — tidak ada call ke API/Supabase.
+ */
+import { useState } from "react";
 import { setDemo, useDemo, demoToast } from "@/lib/demo-store";
-import { PageHead, Kartu, tanggalID } from "@/components/penawaran/demo/ui";
+import { pcsLabel } from "@/lib/utils";
+import { PageHead } from "@/components/penawaran/demo/ui";
+import { DetailSheet } from "@/components/penawaran/demo/DetailSheet";
 
-const URUTAN = ["Dikemas", "Dititip Ekspedisi", "Dalam Pengiriman", "Diterima"];
-const WARNA: Record<string, string> = {
-  Dikemas: "bg-slate-100 text-slate-600",
-  "Dititip Ekspedisi": "bg-sky-50 text-sky-700",
-  "Dalam Pengiriman": "bg-amber-50 text-amber-700",
-  Diterima: "bg-emerald-50 text-emerald-700",
+type FilterKey = "all" | "baru" | "produksi" | "kirim" | "selesai";
+const FILTER_LABEL: Record<FilterKey, string> = {
+  all: "Semua", baru: "Baru", produksi: "Produksi", kirim: "Siap Dikirim", selesai: "Selesai",
 };
+
+/** Status bucket — sama seperti bucket pesanan demo/admin asli. */
+function statusOf(tahapSelesai: number, total: number): FilterKey {
+  if (tahapSelesai >= total) return "selesai";
+  if (tahapSelesai >= total - 1) return "kirim";
+  if (tahapSelesai <= 1) return "baru";
+  return "produksi";
+}
 
 export default function DemoPengiriman() {
   const s = useDemo();
+  const [detailId, setDetailId] = useState<number | null>(null);
+  const total = s.tahapan.length;
 
-  const update = (id: number) => {
-    setDemo({
-      kirim: s.kirim.map((k) => {
-        if (k.id !== id) return k;
-        const next = URUTAN[Math.min(URUTAN.length - 1, URUTAN.indexOf(k.status) + 1)];
-        return { ...k, status: next };
-      }),
-    });
-    demoToast("Status pengiriman diperbarui");
-  };
+  // Antrian "siap kirim" = tahap sebelum terakhir (Packing) yang belum tuntas.
+  const siap = s.orders.filter((o) => {
+    const berjalan = Math.min(o.tahapSelesai + 1, total);
+    return o.tahapSelesai < total && berjalan >= total - 1;
+  });
+
+  const detail = s.orders.find((o) => o.id === detailId) ?? null;
 
   return (
     <div>
       <PageHead title="Pengiriman" />
-      <Kartu>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-[13px]">
-            <thead>
-              <tr className="text-left text-[10.5px] uppercase tracking-wide text-[#94A3B8]">
-                {["Resi", "Order", "Ekspedisi", "Tanggal", "Status", ""].map((h, i) => (
-                  <th key={h} className={`px-4 py-3 font-semibold ${i === 4 ? "" : ""}`}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {s.kirim.map((k, i) => (
-                <tr key={k.id} className={i % 2 ? "bg-[#FAFBFC]" : ""}>
-                  <td className="px-4 py-3 font-bold tabular-nums text-[#04123F]">{k.resi}</td>
-                  <td className="px-4 py-3">{k.order}</td>
-                  <td className="px-4 py-3 text-[#475569]">{k.ekspedisi}</td>
-                  <td className="px-4 py-3 tabular-nums text-[#475569]">{tanggalID(k.tanggal)}</td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold ${WARNA[k.status] ?? "bg-[#F1F5F9]"}`}>
-                      {k.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    {k.status !== "Diterima" && (
-                      <button
-                        type="button"
-                        onClick={() => update(k.id)}
-                        className="rounded-xl bg-[#FEC40B] px-3 py-1.5 text-[12px] font-bold text-[#04123F] transition hover:brightness-105 active:scale-95"
-                      >
-                        Update Status
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <p className="text-[13.5px] text-[#64748B] mb-4">
+        Pesanan tahap {total - 1} (siap dikirim) — klik tahap Kirim untuk menandai pesanan selesai. Nomor resi opsional.
+      </p>
+      {siap.length === 0 ? (
+        <p className="text-[13.5px] text-[#64748B]">
+          Belum ada pesanan yang siap dikirim.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {siap.map((o) => {
+            const st = statusOf(o.tahapSelesai, total);
+            return (
+              <div key={o.id} className="pas-card p-4 sm:p-5">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold pas-num">{o.kode}</p>
+                    <p className="text-[13px] text-[var(--pas-muted)] mt-0.5">
+                      {o.customer} - {o.phone || "-"}
+                    </p>
+                  </div>
+                  <span className={`pas-pill ${st}`}>
+                    {FILTER_LABEL[st]}
+                  </span>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-3 mt-4 text-[13.5px]">
+                  <div>
+                    <p className="text-[12px] text-[var(--pas-muted)]">Isi Paket</p>
+                    <p className="mt-1">
+                      {o.produk} - {pcsLabel(o.qty)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[12px] text-[var(--pas-muted)]">Ekspedisi</p>
+                    <p className="mt-1">
+                      {o.courier || (
+                        <span className="text-[var(--pas-muted)]">belum diisi</span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <button
+                    className="pas-btn-ghost px-4 py-2 text-[13.5px]"
+                    onClick={() => setDetailId(o.id)}
+                  >
+                    Buka Detail Pesanan
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      </Kartu>
+      )}
+
+      {/* Detail — sheet sama seperti DetailSheet admin asli */}
+      <DetailSheet
+        open={!!detail}
+        order={detail}
+        tahapan={s.tahapan}
+        st={detail ? statusOf(detail.tahapSelesai, total) : "baru"}
+        stLabel={detail ? FILTER_LABEL[statusOf(detail.tahapSelesai, total)] : ""}
+        onClose={() => setDetailId(null)}
+        onSimpan={(tahapSelesai) => {
+          setDemo({
+            orders: s.orders.map((o) => (o.id === detailId ? { ...o, tahapSelesai } : o)),
+          });
+          setDetailId(null);
+          demoToast("Perubahan disimpan (mode demo)");
+        }}
+        onSelesai={() => {
+          setDemo({
+            orders: s.orders.map((o) => (o.id === detailId ? { ...o, tahapSelesai: total } : o)),
+          });
+          setDetailId(null);
+          demoToast("Pesanan ditandai selesai (mode demo)");
+        }}
+      />
     </div>
   );
 }
