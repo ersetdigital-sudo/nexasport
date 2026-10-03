@@ -11,7 +11,7 @@
  * manual seperti di sheet.
  */
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { KainFabric } from "@/lib/kain-server";
 import { konversiHargaPcs } from "@/lib/kain-konversi";
 import { rupiah } from "@/lib/rupiah";
@@ -43,9 +43,6 @@ const FALLBACK_GRUP = {
 /** Nilai khusus opsi "grup baru" pada pilihan grup. */
 const GRUP_BARU = "__grup_baru__";
 
-const KELAS_INPUT_KG =
-  "w-24 text-right rounded-lg border border-[#E3E7EE] bg-white px-2 py-1.5 text-[13px] tabular-nums";
-
 export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }) {
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
@@ -55,8 +52,12 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
   const [hargaPerKg, setHargaPerKg] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [kgDraft, setKgDraft] = useState<Record<number, string>>({});
+  // Edit harga/kg inline: satu baris aktif dalam satu waktu (klik harga →
+  // ketik → Enter simpan, Esc batal — sama seperti tab Database HPP).
+  const [editingKgId, setEditingKgId] = useState<number | null>(null);
+  const [kgDraft, setKgDraft] = useState("");
   const [savingKg, setSavingKg] = useState<number | null>(null);
+  const batalKg = useRef(false);
   const [toast, setToast] = useState("");
 
   const flash = (message: string) => {
@@ -117,9 +118,13 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
   };
 
   /** Simpan harga per kg → server menghitung ulang harga per pcs otomatis. */
-  const simpanKg = async (f: KainFabric) => {
-    const raw = (kgDraft[f.id] ?? "").replace(/[^\d]/g, "");
-    if (raw === "" || Number(raw) === f.hargaPerKg) return;
+  const commitKg = async (f: KainFabric) => {
+    if (editingKgId !== f.id) return;
+    const raw = kgDraft.replace(/[^\d]/g, "");
+    if (raw === "" || Number(raw) === f.hargaPerKg) {
+      setEditingKgId(null);
+      return;
+    }
     setSavingKg(f.id);
     try {
       const res = await fetch("/api/pesanan/kain", {
@@ -130,19 +135,70 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         flash(data?.error ?? "Gagal menyimpan harga");
-        return;
+      } else {
+        flash("Harga/kg tersimpan — harga pcs ikut dihitung ulang ✅");
+        router.refresh();
       }
-      setKgDraft((prev) => {
-        const next = { ...prev };
-        delete next[f.id];
-        return next;
-      });
-      flash("Harga/kg tersimpan — harga pcs ikut dihitung ulang ✅");
-      router.refresh();
     } finally {
-      setSavingKg(f.id);
+      setSavingKg(null);
+      setEditingKgId(null);
     }
   };
+
+  /** Sel harga/kg: tampil format rupiah, klik → edit langsung di baris. */
+  const selHargaKg = (f: KainFabric) =>
+    editingKgId === f.id ? (
+      <span className="inline-flex items-center gap-1.5">
+        <input
+          type="number"
+          min={0}
+          autoFocus
+          disabled={savingKg === f.id}
+          className="w-24 text-right rounded-lg border border-[#04123F] bg-white px-2 py-1.5 text-[13px] tabular-nums"
+          value={kgDraft}
+          onChange={(e) => setKgDraft(e.target.value)}
+          onBlur={() => {
+            if (batalKg.current) {
+              batalKg.current = false;
+              setEditingKgId(null);
+              return;
+            }
+            commitKg(f);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") commitKg(f);
+            if (e.key === "Escape") {
+              batalKg.current = true;
+              setEditingKgId(null);
+            }
+          }}
+        />
+        <button
+          type="button"
+          title="Simpan"
+          // preventDefault: input tetap fokus, blur tidak memicu simpan ganda.
+          onMouseDown={(e) => e.preventDefault()}
+          disabled={savingKg === f.id}
+          onClick={() => commitKg(f)}
+          className="pas-btn pas-btn-accent text-[11px] px-2 py-1 whitespace-nowrap"
+        >
+          {savingKg === f.id ? "…" : "✓"}
+        </button>
+      </span>
+    ) : (
+      <button
+        type="button"
+        title="Klik untuk edit harga/kg"
+        onClick={() => {
+          setEditingKgId(f.id);
+          setKgDraft(String(f.hargaPerKg));
+        }}
+        className="group inline-flex items-center gap-1.5 font-semibold tabular-nums rounded-lg px-2 py-1 -mx-2 hover:bg-[#EEF1F5] transition"
+      >
+        {rupiah(f.hargaPerKg)}
+        <span className="opacity-0 group-hover:opacity-60 text-[11px] transition">✏️</span>
+      </button>
+    );
 
   return (
     <div>
@@ -282,19 +338,7 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
                     >
                       <td className="px-4 py-2.5 opacity-40 tabular-nums">{i + 1}</td>
                       <td className="px-2 py-2.5 font-medium">{f.nama}</td>
-                      <td className="px-3 py-2.5 text-right">
-                        <input
-                          type="number"
-                          min={0}
-                          disabled={savingKg === f.id}
-                          className={KELAS_INPUT_KG}
-                          value={kgDraft[f.id] ?? String(f.hargaPerKg)}
-                          onChange={(e) =>
-                            setKgDraft((prev) => ({ ...prev, [f.id]: e.target.value }))
-                          }
-                          onBlur={() => simpanKg(f)}
-                        />
-                      </td>
+                      <td className="px-3 py-2.5 text-right">{selHargaKg(f)}</td>
                       <td className="px-3 py-2.5 text-right tabular-nums">
                         {f.hargaAtasan != null ? rupiah(f.hargaAtasan) : <span className="opacity-40">—</span>}
                       </td>
@@ -312,20 +356,7 @@ export default function DaftarKain({ fabrics }: { fabrics: KainFabric[] | null }
                   <div key={f.id} className="px-4 py-3">
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[13.5px] font-medium">{f.nama}</span>
-                      <span className="flex items-center gap-1.5">
-                        <input
-                          type="number"
-                          min={0}
-                          disabled={savingKg === f.id}
-                          className={KELAS_INPUT_KG}
-                          value={kgDraft[f.id] ?? String(f.hargaPerKg)}
-                          onChange={(e) =>
-                            setKgDraft((prev) => ({ ...prev, [f.id]: e.target.value }))
-                          }
-                          onBlur={() => simpanKg(f)}
-                        />
-                        <span className="text-[10.5px] opacity-50 whitespace-nowrap">/kg</span>
-                      </span>
+                      {selHargaKg(f)}
                     </div>
                     <div className="mt-2 grid grid-cols-2 gap-2">
                       <div className="rounded-lg bg-[#F7F8FA] px-3 py-2">
