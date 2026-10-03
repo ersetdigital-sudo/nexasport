@@ -75,15 +75,15 @@ export function MockupDashboard() {
                   <th className="py-1.5 font-semibold">Kode</th>
                   <th className="py-1.5 font-semibold">Customer</th>
                   <th className="py-1.5 font-semibold">Progres</th>
-                  <th className="py-1.5 text-right font-semibold">Total</th>
+                  <th className="py-1.5 text-right font-semibold">Deadline</th>
                 </tr>
               </thead>
               <tbody className="text-[10px] font-medium text-[#1E293B]">
                 {[
-                  ["NS-2410", "TNT Sport", 7, 4_140_000, "Jahit"],
-                  ["NS-2409", "FC Garuda Muda", 4, 2_420_000, "Print"],
-                  ["NS-2408", "Komunitas Grid", 11, 1_980_000, "Kirim"],
-                ].map(([kode, cust, tahap, total, status], i) => (
+                  ["NS-2410", "TNT Sport", 7, "H-3", "Jahit"],
+                  ["NS-2409", "FC Garuda Muda", 4, "H-5", "Print"],
+                  ["NS-2408", "Komunitas Grid", 11, "Selesai", "Kirim"],
+                ].map(([kode, cust, tahap, deadline, status], i) => (
                   <tr key={kode as string} className={i % 2 ? "bg-[#F8FAFC]" : ""}>
                     <td className="py-2.5 font-bold text-[#04123F]">{kode}</td>
                     <td className="py-2.5">{cust}</td>
@@ -98,7 +98,7 @@ export function MockupDashboard() {
                         {status}
                       </span>
                     </td>
-                    <td className="py-2.5 text-right tabular-nums">{rp(total as number)}</td>
+                    <td className="py-2.5 text-right font-bold text-[#04123F]">{deadline}</td>
                   </tr>
                 ))}
               </tbody>

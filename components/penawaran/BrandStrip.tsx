@@ -20,7 +20,8 @@ export function BrandStrip() {
       <p className="text-center text-[11.5px] font-bold uppercase tracking-[0.22em] text-[#8794AE]">
         Dipercaya oleh brand & komunitas
       </p>
-      <div className="pas-brand-mask relative mt-6 overflow-hidden">
+      {/* Lebar tampilan dibatasi supaya satu siklus logo tidak pernah tampil dobel */}
+      <div className="pas-brand-mask relative mx-auto mt-6 max-w-6xl overflow-hidden px-5">
         <div className="pas-brand-marquee flex w-max items-center gap-4 pr-4 sm:gap-6 sm:pr-6">
           {list.map((b, i) => (
             <div
