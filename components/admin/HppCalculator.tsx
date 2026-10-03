@@ -16,7 +16,7 @@
  * DAFTAR KAIN), dan harga bisa diedit langsung dari bawah halaman —
  * padanan sheet DAFTAR KAIN/Lists yang di Excel diedit manual.
  */
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import type { HppItem } from "@/lib/hpp-server";
 import type { KainFabric } from "@/lib/kain-server";
 import DashboardShell from "@/components/admin/DashboardShell";
@@ -108,10 +108,14 @@ export default function HppCalculator({
     return [...chosen, ...fixed];
   }, [selected, priceByKey, fabrics]);
 
-  // Opsi dropdown tiap baris: item dari database HPP + kain dari Daftar Kain
-  // (nama kain yang belum ada di database dilekatkan pada baris kain).
-  const optionsFor = (rowDef: (typeof CALC_ROWS)[number]) => {
-    const dariDb = items?.filter((it) => it.item === rowDef.item) ?? [];
+  // Opsi dropdown tiap baris: item dari database HPP + kain dari Daftar Kain.
+  // Kain dikelompokkan per grup (Kain Basic/Premium/Pro, dst.) supaya
+  // dropdown panjang tetap enak dibaca.
+  type OpsiGrup = { label: string; options: { id: number; variasi: string }[] };
+  const optionsFor = (rowDef: (typeof CALC_ROWS)[number]): OpsiGrup[] => {
+    const dariDb = (items?.filter((it) => it.item === rowDef.item) ?? []).map(
+      (it) => ({ id: it.id, variasi: it.variasi })
+    );
     if (rowDef.key === "kain_atasan" || rowDef.key === "kain_celana") {
       const namaDb = new Set(dariDb.map((it) => it.variasi));
       const tambahan = (fabrics ?? [])
@@ -119,16 +123,46 @@ export default function HppCalculator({
         .filter(
           (f) =>
             (rowDef.key === "kain_atasan" ? f.hargaAtasan : f.hargaCelana) != null
-        )
-        .map((f) => ({
-          id: -f.id,
-          variasi: f.nama,
-          harga: (rowDef.key === "kain_atasan" ? f.hargaAtasan : f.hargaCelana)!,
-        }));
-      return [...dariDb, ...tambahan];
+        );
+      const grups: string[] = [];
+      for (const f of tambahan) if (!grups.includes(f.grup)) grups.push(f.grup);
+      return [
+        { label: "Standar", options: dariDb },
+        ...grups.map((g) => ({
+          label: g,
+          options: tambahan
+            .filter((f) => f.grup === g)
+            .map((f) => ({ id: -f.id, variasi: f.nama })),
+        })),
+      ];
     }
-    return dariDb;
+    return [{ label: "", options: dariDb }];
   };
+
+  /** Opsi grup → <option>/<optgroup>. */
+  const renderOpsi = (groups: OpsiGrup[]) => (
+    <>
+      {groups.map((g) =>
+        g.label ? (
+          <optgroup key={g.label} label={g.label}>
+            {g.options.map((opt) => (
+              <option key={opt.id} value={opt.variasi}>
+                {opt.variasi}
+              </option>
+            ))}
+          </optgroup>
+        ) : (
+          <Fragment key="standar">
+            {g.options.map((opt) => (
+              <option key={opt.id} value={opt.variasi}>
+                {opt.variasi}
+              </option>
+            ))}
+          </Fragment>
+        )
+      )}
+    </>
+  );
 
   const totalHpp = lines.reduce((sum, line) => sum + (line.harga ?? 0), 0);
   const hargaJual = totalHpp + (Number.isFinite(margin) ? margin : 0);
@@ -191,17 +225,17 @@ export default function HppCalculator({
     >
       <div className="max-w-4xl mx-auto">
       {/* ── TAB SHEET (padanan tab sheet di Excel) ── */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="inline-flex max-w-full overflow-x-auto rounded-2xl bg-white border border-[var(--pas-line)] shadow-sm p-1 mb-6">
         {TABS.map((t) => (
           <button
             key={t.key}
             type="button"
             onClick={() => setTab(t.key)}
             className={
-              "rounded-xl px-4 py-2 text-[13px] font-semibold transition border " +
+              "rounded-xl px-4 py-2 text-[13px] font-semibold transition whitespace-nowrap " +
               (tab === t.key
-                ? "bg-[#04123F] text-white border-[#04123F] shadow-sm"
-                : "bg-white text-[var(--pas-muted)] border-[var(--pas-line)] hover:text-[var(--pas-ink-1)] hover:border-[#CBD2DD]")
+                ? "bg-[#04123F] text-white shadow-sm"
+                : "text-[var(--pas-muted)] hover:text-[var(--pas-ink-1)]")
             }
           >
             {t.label}
@@ -275,11 +309,7 @@ export default function HppCalculator({
                         }
                       >
                         <option value="">—</option>
-                        {options.map((opt) => (
-                          <option key={opt.id} value={opt.variasi}>
-                            {opt.variasi}
-                          </option>
-                        ))}
+                        {renderOpsi(options)}
                       </select>
                     ) : (
                       <span className="opacity-70">{line.variasi}</span>
@@ -362,11 +392,7 @@ export default function HppCalculator({
                     }
                   >
                     <option value="">—</option>
-                    {options.map((opt) => (
-                      <option key={opt.id} value={opt.variasi}>
-                        {opt.variasi}
-                      </option>
-                    ))}
+                    {renderOpsi(options)}
                   </select>
                 ) : (
                   <span className="block text-[13px] opacity-70">

@@ -230,41 +230,52 @@ export default function HppDatabase({
 
   return (
     <div>
-      {/* ── FILTER + AKSI ── */}
-      <div className="flex flex-col gap-3 mb-4">
-        <div className="flex gap-2">
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Cari item atau variasi…"
-          className="w-full sm:w-72 rounded-xl border border-[var(--pas-line)] bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#04123F]"
-        />
-        <button
-          type="button"
-          onClick={() => setShowForm((v) => !v)}
-          className="pas-btn pas-btn-accent whitespace-nowrap px-3.5 py-2.5 text-[14px]"
-        >
-          {showForm ? "Tutup" : "Tambah Item"}
-        </button>
+      {/* ── HEADER + FILTER ── */}
+      <div className="pas-card overflow-hidden mb-5">
+        <div className="bg-gradient-to-r from-[#04123F] via-[#0A2465] to-[#123A8F] px-5 py-4 flex items-center justify-between gap-3 flex-wrap">
+          <div className="min-w-0">
+            <h2 className="text-white font-bold text-[15px] leading-tight">
+              Database HPP
+            </h2>
+            <p className="text-white/60 text-[12px] mt-0.5">
+              {items.length} item harga bahan &amp; proses — klik harga untuk
+              edit langsung
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowForm((v) => !v)}
+            className="pas-btn pas-btn-accent whitespace-nowrap px-3.5 py-2.5 text-[14px]"
+          >
+            {showForm ? "Tutup" : "+ Tambah Item"}
+          </button>
         </div>
-        <div className="flex flex-wrap gap-1.5">
-          <FilterChip
-            label="Semua"
-            count={items.length}
-            active={kategori === ""}
-            onClick={() => setKategori("")}
+        <div className="px-5 py-3.5 flex flex-col gap-3">
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Cari item atau variasi…"
+            className="w-full sm:w-80 rounded-xl border border-[var(--pas-line)] bg-[#F7F8FA] px-3.5 py-2.5 text-sm outline-none focus:bg-white focus:border-[#04123F]"
           />
-          {kategories.map((k) => (
+          <div className="flex flex-wrap gap-1.5">
             <FilterChip
-              key={k}
-              label={k}
-              count={items.filter((it) => it.kategori === k).length}
-              active={kategori === k}
-              onClick={() => setKategori(kategori === k ? "" : k)}
-              dot={KATEGORI_META[k]?.dot ?? FALLBACK_META.dot}
+              label="Semua"
+              count={items.length}
+              active={kategori === ""}
+              onClick={() => setKategori("")}
             />
-          ))}
+            {kategories.map((k) => (
+              <FilterChip
+                key={k}
+                label={k}
+                count={items.filter((it) => it.kategori === k).length}
+                active={kategori === k}
+                onClick={() => setKategori(kategori === k ? "" : k)}
+                dot={KATEGORI_META[k]?.dot ?? FALLBACK_META.dot}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -396,7 +407,13 @@ export default function HppDatabase({
             {filtered.map((it, i) => {
               const meta = KATEGORI_META[it.kategori] ?? FALLBACK_META;
               return (
-                <tr key={it.id} className={i % 2 ? "bg-[#F7F8FA]" : ""}>
+                <tr
+                  key={it.id}
+                  className={
+                    (i % 2 ? "bg-[#F7F8FA] " : "") +
+                    "transition-colors hover:bg-[#EEF2F8]"
+                  }
+                >
                   <td className="px-4 py-2.5 opacity-40 tabular-nums">{i + 1}</td>
                   <td className="px-2 py-2.5">
                     <span
