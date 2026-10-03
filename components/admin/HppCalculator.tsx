@@ -127,6 +127,12 @@ export default function HppCalculator({
     }
   };
 
+  // Dipakai tab Database HPP supaya harga baru langsung ikut di kalkulator.
+  const updateItemHarga = (id: number, harga: number) =>
+    setItems((prev) =>
+      (prev ?? []).map((it) => (it.id === id ? { ...it, harga } : it))
+    );
+
   const isEmpty = !items || items.length === 0;
 
   return (
@@ -408,7 +414,7 @@ export default function HppCalculator({
       </div>
       )}
 
-      {tab === "database" && <HppDatabase items={items} />}
+      {tab === "database" && <HppDatabase items={items} onHargaSaved={updateItemHarga} />}
 
       {tab === "kain" && <DaftarKain fabrics={fabrics} />}
       </div>

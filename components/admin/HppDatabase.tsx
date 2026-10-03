@@ -24,9 +24,54 @@ const KATEGORI_META: Record<string, { dot: string; chip: string }> = {
 };
 const FALLBACK_META = { dot: "bg-[#94A3B8]", chip: "bg-[#F1F5F9] text-[#334155]" };
 
-export default function HppDatabase({ items }: { items: HppItem[] | null }) {
+export default function HppDatabase({
+  items,
+  onHargaSaved,
+}: {
+  items: HppItem[] | null;
+  onHargaSaved?: (id: number, harga: number) => void;
+}) {
   const [query, setQuery] = useState("");
   const [kategori, setKategori] = useState<string>("");
+  const [editing, setEditing] = useState(false);
+  const [draftHarga, setDraftHarga] = useState<Record<number, string>>({});
+  const [savingId, setSavingId] = useState<number | null>(null);
+  const [toast, setToast] = useState("");
+
+  const flash = (message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(""), 2200);
+  };
+
+  const saveHarga = async (item: HppItem) => {
+    const raw = (draftHarga[item.id] ?? "").replace(/[^\d]/g, "");
+    if (raw === "" || !Number.isFinite(Number(raw))) {
+      flash("Isi harga dengan angka dulu");
+      return;
+    }
+    setSavingId(item.id);
+    try {
+      const res = await fetch("/api/pesanan/hpp", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: item.id, harga: Number(raw) }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        flash(data?.error ?? "Gagal menyimpan harga");
+        return;
+      }
+      onHargaSaved?.(item.id, Number(raw));
+      setDraftHarga((prev) => {
+        const next = { ...prev };
+        delete next[item.id];
+        return next;
+      });
+      flash("Harga tersimpan ✅");
+    } finally {
+      setSavingId(null);
+    }
+  };
 
   const kategories = useMemo(() => {
     const seen: string[] = [];
@@ -59,6 +104,7 @@ export default function HppDatabase({ items }: { items: HppItem[] | null }) {
     <div>
       {/* ── FILTER: cari + chip kategori ── */}
       <div className="flex flex-col gap-3 mb-4">
+        <div className="flex gap-2">
         <input
           type="search"
           value={query}
@@ -66,6 +112,14 @@ export default function HppDatabase({ items }: { items: HppItem[] | null }) {
           placeholder="Cari item atau variasi…"
           className="w-full sm:w-72 rounded-xl border border-[var(--pas-line)] bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#04123F]"
         />
+        <button
+          type="button"
+          onClick={() => setEditing((v) => !v)}
+          className="pas-btn pas-btn-accent whitespace-nowrap px-3.5 py-2.5 text-[14px]"
+        >
+          {editing ? "Tutup Harga" : "Edit Harga"}
+        </button>
+        </div>
         <div className="flex flex-wrap gap-1.5">
           <FilterChip
             label="Semua"
@@ -115,8 +169,30 @@ export default function HppDatabase({ items }: { items: HppItem[] | null }) {
                   </td>
                   <td className="px-2 py-2.5 font-medium">{it.item}</td>
                   <td className="px-2 py-2.5 opacity-80">{it.variasi}</td>
-                  <td className="px-3 py-2.5 text-right font-semibold tabular-nums">
-                    {rupiah(it.harga)}
+                  <td className="px-3 py-2.5 text-right">
+                    {editing ? (
+                      <span className="inline-flex items-center justify-end gap-1.5">
+                        <input
+                          type="number"
+                          min={0}
+                          className="w-24 text-right rounded-lg border border-[#E3E7EE] bg-white px-2 py-1.5 text-[13px]"
+                          value={draftHarga[it.id] ?? String(it.harga)}
+                          onChange={(e) =>
+                            setDraftHarga((prev) => ({ ...prev, [it.id]: e.target.value }))
+                          }
+                        />
+                        <button
+                          type="button"
+                          className="pas-btn pas-btn-ghost text-[12px] px-2.5 py-1"
+                          disabled={savingId === it.id}
+                          onClick={() => saveHarga(it)}
+                        >
+                          {savingId === it.id ? "…" : "Simpan"}
+                        </button>
+                      </span>
+                    ) : (
+                      <span className="font-semibold tabular-nums">{rupiah(it.harga)}</span>
+                    )}
                   </td>
                   <td className="px-4 py-2.5 opacity-60">{it.satuan}</td>
                 </tr>
@@ -161,6 +237,27 @@ export default function HppDatabase({ items }: { items: HppItem[] | null }) {
                   {it.satuan}
                 </span>
               </div>
+              {editing && (
+                <div className="mt-2 flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={0}
+                    className="w-28 text-right rounded-lg border border-[#E3E7EE] bg-white px-2.5 py-1.5 text-[13px]"
+                    value={draftHarga[it.id] ?? String(it.harga)}
+                    onChange={(e) =>
+                      setDraftHarga((prev) => ({ ...prev, [it.id]: e.target.value }))
+                    }
+                  />
+                  <button
+                    type="button"
+                    className="pas-btn pas-btn-ghost text-[12px] px-2.5 py-1"
+                    disabled={savingId === it.id}
+                    onClick={() => saveHarga(it)}
+                  >
+                    {savingId === it.id ? "…" : "Simpan"}
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}
@@ -173,9 +270,15 @@ export default function HppDatabase({ items }: { items: HppItem[] | null }) {
 
       <p className="mt-3 text-[11.5px] opacity-50">
         Menampilkan {filtered.length} dari {items.length} baris — padanan sheet
-        DATABASE HPP di Excel. Harga bisa diedit dari tombol “Edit Harga” di tab
-        Kalkulator.
+        DATABASE HPP di Excel. Harga bisa diedit langsung lewat tombol “Edit
+        Harga” di atas.
       </p>
+
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 rounded-xl bg-[#04123F] text-white text-[13px] px-4 py-2.5 shadow-lg z-50">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
